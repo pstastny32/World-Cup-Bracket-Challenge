@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>World Cup 2026 Pool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root{--bg:#0A1620;--surface:#122433;--surface-2:#0F1E2B;--line:#21384a;--gold:#F4B400;--green:#25C281;--text:#EAF2F7;--muted:#7C97A8;--coral:#FF6B5B;--amber:#E8A33D}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}
+  body{padding:0 0 120px}
+  .wrap{max-width:560px;margin:0 auto;padding:0 14px}
+  .eyebrow{font:600 11px/1 Inter;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+  h1{font-family:Anton;font-weight:400;line-height:.92;letter-spacing:.01em;text-transform:uppercase;margin:8px 0 6px}
+  .sub{color:var(--muted);font-size:13px;margin:0}
+  .top{display:flex;justify-content:space-between;align-items:center;padding:16px 0 14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .who{font:600 13px Inter;color:var(--muted)}.who b{color:var(--text)}
+  .linkbtn{background:none;border:0;color:var(--gold);font:600 13px Inter;cursor:pointer;padding:0}
+  .back{background:none;border:0;color:var(--muted);font:600 13px Inter;cursor:pointer;padding:8px 0;margin-top:6px}
+  .homebtn{display:block;width:100%;margin:18px 0 6px;background:transparent;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:14px;font:700 14px Inter;cursor:pointer}
+  .sharebtn{display:block;width:100%;margin:12px 0 0;background:var(--gold);color:#1a1205;border:0;border-radius:12px;padding:14px;font:700 14px Inter;cursor:pointer}
+  .hero{padding:24px 0 8px}.hero h1{font-size:42px}
+  .lockbar{margin:14px 0 6px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+  .dot.locked{background:var(--coral);box-shadow:0 0 8px var(--coral)}
+  .cards{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+  .card{display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;color:var(--text);transition:border-color .12s,transform .06s}
+  .card:active{transform:translateY(1px)}.card.live{border-color:var(--green)}
+  .card .t{font:700 16px Inter}.card .d{font:500 12.5px Inter;color:var(--muted);margin-top:3px}
+  .card .arrow{font-family:Anton;color:var(--gold);font-size:20px}
+  .tag{font:600 10px/1 "JetBrains Mono";text-transform:uppercase;letter-spacing:.08em;padding:4px 7px;border-radius:6px;background:rgba(37,194,129,.14);color:var(--green);white-space:nowrap}
+  .tag.gray{background:rgba(124,151,168,.14);color:var(--muted)}.tag.amber{background:rgba(232,163,61,.16);color:var(--amber)}.tag.red{background:rgba(255,107,91,.18);color:var(--coral)}
+  .doc h2{font-family:Anton;font-weight:400;text-transform:uppercase;font-size:17px;letter-spacing:.04em;color:var(--gold);margin:26px 0 10px}
+  .doc p{font-size:14.5px;line-height:1.55;color:#cddbe4;margin:0 0 12px}
+  .rule{display:flex;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:13px 14px;margin-bottom:8px}
+  .rule .lab{font:600 14px Inter}.rule .lab small{display:block;color:var(--muted);font-weight:500;font-size:12px;margin-top:3px}
+  .rule .val{font-family:Anton;font-weight:400;font-size:20px;color:var(--gold);white-space:nowrap}
+  .ex{background:var(--surface-2);border:1px dashed var(--line);border-radius:11px;padding:12px 14px;font-size:13.5px;color:#cddbe4;margin-bottom:8px}.ex b{color:var(--gold)}
+  table.kt{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:13.5px}
+  table.kt th{text-align:left;color:var(--muted);font:600 11px Inter;letter-spacing:.06em;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--line)}
+  table.kt td{padding:8px;border-bottom:1px solid var(--line)}
+  table.kt td:last-child,table.kt th:last-child{text-align:right;font-family:"JetBrains Mono"}
+  .ghead{font-family:Anton;font-weight:400;font-size:15px;letter-spacing:.1em;color:var(--gold);margin:22px 4px 8px}
+  .match{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 12px 10px;margin-bottom:10px}
+  .meta{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:10px}
+  .meta .grp{font-family:"JetBrains Mono";color:var(--gold)}
+  .rowg{display:grid;grid-template-columns:1fr 54px 1fr;gap:6px;align-items:stretch}
+  .side{appearance:none;border:1px solid var(--line);background:var(--surface-2);color:var(--text);border-radius:11px;padding:11px 8px;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center;transition:border-color .12s,background .12s}
+  .badge{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 9px/1 "JetBrains Mono";background:#0c2030;border:1px solid var(--line);color:var(--text);overflow:hidden;flex:0 0 auto}
+  .badge img{width:100%;height:100%;object-fit:cover}
+  .side .badge{width:44px;height:44px;font-size:13px}
+  .side .name{font:600 12.5px/1.15 Inter;text-align:center}
+  .side .rk{font:600 10px/1 "JetBrains Mono";color:var(--muted)}
+  .side .pts{font:600 11px/1 Inter;color:var(--muted)}.side .pts b{font-family:Anton;font-weight:400;font-size:15px;margin-right:2px}
+  .side.upset .pts,.side.upset .pts b{color:var(--gold)}
+  .side.sel{background:rgba(37,194,129,.12);border-color:var(--green)}
+  .side.sel.upset{background:rgba(244,180,0,.12);border-color:var(--gold)}
+  .side.correct{background:rgba(37,194,129,.2);border-color:var(--green)}
+  .side.wrong{background:rgba(255,107,91,.16);border-color:var(--coral)}
+  .draw{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid var(--line);background:var(--surface-2);border-radius:11px;cursor:pointer;color:var(--muted)}
+  .draw .x{font-family:Anton;font-size:15px;color:var(--muted)}.draw .pts{font:600 10px/1 Inter}
+  .draw.sel{background:rgba(124,151,168,.16);border-color:var(--muted);color:var(--text)}
+  .draw.correct{background:rgba(37,194,129,.2);border-color:var(--green)}.draw.wrong{background:rgba(255,107,91,.16);border-color:var(--coral)}
+  .res{margin-top:9px;text-align:center;font:600 12px Inter;color:var(--muted)}
+  .res .ft{font-family:"JetBrains Mono";color:var(--text)}.res .g{color:var(--green)}.res .r{color:var(--coral)}
+  .odds{display:flex;justify-content:center;gap:14px;margin-top:9px;font:600 10px/1 "JetBrains Mono";color:var(--muted)}.odds span b{color:var(--text)}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(180deg,transparent,var(--bg) 28%);padding:18px 14px;display:flex;justify-content:center;z-index:6}
+  .bar .inner{width:100%;max-width:560px;display:flex;gap:12px;align-items:center}
+  .count{font:600 12px Inter;color:var(--muted);white-space:nowrap}.count b{color:var(--text);font-family:Anton;font-weight:400;font-size:16px}
+  button.cta{flex:1;appearance:none;border:0;border-radius:12px;padding:15px;cursor:pointer;font:700 15px Inter;background:var(--gold);color:#1a1205}
+  button.cta:disabled{background:#33424d;color:var(--muted);cursor:not-allowed}
+  button.ghost{flex:0 0 auto;background:transparent;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:15px 16px;font:700 14px Inter;cursor:pointer}
+  .auth{max-width:380px;margin:54px auto;padding:0 18px}
+  .field{margin-bottom:12px}.field label{display:block;font:600 12px Inter;color:var(--muted);margin-bottom:6px;letter-spacing:.04em}
+  .field input{width:100%;padding:13px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font:500 15px Inter}
+  .toggle{margin-top:14px;font-size:13px;color:var(--muted);text-align:center}.toggle button{background:none;border:0;color:var(--gold);font:600 13px Inter;cursor:pointer;padding:0}
+  .err{background:rgba(255,107,91,.12);border:1px solid var(--coral);color:#ffd9d3;padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px}
+  .ok{background:rgba(37,194,129,.12);border:1px solid var(--green);color:#cfeede;padding:14px;border-radius:11px;font-size:14px;margin-top:16px}
+  .strow{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:10px 12px;margin-bottom:6px}
+  .strow.q{border-left-color:var(--green)}.strow.third{border-left-color:var(--amber)}.strow.out{border-left-color:var(--line);opacity:.7}
+  .strow .pos{font:700 12px "JetBrains Mono";color:var(--muted);width:18px}
+  .strow .nm{flex:1;font:600 14px Inter;display:flex;align-items:center;gap:8px}.strow .nm small{color:var(--muted);font-weight:500;font-family:"JetBrains Mono"}
+  .strow .pp{font-family:Anton;font-size:16px;color:var(--gold);margin-right:6px}
+  .mv{background:#16293a;border:1px solid var(--line);color:var(--text);border-radius:7px;width:26px;height:26px;font-size:13px;cursor:pointer}.mv:disabled{opacity:.3;cursor:default}
+  .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface-2);border-radius:999px;padding:7px 11px;margin:4px 5px 4px 0;cursor:pointer;font:600 13px Inter;color:var(--text)}
+  .chip.sel{background:rgba(37,194,129,.14);border-color:var(--green)}.chip small{font-family:"JetBrains Mono";color:var(--muted)}
+  /* converging bracket */
+  .bk{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 16px;-webkit-overflow-scrolling:touch}
+  .bkcol{display:flex;flex-direction:column;justify-content:space-around;gap:8px;min-width:150px;flex:0 0 auto}
+  .bkcol.center{justify-content:flex-start;align-items:stretch;min-width:160px}
+  .bkcol .ch{font:600 10px "JetBrains Mono";color:var(--gold);text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:2px}
+  .node{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:6px 8px}
+  .node .lab{font:600 9px "JetBrains Mono";color:var(--gold);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+  .nteam{display:flex;align-items:center;gap:6px;padding:6px 7px;border:1px solid var(--line);border-radius:7px;background:var(--surface-2);margin-bottom:4px;font:600 12px Inter;cursor:pointer}
+  .nteam:last-child{margin-bottom:0}.nteam .badge{width:18px;height:18px;font-size:8px}
+  .nteam .nm2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nteam .s{font:600 9px "JetBrains Mono";color:var(--muted);margin-left:auto}
+  .nteam .pb{font:600 10px Inter;color:var(--muted);margin-left:4px}
+  .nteam.win{background:rgba(37,194,129,.16);border-color:var(--green)}.nteam.win .pb{color:var(--green)}
+  .nteam.alive{border-color:var(--green)}
+  .nteam.dead{background:rgba(255,107,91,.13);border-color:var(--coral);opacity:.75}.nteam.dead .nm2{text-decoration:line-through;color:var(--coral)}
+  .nteam.tbd{opacity:.4;cursor:default}
+  .champcell{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:linear-gradient(180deg,rgba(244,180,0,.1),transparent);border:1px solid var(--gold);border-radius:10px;padding:12px 8px;margin-bottom:10px}
+  .champcell .badge{width:46px;height:46px;font-size:13px;border-color:var(--gold)}
+  .champcell .cn{font-family:Anton;font-size:14px;text-transform:uppercase;line-height:1}
+  .champcell .cs{font:600 9px "JetBrains Mono";color:var(--gold);letter-spacing:.1em;text-transform:uppercase}
+  .lb{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:7px}
+  .lb.clickable{cursor:pointer}.lb.me{border-color:var(--gold)}
+  .lb .rk{font:700 13px "JetBrains Mono";color:var(--muted);width:34px}.lb.top .rk{color:var(--gold)}
+  .lb .u{flex:1;font:600 15px Inter}.lb .u small{display:block;color:var(--muted);font-weight:500;font-size:11px;margin-top:2px}
+  .lb .tot{font-family:Anton;font-size:22px;color:var(--gold)}
+  .lg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  .lgtop{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:6px}
+  .lgteam{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1}
+  .lgteam .badge{width:56px;height:56px;font-size:16px}.lgteam .nm{font:700 14px Inter;text-align:center}.lgteam .rk{font:600 10px "JetBrains Mono";color:var(--muted)}
+  .scorebug{display:flex;align-items:center;gap:10px;font-family:Anton;font-size:34px}
+  .scorebug .livedot{font:700 9px "JetBrains Mono";color:var(--coral);letter-spacing:.1em}
+  .backers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .backers .col{font-size:12px}.backers .col h5{margin:0 0 5px;font:600 11px Inter;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .backers .col .b{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--line)}
+  .backers .col .b .pl{font-family:"JetBrains Mono";color:var(--muted)}
+  .wm{position:fixed;right:9px;bottom:7px;font:500 10px Inter;color:rgba(124,151,168,.4);pointer-events:none;z-index:7}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body><div id="root"></div><div class="wm">created by pstastny</div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
+const GROUP_LOCK_ISO = "2026-06-11T15:00:00-04:00";
+const RANK={"Mexico":14,"South Korea":23,"South Africa":41,"Czechia":33,"Canada":27,"Switzerland":18,"Qatar":36,"Bosnia-Herzegovina":43,"Brazil":6,"Morocco":7,"Scotland":31,"Haiti":47,"United States":16,"Paraguay":34,"Australia":24,"Türkiye":20,"Germany":10,"Ecuador":22,"Côte d'Ivoire":29,"Curaçao":46,"Netherlands":8,"Japan":17,"Tunisia":35,"Sweden":32,"Belgium":9,"Iran":19,"Egypt":26,"New Zealand":48,"Spain":2,"Uruguay":12,"Saudi Arabia":39,"Cape Verde":44,"France":3,"Senegal":15,"Norway":28,"Iraq":40,"Argentina":1,"Austria":21,"Algeria":25,"Jordan":42,"Portugal":5,"Colombia":13,"Uzbekistan":38,"DR Congo":37,"England":4,"Croatia":11,"Panama":30,"Ghana":45};
+const GROUPS={A:["Mexico","South Korea","South Africa","Czechia"],B:["Canada","Switzerland","Qatar","Bosnia-Herzegovina"],C:["Brazil","Morocco","Scotland","Haiti"],D:["United States","Paraguay","Australia","Türkiye"],E:["Germany","Ecuador","Côte d'Ivoire","Curaçao"],F:["Netherlands","Japan","Tunisia","Sweden"],G:["Belgium","Iran","Egypt","New Zealand"],H:["Spain","Uruguay","Saudi Arabia","Cape Verde"],I:["France","Senegal","Norway","Iraq"],J:["Argentina","Austria","Algeria","Jordan"],K:["Portugal","Colombia","Uzbekistan","DR Congo"],L:["England","Croatia","Panama","Ghana"]};
+let CREST={};
+function buildFixtures(){const pairs=[[0,1],[2,3],[0,2],[3,1],[0,3],[1,2]];const out=[];
+  Object.keys(GROUPS).forEach(g=>{const t=GROUPS[g];pairs.forEach((p,i)=>out.push({id:g+(i+1),group:g,teamA:t[p[0]],teamB:t[p[1]],seedA:RANK[t[p[0]]],seedB:RANK[t[p[1]]],dateTimeISO:"",city:"",country:""}));});return out;}
+function groupBonus(gap){if(gap<=0)return 0;if(gap<=3)return 1;if(gap<=7)return 2;if(gap<=10)return 3;if(gap<=15)return 5;if(gap<=20)return 8;if(gap<=30)return 12;return 15;}
+function potential(pick,rA,rB){if(pick==="D")return 1;const w=pick==="A"?rA:rB,l=pick==="A"?rB:rA;const gap=w-l;return gap>0?1+groupBonus(gap):1;}
+const KOM={R32:1,R16:1.5,QF:2,SF:2.5,FINAL:3};
+function koPotential(round,pr,opp){const gap=pr-opp;const base=gap>0?1+groupBonus(gap):1;return Math.round(base*KOM[round]);}
+function initials(n){return n?n.replace(/&|\.|-/g," ").split(/\s+/).map(w=>w[0]).join("").slice(0,3).toUpperCase():"";}
+function fmt(iso){if(!iso)return "Time & venue load live";const d=new Date(iso);return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});}
+function byTime(a,b){if(a.dateTimeISO&&b.dateTimeISO)return new Date(a.dateTimeISO)-new Date(b.dateTimeISO);if(a.dateTimeISO)return -1;if(b.dateTimeISO)return 1;return a.id.localeCompare(b.id);}
+async function postJSON(b){const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)});return r.json();}
+function locked(){return new Date()>=new Date(GROUP_LOCK_ISO);}
+function isLive(f){if(f.status==="LIVE")return true;if(f.status==="FINISHED")return false;if(!f.dateTimeISO)return false;const k=new Date(f.dateTimeISO),now=new Date();return now>=k&&now<=new Date(k.getTime()+2.25*3600*1000);}
+function eliminatedSet(fixtures){const s=new Set();fixtures.forEach(f=>{if(f.round&&f.round!=="GROUP"&&f.result){const loser=f.result==="A"?f.teamB:f.result==="B"?f.teamA:null;if(loser)s.add(loser);}});return s;}
+function actualR32(fixtures){const s=new Set();fixtures.forEach(f=>{if(f.round==="R32"){if(f.teamA)s.add(f.teamA);if(f.teamB)s.add(f.teamB);}});return s;}
+function ranksWithTies(rows){let last=null,place=0;const counts={};rows.forEach(r=>counts[r.total]=(counts[r.total]||0)+1);
+  return rows.map((r,i)=>{if(r.total!==last){place=i+1;last=r.total;}return{...r,place:(counts[r.total]>1?"T":"")+place};});}
+function Crest({team,cls}){const u=CREST[team];return <span className={"badge "+(cls||"")}>{u?<img src={u} alt=""/>:initials(team)}</span>;}
+function standings(teams,fixtures,picks){const pts={};teams.forEach(t=>pts[t]=0);
+  fixtures.filter(f=>teams.includes(f.teamA)).forEach(f=>{const p=picks[f.id];if(!p)return;
+    if(p==="A")pts[f.teamA]+=3;else if(p==="B")pts[f.teamB]+=3;else{pts[f.teamA]+=1;pts[f.teamB]+=1;}});
+  return{order:teams.slice().sort((a,b)=>pts[b]-pts[a]||RANK[a]-RANK[b]),pts};}
+const THIRD_SLOTS=[{w:'E',e:['A','B','C','D','F']},{w:'I',e:['C','D','F','G','H']},{w:'A',e:['C','E','F','H','I']},{w:'L',e:['E','H','I','J','K']},{w:'G',e:['A','E','H','I','J']},{w:'D',e:['B','E','F','I','J']},{w:'B',e:['E','F','G','I','J']},{w:'K',e:['D','E','I','J','L']}];
+function matchThirds(chosen){const used=Array(8).fill(false),res={};function bt(i){if(i===chosen.length)return true;for(let s=0;s<8;s++){if(!used[s]&&THIRD_SLOTS[s].e.includes(chosen[i].group)){used[s]=true;res[THIRD_SLOTS[s].w]=chosen[i];if(bt(i+1))return true;used[s]=false;delete res[THIRD_SLOTS[s].w];}}return false;}return bt(0)?res:null;}
+const FIXED_R32=[["RU-A","RU-B"],["W-C","RU-F"],["W-F","RU-C"],["RU-E","RU-I"],["W-H","RU-J"],["RU-K","RU-L"],["RU-D","RU-G"],["W-J","RU-H"]];
+const ROUND_SEQ=[["R32",16],["R16",8],["QF",4],["SF",2],["FINAL",1]];
+
+/* ===== Bracket: linear paired layout (R32 pairs → R16 → QF → SF → Final) ===== */
+function Bracket({field,pk,onPick,colorFn,interactive}){
+  const ROUNDS=[["R32",16],["R16",8],["QF",4],["SF",2],["FINAL",1]];
+  function teamsForRound(ri){
+    if(ri===0)return field;
+    const prev=ROUNDS[ri-1][0];const pt=teamsForRound(ri-1);const out=[];
+    for(let m=0;m<pt.length/2;m++){const w=(pk[prev]||{})[m];out.push(w?field.find(f=>f&&f.team===w):null);}
+    return out;}
+  function NTeam({x,opp,round,m}){
+    if(!x)return <div className="nteam tbd"><span className="nm2">TBD</span></div>;
+    const sel=(pk[round]||{})[m]===x.team;
+    const up=opp&&x.seed>opp.seed;
+    const pts=opp?koPotential(round,x.seed,opp.seed):0;
+    const c=colorFn?colorFn(x.team):"";
+    let cl=sel?" win":""; if(c)cl=" "+c;
+    return <div className={"nteam"+cl} onClick={()=>interactive&&opp&&onPick(round,m,x.team)}>
+      <Crest team={x.team}/><span className="nm2">{x.team}</span><span className="s">#{x.seed}</span>
+      {opp&&interactive&&<span className="pb">+{pts}{up?"↑":""}</span>}</div>;}
+  // build columns: pair each R32 match with its downstream rounds converging inward
+  // Layout: [R32 left 8] [R16 left 4] [QF left 2] [SF left 1] [FINAL] [SF right 1] [QF right 2] [R16 right 4] [R32 right 8]
+  const r32=teamsForRound(0);const r16=teamsForRound(1);const qf=teamsForRound(2);const sf=teamsForRound(3);const fin=teamsForRound(4);
+  const champ=(pk.FINAL||{})[0];
+  function mkNode(round,m,teams){
+    const a=teams[m*2],b=teams[m*2+1];
+    return <div key={round+m} className="node"><div className="lab">{round} · {m+1}</div>
+      <NTeam x={a} opp={b} round={round} m={m}/><NTeam x={b} opp={a} round={round} m={m}/></div>;}
+  return (<div className="bk">
+    <div className="bkcol"><div className="ch">R32</div>{[0,1,2,3,4,5,6,7].map(m=>mkNode("R32",m,r32))}</div>
+    <div className="bkcol"><div className="ch">R16</div>{[0,1,2,3].map(m=>mkNode("R16",m,r16))}</div>
+    <div className="bkcol"><div className="ch">QF</div>{[0,1].map(m=>mkNode("QF",m,qf))}</div>
+    <div className="bkcol"><div className="ch">SF</div>{[0].map(m=>mkNode("SF",m,sf))}
+      <div className="champcell"><Crest team={champ||""}/><div className="cs">Champion</div><div className="cn">{champ||"TBD"}</div></div>
+      {mkNode("FINAL",0,fin)}</div>
+    <div className="bkcol"><div className="ch">SF</div>{[1].map(m=>mkNode("SF",m,sf))}</div>
+    <div className="bkcol"><div className="ch">QF</div>{[2,3].map(m=>mkNode("QF",m,qf))}</div>
+    <div className="bkcol"><div className="ch">R16</div>{[4,5,6,7].map(m=>mkNode("R16",m,r16))}</div>
+    <div className="bkcol"><div className="ch">R32</div>{[8,9,10,11,12,13,14,15].map(m=>mkNode("R32",m,r32))}</div>
+  </div>);}
+
+
+/* Auth */
+function Auth({onAuth}){
+  const remembered=(typeof localStorage!=="undefined")?localStorage.getItem("wc_user"):null;
+  const [mode,setMode]=useState(remembered?"returning":"login");
+  const [u,setU]=useState(remembered||"");const [p,setP]=useState("");const [err,setErr]=useState("");const [busy,setBusy]=useState(false);
+  async function go(signup){setErr("");const name=(mode==="returning"?remembered:u).trim();
+    if(!name||!p){setErr("Enter your "+(mode==="returning"?"passcode.":"username and passcode."));return;}
+    setBusy(true);try{const res=await postJSON({action:signup?"signup":"login",username:name,passcode:p});
+      if(res.error){setErr(res.error);}else{if(typeof localStorage!=="undefined")localStorage.setItem("wc_user",res.username);onAuth(res.username);}
+    }catch(e){setErr("Network error — try again.");}setBusy(false);}
+  return (<div className="auth"><div className="eyebrow">World Cup 2026 Pool</div>
+    <h1 style={{fontSize:34,margin:"8px 0 18px"}}>{mode==="returning"?"Welcome back":mode==="signup"?"Create account":"Sign in"}</h1>
+    {err&&<div className="err">{err}</div>}
+    {mode==="returning"?(<div className="field"><label>Passcode for <b style={{color:"var(--text)"}}>{remembered}</b></label>
+      <input type="password" value={p} onChange={e=>setP(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go(false)} autoFocus /></div>
+    ):(<><div className="field"><label>Username</label><input value={u} onChange={e=>setU(e.target.value)} autoCapitalize="none" /></div>
+      <div className="field"><label>Passcode</label><input type="password" value={p} onChange={e=>setP(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go(mode==="signup")} /></div></>)}
+    <button className="cta" style={{width:"100%"}} disabled={busy} onClick={()=>go(mode==="signup")}>{busy?"…":mode==="returning"?"Continue":mode==="signup"?"Create account":"Sign in"}</button>
+    <div className="toggle">{mode==="returning"&&<button onClick={()=>{setMode("login");setU("");setErr("");}}>Not {remembered}? Switch user</button>}
+      {mode==="login"&&<span>New here? <button onClick={()=>{setMode("signup");setErr("");}}>Create an account</button></span>}
+      {mode==="signup"&&<span>Already in? <button onClick={()=>{setMode("login");setErr("");}}>Sign in</button></span>}</div></div>);
+}
+
+/* Home */
+function Home({user,go,onSignOut,picksCount,standingsDone,koStatus,anyLive}){
+  const L=locked();const koTag=koStatus==="done"?"Completed":koStatus==="resume"?"Resume":"Demo";
+  return (<div className="wrap">
+    <div className="top"><span className="who">Signed in as <b>{user}</b></span><button className="linkbtn" onClick={onSignOut}>Sign out</button></div>
+    <div className="hero"><div className="eyebrow">USA · Canada · Mexico</div><h1>World Cup<br/>Pick 'Em Pool</h1>
+      <div className="lockbar"><span className={"dot"+(L?" locked":"")}></span>{L?"Group picks are locked — tournament underway.":"Group picks lock at the first kickoff, June 11."}</div></div>
+    <div className="cards">
+      <button className="card" onClick={()=>go("scoring")}><div><div className="t">How scoring works</div><div className="d">Tiered upset points, advancement, knockout multipliers.</div></div><span className="arrow">→</span></button>
+      <button className="card live" onClick={()=>go("live")}><div><div className="t">Live games</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>
+      <button className={"card"+(L?"":" live")} onClick={()=>go("group")}><div><div className="t">Make your group picks</div><div className="d">{picksCount>0?picksCount+" of 72 picked.":"Call all 72 group games. Save as you go."}</div></div><span className="tag">{picksCount>=72?"Completed":L?"View":picksCount>0?"Resume":"Open"}</span></button>
+      <button className="card" onClick={()=>go("standings")}><div><div className="t">Group stage standings & predicted bracket</div><div className="d">Your groups, tiebreakers, third-place picks, Round of 32.</div></div><span className="tag">{standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>
+      <button className="card" onClick={()=>go("ko")}><div><div className="t">Knockout bracket</div><div className="d">Pick the Round of 32 through to the final.</div></div><span className={"tag"+(koStatus==="done"?"":" amber")}>{koTag}</span></button>
+      <button className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>
+    </div></div>);
+}
+
+/* How scoring */
+function HowScoring({back}){
+  return (<div className="wrap doc"><button className="back" onClick={back}>← Back</button>
+    <div className="eyebrow">The rules</div><h1 style={{fontSize:32}}>How scoring works</h1>
+    <p>Every team is ranked <b>1 to 48 by the FIFA World Ranking</b>, locked for the tournament and shown next to each team. Lower number = stronger. Upsets pay off the gap between the two FIFA rankings.</p>
+    <h2>Group stage — per game</h2>
+    <div className="rule"><div className="lab">Correct favorite win<small>higher-ranked team (lower FIFA number) wins</small></div><div className="val">1</div></div>
+    <div className="rule"><div className="lab">Correct draw</div><div className="val">1</div></div>
+    <div className="rule"><div className="lab">Correct underdog win<small>1 point + the bonus below</small></div><div className="val">1 + bonus</div></div>
+    <table className="kt"><thead><tr><th>FIFA-ranking gap</th><th>Upset bonus</th></tr></thead><tbody>
+      <tr><td>1–3</td><td>+1</td></tr><tr><td>4–7</td><td>+2</td></tr><tr><td>8–10</td><td>+3</td></tr><tr><td>11–15</td><td>+5</td></tr>
+      <tr><td>16–20</td><td>+8</td></tr><tr><td>21–30</td><td>+12</td></tr><tr><td>31–45</td><td>+15</td></tr></tbody></table>
+    <div className="ex">Example: <b>South Africa (#41)</b> beats <b>Mexico (#14)</b> — gap 27 → 1 + 12 = <b>13 points</b>.</div>
+    <h2>Advancing to the Round of 32</h2>
+    <div className="rule"><div className="lab">Each team you correctly send through<small>your 2 per group + 8 best third-place teams</small></div><div className="val">2</div></div>
+    <h2>Knockout — per game</h2>
+    <p>Same idea as the group stage — <b>1 for the winner, +bonus if it's an upset</b> (same gap table) — then <b>× the round multiplier</b>.</p>
+    <table className="kt"><thead><tr><th>Round</th><th>Multiplier</th></tr></thead><tbody>
+      <tr><td>Round of 32</td><td>× 1</td></tr><tr><td>Round of 16</td><td>× 1.5</td></tr><tr><td>Quarterfinal</td><td>× 2</td></tr><tr><td>Semifinal</td><td>× 2.5</td></tr><tr><td>Final / champion</td><td>× 3</td></tr></tbody></table>
+    <div className="ex"><b>#4 beats #1</b> (gap 3 → 2 base): quarterfinal 2 × 2 = <b>4</b>, final 2 × 3 = <b>6</b>. A real shock <b>#20 beats #2</b> (gap 18 → 9 base) in the final = 9 × 3 = <b>27</b>.</div>
+    <p className="sub" style={{marginTop:16}}>Group picks lock June 11. The knockout opens after the groups, filled from the real 32 qualifiers — a wrong group call never wrecks your bracket.</p>
+    <button className="homebtn" onClick={back}>← Back to home</button></div>);
+}
+
+/* Group picker */
+function Side({team,rk,oppRk,side,selected,onPick,result}){
+  const pts=potential(side,side==="A"?rk:oppRk,side==="A"?oppRk:rk);const upset=(rk-oppRk)>0;
+  let extra="";if(result&&selected)extra=(result===side)?" correct":" wrong";
+  return (<button className={"side"+(selected?" sel":"")+(upset?" upset":"")+extra} onClick={onPick} aria-pressed={selected}>
+    <Crest team={team}/><div className="name">{team}</div><div className="rk">FIFA #{rk}</div><div className="pts"><b>+{pts}</b>{upset?"pts":"pt"}</div></button>);
+}
+function Match({g,pick,onPick}){
+  const r=g.result;let earned=0,correct=false;if(r&&pick){correct=(pick===r);earned=correct?potential(pick,g.seedA,g.seedB):0;}
+  return (<div className="match">
+    <div className="meta"><span className="grp">GROUP {g.group}</span><span>{fmt(g.dateTimeISO)}{g.city?" · "+g.city:""}{g.country?", "+g.country:""}</span></div>
+    <div className="rowg">
+      <Side team={g.teamA} rk={g.seedA} oppRk={g.seedB} side="A" selected={pick==="A"} result={r} onPick={()=>onPick(g.id,"A")} />
+      <div className={"draw"+(pick==="D"?" sel":"")+(r&&pick==="D"?(r==="D"?" correct":" wrong"):"")} role="button" tabIndex="0" onClick={()=>onPick(g.id,"D")} onKeyDown={e=>e.key==="Enter"&&onPick(g.id,"D")}><div className="x">DRAW</div><div className="pts">+1pt</div></div>
+      <Side team={g.teamB} rk={g.seedB} oppRk={g.seedA} side="B" selected={pick==="B"} result={r} onPick={()=>onPick(g.id,"B")} /></div>
+    {r&&<div className="res"><span className="ft">FT {g.scoreA}–{g.scoreB}</span>{pick?(correct?<span className="g"> · your pick +{earned}</span>:<span className="r"> · your pick 0</span>):<span> · no pick</span>}</div>}
+    {!r&&(g.probA||g.probB)&&<div className="odds"><span>{g.teamA}: <b>{Math.round((g.probA||0)*100)}%</b></span><span>{g.teamB}: <b>{Math.round((g.probB||0)*100)}%</b></span></div>}</div>);
+}
+function Picker({user,fixtures,picks,setPicks,back}){
+  const [L]=useState(locked());const [saved,setSaved]=useState(false);const [err,setErr]=useState("");const [busy,setBusy]=useState(false);
+  const onPick=(id,v)=>{if(L)return;setSaved(false);setPicks(p=>({...p,[id]:v}));};
+  const made=Object.keys(picks).length,all=made===fixtures.length;
+  async function save(){setErr("");setBusy(true);try{const res=await postJSON({action:"saveGroup",username:user,picksJson:JSON.stringify(picks)});
+    if(res.error)setErr(res.error);else setSaved(true);}catch(e){setErr("Network error — not saved. Try again.");}setBusy(false);}
+  const byGroup={};fixtures.forEach(f=>{(byGroup[f.group]=byGroup[f.group]||[]).push(f);});Object.keys(byGroup).forEach(g=>byGroup[g].sort(byTime));
+  const anyResults=fixtures.some(f=>f.result);
+  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
+    <div className="eyebrow">Group Stage</div><h1 style={{fontSize:30}}>{all?"Your picks":"Pick all 72"}</h1>
+    <p className="sub">{L?(anyResults?"Locked. Green = correct, red = missed.":"Locked — first match has kicked off."):"Tap a team or Draw. Save anytime; edit until June 11."}</p>
+    {err&&<div className="err" style={{marginTop:12}}>{err}</div>}
+    {saved&&<div className="ok" style={{marginTop:12}}>Saved — {made}/72 in.{all?" All picked.":" Come back to finish."}</div>}
+    {Object.keys(byGroup).sort().map(g=>(<div key={g}><div className="ghead">GROUP {g}</div>
+      {byGroup[g].map(f=><Match key={f.id} g={f} pick={picks[f.id]} onPick={onPick} />)}</div>))}
+    <button className="homebtn" onClick={back}>← Back to home</button>
+    {!L&&<div className="bar"><div className="inner"><span className="count"><b>{made}</b>/72</span>
+      <button className="cta" disabled={made===0||busy} onClick={save}>{busy?"Saving…":all?"Save all picks":`Save progress (${made})`}</button></div></div>}</div>);
+}
+
+/* Standings + predicted bracket */
+function StRow({pos,team,pts,cls,onUp,onDown,canUp,canDown}){
+  return (<div className={"strow "+cls}><span className="pos">{pos}</span>
+    <span className="nm"><Crest team={team}/>{team}<small>#{RANK[team]}</small></span><span className="pp">{pts}</span>
+    <button className="mv" disabled={!canUp} onClick={onUp}>▲</button><button className="mv" disabled={!canDown} onClick={onDown}>▼</button></div>);
+}
+function Standings({user,fixtures,picks,saved,back}){
+  const made=Object.keys(picks).length;
+  const groupFx=fixtures.filter(f=>(f.round||"GROUP")==="GROUP");
+  const init=saved&&saved.orders?saved.orders:(()=>{const o={};Object.keys(GROUPS).forEach(g=>{o[g]=standings(GROUPS[g],groupFx,picks).order;});return o;})();
+  const [orders,setOrders]=useState(init);
+  const thirdsPool=Object.keys(GROUPS).map(g=>({team:orders[g][2],group:g})).filter(x=>x.team);
+  const [thirds,setThirds]=useState(()=>saved&&saved.thirds?saved.thirds:thirdsPool.map(x=>x.team).sort((a,b)=>RANK[a]-RANK[b]).slice(0,8));
+  const validThirds=thirds.filter(t=>thirdsPool.some(x=>x.team===t));
+  const [showBr,setShowBr]=useState(!!(saved&&saved.orders));const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);
+  const realSet=actualR32(fixtures);const L=locked();
+  function move(g,i,dir){if(L)return;setOrders(o=>{const arr=o[g].slice();const j=i+dir;if(j<0||j>3)return o;[arr[i],arr[j]]=[arr[j],arr[i]];return{...o,[g]:arr};});setShowBr(false);setMsg("");}
+  function toggleThird(t){if(L)return;setThirds(ts=>ts.includes(t)?ts.filter(x=>x!==t):ts.length<8?[...ts,t]:ts);setShowBr(false);setMsg("");}
+  if(made<72) return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
+    <div className="eyebrow">Standings</div><h1 style={{fontSize:30}}>Almost there</h1>
+    <div className="ok" style={{background:"rgba(232,163,61,.12)",borderColor:"var(--amber)",color:"#f3dcb0"}}>You've made {made}/72 group picks. Finish all 72 to generate your standings and predicted bracket.</div>
+    <button className="homebtn" onClick={back}>← Back to home</button></div>);
+  let games=null,bErr="";
+  if(showBr){const chosen=validThirds.map(t=>({team:t,group:thirdsPool.find(x=>x.team===t).group}));
+    if(chosen.length!==8)bErr="Pick exactly 8 third-place teams.";
+    else{const assign=matchThirds(chosen);
+      if(!assign)bErr="This set of third-place teams can't be slotted — swap one or two.";
+      else{const W=g=>orders[g][0],RU=g=>orders[g][1];const ref=t=>{const p=t.split("-");return p[0]==="W"?W(p[1]):RU(p[1]);};
+        games=FIXED_R32.map(([a,b])=>[ref(a),ref(b)]);THIRD_SLOTS.forEach(s=>{if(assign[s.w])games.push([W(s.w),assign[s.w].team]);});}}}
+  async function generate(){setShowBr(true);if(L)return;
+    const advancers=[];Object.keys(GROUPS).forEach(g=>{advancers.push(orders[g][0],orders[g][1]);});validThirds.forEach(t=>advancers.push(t));
+    setBusy(true);setMsg("");try{const res=await postJSON({action:"saveGroup",username:user,picksJson:JSON.stringify(picks),advanceJson:JSON.stringify({advancers,orders,thirds:validThirds})});
+      setMsg(res.error?res.error:"Your bracket was saved.");}catch(e){setMsg("Network error — bracket not saved.");}setBusy(false);}
+  function share(){if(!games)return;const lines=games.map(([a,b],i)=>`${i+1}. ${a} (#${RANK[a]}) v ${b} (#${RANK[b]})`).join("\n");
+    const text=`My World Cup 2026 predicted Round of 32:\n\n${lines}`;
+    if(navigator.share){navigator.share({title:"My WC2026 bracket",text}).catch(()=>{});}
+    else{try{navigator.clipboard.writeText(text);setMsg("Bracket copied — paste into WhatsApp, or screenshot it.");}catch(e){setMsg("Screenshot the bracket to share.");}}}
+  const field=games?games.reduce((a,g)=>a.concat([{team:g[0],seed:RANK[g[0]]},{team:g[1],seed:RANK[g[1]]}]),[]):[];
+  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
+    <div className="eyebrow">From your picks</div><h1 style={{fontSize:30}}>Standings & bracket</h1>
+    <p className="sub">{L?"Locked — tournament has started. View only.":"3 a win, 1 a draw. Reorder with ▲▼ to settle ties — top two (green) advance, third (amber) is a candidate."}</p>
+    {Object.keys(GROUPS).sort().map(g=>{const {pts}=standings(GROUPS[g],groupFx,picks);const ord=orders[g];
+      return (<div key={g}><div className="ghead">GROUP {g}</div>
+        {ord.map((t,i)=><StRow key={t} pos={i+1} team={t} pts={pts[t]} cls={i<2?"q":i===2?"third":"out"} onUp={()=>move(g,i,-1)} onDown={()=>move(g,i,1)} canUp={i>0&&!L} canDown={i<3&&!L} />)}</div>);})}
+    <div className="ghead">PICK 8 OF 12 THIRD-PLACE TEAMS</div>
+    <p className="sub" style={{marginBottom:8}}>{validThirds.length}/8 selected · FIFA ranks shown to help</p>
+    <div>{thirdsPool.slice().sort((a,b)=>RANK[a.team]-RANK[b.team]).map(x=>(
+      <span key={x.team} className={"chip"+(thirds.includes(x.team)?" sel":"")} onClick={()=>toggleThird(x.team)}><Crest team={x.team}/>{x.team} <small>#{RANK[x.team]}·{x.group}</small></span>))}</div>
+    <div style={{margin:"18px 0"}}><button className="cta" style={{width:"100%"}} disabled={validThirds.length!==8||busy} onClick={generate}>{busy?"Saving…":validThirds.length!==8?`Pick ${8-validThirds.length} more`:L?"View my Round of 32":"Generate my Round of 32"}</button></div>
+    {msg&&<div className="ok" style={{marginBottom:12}}>{msg}</div>}
+    {showBr&&bErr&&<div className="err">{bErr}</div>}
+    {showBr&&games&&(<div><div className="ghead">YOUR PREDICTED BRACKET</div>
+      {realSet.size>0&&<p className="sub" style={{margin:"0 4px 8px"}}>Green = made the real Round of 32, red = didn't.</p>}
+      <Bracket field={field} pk={{}} onPick={null} colorFn={realSet.size>0?(t=>realSet.has(t)?"alive":"dead"):null} interactive={false} />
+      <button className="sharebtn" onClick={share}>Share my bracket</button>
+      <button className="homebtn" onClick={back}>← Back to home</button></div>)}
+  </div>);
+}
+
+/* Knockout bracket */
+function koSeedField(){const byNum={};Object.keys(RANK).forEach(t=>byNum[RANK[t]]=t);
+  const ord=[1,32,16,17,8,25,9,24,4,29,13,20,5,28,12,21,2,31,15,18,7,26,10,23,3,30,14,19,6,27,11,22];
+  return ord.map(n=>({team:byNum[n],seed:n}));}
+function koIdx(f){const m=String(f.id).match(/(\d+)\s*$/);return m?parseInt(m[1],10):9999;}
+function buildKOField(fixtures){const r32=fixtures.filter(f=>f.round==="R32").sort((a,b)=>koIdx(a)-koIdx(b));
+  if(r32.length===16){const arr=[];r32.forEach(f=>{arr.push({team:f.teamA,seed:RANK[f.teamA]||99});arr.push({team:f.teamB,seed:RANK[f.teamB]||99});});return arr;}
+  return koSeedField();}
+function Knockout({user,fixtures,savedPk,bracketLocked,readOnly,back}){
+  const real=fixtures.some(f=>f.round==="R32");
+  const [field]=useState(()=>buildKOField(fixtures));
+  const [pk,setPk]=useState(savedPk||{});const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);
+  const dead=eliminatedSet(fixtures);
+  function pick(round,m,team){if(readOnly||bracketLocked)return;setPk(p=>{const r={...(p[round]||{})};r[m]=team;const np={...p,[round]:r};
+    const ri=ROUND_SEQ.findIndex(x=>x[0]===round);for(let k=ri+1;k<ROUND_SEQ.length;k++)delete np[ROUND_SEQ[k][0]];return np;});setMsg("");}
+  const champ=(pk.FINAL||{})[0];
+  async function submit(){setBusy(true);setMsg("");try{const res=await postJSON({action:"saveBracket",username:user,picksJson:JSON.stringify(pk)});
+    setMsg(res.error?res.error:"Your bracket was saved. It'll be here when you come back, editable until the knockout starts.");}catch(e){setMsg("Network error submitting.");}setBusy(false);}
+  const colorFn=t=>dead.has(t)?"dead":"";
+  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
+    <div className="eyebrow">{real?"Knockout":"Demo · sample 32-team field"}</div><h1 style={{fontSize:30}}>Knockout bracket</h1>
+    <p className="sub">{readOnly?"View only.":"Tap a team to advance it; scroll sideways. "}Eliminated teams cross out red across your whole bracket.</p>
+    <Bracket field={field} pk={pk} onPick={pick} colorFn={colorFn} interactive={!readOnly&&!bracketLocked} />
+    {msg&&<div className="ok" style={{marginTop:10}}>{msg}</div>}
+    {!readOnly&&!bracketLocked&&<div className="bar"><div className="inner"><span className="count">Champion: <b>{champ?initials(champ):"—"}</b></span>
+      <button className="cta" disabled={!champ||busy} onClick={submit}>{busy?"Saving…":champ?"Submit bracket":"Pick to the final"}</button></div></div>}
+    {(readOnly||bracketLocked)&&<button className="homebtn" onClick={back}>← Back to home</button>}</div>);
+}
+
+/* Leaderboard */
+function Leaderboard({user,back,bracketLocked,viewBracket}){
+  const [rows,setRows]=useState(null);const [bp,setBp]=useState({});const [err,setErr]=useState("");
+  useEffect(()=>{fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
+    if(d.error){setErr(d.error);return;}setRows(ranksWithTies((d.leaderboard||[]).slice().sort((a,b)=>(b.total||0)-(a.total||0))));}).catch(()=>setErr("Couldn't load."));
+    fetch(API_URL+"?action=mypicks&username="+encodeURIComponent(user)).then(r=>r.json()).then(d=>{const m={};(d.allBracketPicks||[]).forEach(x=>m[x.username]=x.picksJson);setBp(m);}).catch(()=>{});
+  },[]);
+  function champOf(u){try{const pk=JSON.parse(bp[u]||"{}");return (pk.FINAL||{})[0];}catch(e){return null;}}
+  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
+    <div className="eyebrow">Standings</div><h1 style={{fontSize:30}}>Leaderboard</h1>
+    {bracketLocked&&<p className="sub" style={{marginTop:6}}>Tap anyone to see their bracket.</p>}
+    {err&&<div className="err" style={{marginTop:12}}>{err}</div>}
+    {!rows&&!err&&<p className="sub" style={{marginTop:14}}>Loading…</p>}
+    {rows&&rows.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No scores yet. Run <b style={{color:"var(--text)"}}>simulateGroupResults()</b> then <b style={{color:"var(--text)"}}>recomputeScores()</b> in Apps Script.</div>}
+    {rows&&rows.map((r,i)=>{const champ=bracketLocked?champOf(r.username):null;
+      return (<div key={r.username} className={"lb"+(i<3?" top":"")+(r.username===user?" me":"")+(bracketLocked?" clickable":"")} onClick={()=>bracketLocked&&viewBracket(r.username)}>
+      <span className="rk">{r.place}</span>
+      <span className="u">{r.username}{r.username===user?" (you)":""}<small>group {r.groupPts||0} · advance {r.advancePts||0} · bracket {r.bracketPts||0}{champ?" · champ: "+champ:""}</small></span>
+      <span className="tot">{r.total||0}</span></div>);})}
+    <button className="homebtn" onClick={back}>← Back to home</button></div>);
+}
+
+/* Live games */
+function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
+  const live=fixtures.filter(isLive).sort(byTime);
+  const placeMap={};ranksWithTies((leaderboard||[]).slice().sort((a,b)=>(b.total||0)-(a.total||0))).forEach(r=>placeMap[r.username]=r.place);
+  function backers(fid,side){return (allGroupPicks||[]).filter(p=>{try{return JSON.parse(p.picksJson||"{}")[fid]===side;}catch(e){return false;}}).map(p=>p.username);}
+  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
+    <div className="eyebrow">Now playing</div><h1 style={{fontSize:30}}>Live games</h1>
+    {live.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No games are live right now. (Run <b style={{color:"var(--text)"}}>simulateLiveGame()</b> in Apps Script to test.)</div>}
+    {live.map(f=>{const aB=backers(f.id,"A"),bB=backers(f.id,"B");
+      return (<div key={f.id} className="lg">
+        <div className="lgtop">
+          <div className="lgteam"><Crest team={f.teamA}/><div className="nm">{f.teamA}</div><div className="rk">FIFA #{f.seedA||RANK[f.teamA]}</div></div>
+          <div className="scorebug"><span>{f.scoreA||0}</span><span style={{color:"var(--muted)"}}>–</span><span>{f.scoreB||0}</span></div>
+          <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
+        </div>
+        <div style={{textAlign:"center"}}><span className="scorebug livedot">● LIVE</span> <span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
+        <div className="backers">
+          <div className="col"><h5>Picked {f.teamA}</h5>{aB.length?aB.map(u=><div key={u} className="b"><span>{u}</span><span className="pl">{placeMap[u]||"—"}</span></div>):<div className="sub">No one</div>}</div>
+          <div className="col"><h5>Picked {f.teamB}</h5>{bB.length?bB.map(u=><div key={u} className="b"><span>{u}</span><span className="pl">{placeMap[u]||"—"}</span></div>):<div className="sub">No one</div>}</div>
+        </div></div>);})}
+    <button className="homebtn" onClick={back}>← Back to home</button></div>);
+}
+
+/* App */
+function App(){
+  const [user,setUser]=useState(null);const [view,setView]=useState("home");
+  const [fixtures,setFixtures]=useState(buildFixtures());const [picks,setPicks]=useState({});
+  const [advance,setAdvance]=useState(null);const [bracketPk,setBracketPk]=useState(null);
+  const [leaderboard,setLeaderboard]=useState([]);const [allGroupPicks,setAllGroupPicks]=useState([]);
+  const [bracketLocked,setBL]=useState(false);
+  const [viewUser,setViewUser]=useState(null);const [viewUserPk,setViewUserPk]=useState(null);
+  function load(){
+    fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
+      if(d.teams){d.teams.forEach(t=>{if(t.crestUrl)CREST[t.team]=t.crestUrl;});}
+      if(d.fixtures&&d.fixtures.length){const teams={};(d.teams||[]).forEach(t=>teams[t.team]=t);const odds={};(d.odds||[]).forEach(o=>odds[o.fixtureId]=o);
+        setFixtures(d.fixtures.map(f=>({...f,seedA:Number((teams[f.teamA]||{}).seed)||RANK[f.teamA],seedB:Number((teams[f.teamB]||{}).seed)||RANK[f.teamB],probA:(odds[f.id]||{}).probA,probB:(odds[f.id]||{}).probB})));}
+      setLeaderboard(d.leaderboard||[]);setBL(!!d.bracketLocked);
+    }).catch(()=>{});
+    fetch(API_URL+"?action=mypicks&username="+encodeURIComponent(user)).then(r=>r.json()).then(d=>{
+      if(d.group&&d.group.picksJson)setPicks(JSON.parse(d.group.picksJson));
+      if(d.group&&d.group.advanceJson){try{const a=JSON.parse(d.group.advanceJson);setAdvance(Array.isArray(a)?{advancers:a}:a);}catch(e){}}
+      if(d.bracket&&d.bracket.picksJson){try{setBracketPk(JSON.parse(d.bracket.picksJson));}catch(e){}}
+      setAllGroupPicks(d.allGroupPicks||[]);
+    }).catch(()=>{});
+  }
+  useEffect(()=>{if(user)load();},[user]);
+  if(!user)return <Auth onAuth={setUser} />;
+  const gf=fixtures.filter(f=>(f.round||"GROUP")==="GROUP");
+  const picksCount=Object.keys(picks).length;
+  const standingsDone=!!(advance&&advance.advancers&&advance.advancers.length);
+  const champ=bracketPk&&(bracketPk.FINAL||{})[0];
+  const koStatus=champ?"done":(bracketPk&&Object.keys(bracketPk).length?"resume":"open");
+  const anyLive=fixtures.some(isLive);const home=()=>{setView("home");setViewUser(null);};
+  if(view==="scoring")return <HowScoring back={home} />;
+  if(view==="group")return <Picker user={user} fixtures={gf} picks={picks} setPicks={setPicks} back={home} />;
+  if(view==="standings")return <Standings user={user} fixtures={fixtures} picks={picks} saved={advance&&advance.orders?advance:null} back={home} />;
+  if(view==="ko")return <Knockout user={user} fixtures={fixtures} savedPk={bracketPk} bracketLocked={bracketLocked} readOnly={false} back={home} />;
+  if(view==="leaderboard"){
+    if(viewUser)return <Knockout user={viewUser} fixtures={fixtures} savedPk={viewUserPk||{}} bracketLocked={true} readOnly={true} back={()=>setViewUser(null)} />;
+    return <Leaderboard user={user} back={home} bracketLocked={bracketLocked} viewBracket={(u)=>{
+      fetch(API_URL+"?action=mypicks&username="+encodeURIComponent(u)).then(r=>r.json()).then(d=>{
+        try{setViewUserPk(d.bracket&&d.bracket.picksJson?JSON.parse(d.bracket.picksJson):{});}catch(e){setViewUserPk({});}setViewUser(u);});}} />;
+  }
+  if(view==="live")return <LiveGames fixtures={fixtures} allGroupPicks={allGroupPicks} leaderboard={leaderboard} back={home} />;
+  return <Home user={user} go={setView} picksCount={picksCount} standingsDone={standingsDone} koStatus={koStatus} anyLive={anyLive}
+    onSignOut={()=>{if(typeof localStorage!=="undefined")localStorage.removeItem("wc_user");setUser(null);setPicks({});setAdvance(null);setBracketPk(null);}} />;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script></body></html>
