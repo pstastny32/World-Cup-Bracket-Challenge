@@ -121,6 +121,7 @@
   .scorebug{display:flex;align-items:center;gap:10px;font-family:Anton;font-size:34px}
   .scorebug .livedot{font:700 9px "JetBrains Mono";color:var(--coral);letter-spacing:.1em}
   .backers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .backers.backers3{grid-template-columns:1fr 1fr 1fr}
   .backers .col{font-size:12px}.backers .col h5{margin:0 0 5px;font:600 11px Inter;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
   .backers .col .b{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--line)}
   .backers .col .b .pl{font-family:"JetBrains Mono";color:var(--muted)}
@@ -128,7 +129,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v5</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v6</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
@@ -490,7 +491,7 @@ function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
     <div className="eyebrow">Now playing</div><h1 style={{fontSize:30}}>Live games</h1>
     {live.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No games are live right now. Check back during match windows.</div>}
-    {live.map(f=>{const aB=backers(f.id,"A"),bB=backers(f.id,"B");
+    {live.map(f=>{const aB=backers(f.id,"A"),bB=backers(f.id,"B"),dB=backers(f.id,"D");
       return (<div key={f.id} className="lg">
         <div className="lgtop">
           <div className="lgteam"><Crest team={f.teamA}/><div className="nm">{f.teamA}</div><div className="rk">FIFA #{f.seedA||RANK[f.teamA]}</div></div>
@@ -498,8 +499,9 @@ function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
           <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
         </div>
         <div style={{textAlign:"center"}}><span className="scorebug livedot">● LIVE</span> <span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
-        <div className="backers">
+        <div className="backers backers3">
           <div className="col"><h5>Picked {f.teamA}</h5>{aB.length?aB.map(u=><div key={u} className="b"><span>{u}</span><span className="pl">{placeMap[u]||"—"}</span></div>):<div className="sub">No one</div>}</div>
+          <div className="col"><h5>Picked Draw</h5>{dB.length?dB.map(u=><div key={u} className="b"><span>{u}</span><span className="pl">{placeMap[u]||"—"}</span></div>):<div className="sub">No one</div>}</div>
           <div className="col"><h5>Picked {f.teamB}</h5>{bB.length?bB.map(u=><div key={u} className="b"><span>{u}</span><span className="pl">{placeMap[u]||"—"}</span></div>):<div className="sub">No one</div>}</div>
         </div></div>);})}
     <button className="homebtn" onClick={back}>← Back to home</button></div>);
