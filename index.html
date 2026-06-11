@@ -128,7 +128,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v3</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v4</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
@@ -140,10 +140,11 @@ let TITLE={}; // team -> title-win strength (implied prob), loaded from the Titl
 function buildFixtures(){const pairs=[[0,1],[2,3],[0,2],[3,1],[0,3],[1,2]];const out=[];
   Object.keys(GROUPS).forEach(g=>{const t=GROUPS[g];pairs.forEach((p,i)=>out.push({id:g+(i+1),group:g,teamA:t[p[0]],teamB:t[p[1]],seedA:RANK[t[p[0]]],seedB:RANK[t[p[1]]],dateTimeISO:"",city:"",country:""}));});return out;}
 // Display scoring mirrors the backend (Code.gs). Bonus from the win-probability gap.
-const BONUS_SCALE=20,BONUS_CAP=15,BONUS_MIN_GAP=0.05,TITLE_MIN_PROB=0.003;
+const BONUS_SCALE=20,BONUS_CAP=15,BONUS_MIN_GAP=0.05,TITLE_MIN_PROB=0.003,DRAW_SCALE=12,DRAW_CAP=8;
 function oddsBonus(yourProb,oppProb){yourProb=Number(yourProb);oppProb=Number(oppProb);if(!(yourProb>=0)||!(oppProb>=0))return 0;const gap=oppProb-yourProb;if(gap<BONUS_MIN_GAP)return 0;return Math.max(0,Math.min(BONUS_CAP,Math.round(gap*BONUS_SCALE)));}
-// pts if the chosen side wins: 1 + bonus. Draw = 1. probA/probB are 0..1 win odds for this fixture.
-function potential(pick,probA,probB){if(pick==="D")return 1;const y=pick==="A"?probA:probB,o=pick==="A"?probB:probA;return 1+oddsBonus(y,o);}
+function drawBonus(probA,probB){probA=Number(probA);probB=Number(probB);if(!(probA>=0)||!(probB>=0))return 0;return Math.max(0,Math.min(DRAW_CAP,Math.round(Math.abs(probA-probB)*DRAW_SCALE)));}
+// pts if the chosen side wins: 1 + bonus. Draw = 1 + draw bonus. probA/probB are 0..1 win odds for this fixture.
+function potential(pick,probA,probB){if(pick==="D")return 1+drawBonus(probA,probB);const y=pick==="A"?probA:probB,o=pick==="A"?probB:probA;return 1+oddsBonus(y,o);}
 const KOM={R32:1,R16:1.5,QF:2,SF:2.5,FINAL:3};
 function matchProbFromTitle(x,y){const sx=Math.max(Number(x)||0,TITLE_MIN_PROB),sy=Math.max(Number(y)||0,TITLE_MIN_PROB);return sx/(sx+sy);}
 function koPotential(round,pickedTitle,oppTitle){const y=matchProbFromTitle(pickedTitle,oppTitle),o=1-y;return Math.round((1+oddsBonus(y,o))*KOM[round]);}
@@ -287,9 +288,10 @@ function HowScoring({back}){
     <div className="eyebrow">The rules</div><h1 style={{fontSize:32}}>How scoring works</h1>
     <p>The short version: <b>a correct pick is worth 1 point. The bigger the underdog you call, the bigger the bonus — up to +15. In the knockouts, every round multiplies the stakes.</b></p>
     <p>Bonuses are based on <b>sportsbook win odds</b>, shown on every game. Backing a heavy favorite that wins is still smart — it just earns the flat point. Calling a genuine upset is where the points are.</p>
+    <p><b>Draws count too:</b> calling a draw earns a bonus when one team was heavily favored and got held — the more lopsided the matchup, the bigger the draw bonus (up to +8). It's always worth less than calling the underdog to win outright.</p>
     <h2>Group stage — per game</h2>
     <div className="rule"><div className="lab">Correct favorite win</div><div className="val">1</div></div>
-    <div className="rule"><div className="lab">Correct draw</div><div className="val">1</div></div>
+    <div className="rule"><div className="lab">Correct draw<small>bigger bonus when a heavy favorite gets held</small></div><div className="val">1 + bonus</div></div>
     <div className="rule"><div className="lab">Correct underdog win<small>1 point + an upset bonus</small></div><div className="val">1 + bonus</div></div>
     <table className="kt"><thead><tr><th>How big an underdog</th><th>Upset bonus</th></tr></thead><tbody>
       <tr><td>Near-even matchup</td><td>+0</td></tr><tr><td>Slight underdog</td><td>+1–3</td></tr><tr><td>Clear underdog</td><td>+4–6</td></tr>
@@ -320,7 +322,7 @@ function Match({g,pick,onPick}){
     <div className="meta"><span className="grp">GROUP {g.group}</span><span>{fmt(g.dateTimeISO)}{g.city?" · "+g.city:""}{g.country?", "+g.country:""}</span></div>
     <div className="rowg">
       <Side team={g.teamA} rk={g.seedA} myProb={g.probA} oppProb={g.probB} side="A" selected={pick==="A"} result={r} onPick={()=>onPick(g.id,"A")} />
-      <div className={"draw"+(pick==="D"?" sel":"")+(r&&pick==="D"?(r==="D"?" correct":" wrong"):"")} role="button" tabIndex="0" onClick={()=>onPick(g.id,"D")} onKeyDown={e=>e.key==="Enter"&&onPick(g.id,"D")}><div className="x">DRAW</div><div className="pts">+1pt</div></div>
+      <div className={"draw"+(pick==="D"?" sel":"")+(r&&pick==="D"?(r==="D"?" correct":" wrong"):"")} role="button" tabIndex="0" onClick={()=>onPick(g.id,"D")} onKeyDown={e=>e.key==="Enter"&&onPick(g.id,"D")}><div className="x">DRAW</div><div className="pts">+{potential("D",g.probA,g.probB)}pt{potential("D",g.probA,g.probB)===1?"":"s"}</div></div>
       <Side team={g.teamB} rk={g.seedB} myProb={g.probB} oppProb={g.probA} side="B" selected={pick==="B"} result={r} onPick={()=>onPick(g.id,"B")} /></div>
     {r&&<div className="res"><span className="ft">FT {g.scoreA}–{g.scoreB}</span>{pick?(correct?<span className="g"> · your pick +{earned}</span>:<span className="r"> · your pick 0</span>):<span> · no pick</span>}</div>}
     {!r&&(g.probA||g.probB)&&<div className="odds"><span>{g.teamA}: <b>{Math.round((g.probA||0)*100)}%</b></span><span>{g.teamB}: <b>{Math.round((g.probB||0)*100)}%</b></span></div>}</div>);
