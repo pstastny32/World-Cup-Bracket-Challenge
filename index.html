@@ -366,12 +366,16 @@ function StRow({pos,team,pts,cls,onUp,onDown,canUp,canDown}){
 function Standings({user,fixtures,picks,saved,onSaved,back}){
   const made=Object.keys(picks).length;
   const groupFx=fixtures.filter(f=>(f.round||"GROUP")==="GROUP");
-  const init=saved&&saved.orders?saved.orders:(()=>{const o={};Object.keys(GROUPS).forEach(g=>{o[g]=standings(GROUPS[g],groupFx,picks).order;});return o;})();
+  // Fresh ordering computed from the CURRENT picks (points desc, FIFA rank as tiebreak).
+  const freshOrders=()=>{const o={};Object.keys(GROUPS).forEach(g=>{o[g]=standings(GROUPS[g],groupFx,picks).order;});return o;};
+  // Use the saved manual order ONLY if it was built from these same picks; otherwise re-seed from current picks.
+  const savedMatchesPicks=saved&&saved.orders&&saved.picksSig!==undefined&&saved.picksSig===picksSig(picks);
+  const init=savedMatchesPicks?saved.orders:freshOrders();
   const [orders,setOrders]=useState(init);
   const thirdsPool=Object.keys(GROUPS).map(g=>({team:orders[g][2],group:g})).filter(x=>x.team);
   const [thirds,setThirds]=useState(()=>saved&&saved.thirds?saved.thirds:thirdsPool.map(x=>x.team).sort((a,b)=>RANK[a]-RANK[b]).slice(0,8));
   const validThirds=thirds.filter(t=>thirdsPool.some(x=>x.team===t));
-  const [showBr,setShowBr]=useState(!!(saved&&saved.orders));const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);
+  const [showBr,setShowBr]=useState(!!savedMatchesPicks);const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);
   const realSet=actualR32(fixtures);const L=locked();
   function move(g,i,dir){if(L)return;setOrders(o=>{const arr=o[g].slice();const j=i+dir;if(j<0||j>3)return o;[arr[i],arr[j]]=[arr[j],arr[i]];return{...o,[g]:arr};});setShowBr(false);setMsg("");}
   function toggleThird(t){if(L)return;setThirds(ts=>{
