@@ -136,12 +136,17 @@ const GROUP_LOCK_ISO = "2026-06-11T15:00:00-04:00";
 const RANK={"Mexico":14,"South Korea":23,"South Africa":41,"Czechia":33,"Canada":27,"Switzerland":18,"Qatar":36,"Bosnia-Herzegovina":43,"Brazil":6,"Morocco":7,"Scotland":31,"Haiti":47,"United States":16,"Paraguay":34,"Australia":24,"Türkiye":20,"Germany":10,"Ecuador":22,"Côte d'Ivoire":29,"Curaçao":46,"Netherlands":8,"Japan":17,"Tunisia":35,"Sweden":32,"Belgium":9,"Iran":19,"Egypt":26,"New Zealand":48,"Spain":2,"Uruguay":12,"Saudi Arabia":39,"Cape Verde":44,"France":3,"Senegal":15,"Norway":28,"Iraq":40,"Argentina":1,"Austria":21,"Algeria":25,"Jordan":42,"Portugal":5,"Colombia":13,"Uzbekistan":38,"DR Congo":37,"England":4,"Croatia":11,"Panama":30,"Ghana":45};
 const GROUPS={A:["Mexico","South Korea","South Africa","Czechia"],B:["Canada","Switzerland","Qatar","Bosnia-Herzegovina"],C:["Brazil","Morocco","Scotland","Haiti"],D:["United States","Paraguay","Australia","Türkiye"],E:["Germany","Ecuador","Côte d'Ivoire","Curaçao"],F:["Netherlands","Japan","Tunisia","Sweden"],G:["Belgium","Iran","Egypt","New Zealand"],H:["Spain","Uruguay","Saudi Arabia","Cape Verde"],I:["France","Senegal","Norway","Iraq"],J:["Argentina","Austria","Algeria","Jordan"],K:["Portugal","Colombia","Uzbekistan","DR Congo"],L:["England","Croatia","Panama","Ghana"]};
 let CREST={};
+let TITLE={}; // team -> title-win strength (implied prob), loaded from the TitleOdds tab
 function buildFixtures(){const pairs=[[0,1],[2,3],[0,2],[3,1],[0,3],[1,2]];const out=[];
   Object.keys(GROUPS).forEach(g=>{const t=GROUPS[g];pairs.forEach((p,i)=>out.push({id:g+(i+1),group:g,teamA:t[p[0]],teamB:t[p[1]],seedA:RANK[t[p[0]]],seedB:RANK[t[p[1]]],dateTimeISO:"",city:"",country:""}));});return out;}
-function groupBonus(gap){if(gap<=0)return 0;if(gap<=3)return 1;if(gap<=7)return 2;if(gap<=10)return 3;if(gap<=15)return 5;if(gap<=20)return 8;if(gap<=30)return 12;return 15;}
-function potential(pick,rA,rB){if(pick==="D")return 1;const w=pick==="A"?rA:rB,l=pick==="A"?rB:rA;const gap=w-l;return gap>0?1+groupBonus(gap):1;}
+// Display scoring mirrors the backend (Code.gs). Bonus from the win-probability gap.
+const BONUS_SCALE=20,BONUS_CAP=15,BONUS_MIN_GAP=0.05,TITLE_MIN_PROB=0.003;
+function oddsBonus(yourProb,oppProb){yourProb=Number(yourProb);oppProb=Number(oppProb);if(!(yourProb>=0)||!(oppProb>=0))return 0;const gap=oppProb-yourProb;if(gap<BONUS_MIN_GAP)return 0;return Math.max(0,Math.min(BONUS_CAP,Math.round(gap*BONUS_SCALE)));}
+// pts if the chosen side wins: 1 + bonus. Draw = 1. probA/probB are 0..1 win odds for this fixture.
+function potential(pick,probA,probB){if(pick==="D")return 1;const y=pick==="A"?probA:probB,o=pick==="A"?probB:probA;return 1+oddsBonus(y,o);}
 const KOM={R32:1,R16:1.5,QF:2,SF:2.5,FINAL:3};
-function koPotential(round,pr,opp){const gap=pr-opp;const base=gap>0?1+groupBonus(gap):1;return Math.round(base*KOM[round]);}
+function matchProbFromTitle(x,y){const sx=Math.max(Number(x)||0,TITLE_MIN_PROB),sy=Math.max(Number(y)||0,TITLE_MIN_PROB);return sx/(sx+sy);}
+function koPotential(round,pickedTitle,oppTitle){const y=matchProbFromTitle(pickedTitle,oppTitle),o=1-y;return Math.round((1+oddsBonus(y,o))*KOM[round]);}
 function initials(n){return n?n.replace(/&|\.|-/g," ").split(/\s+/).map(w=>w[0]).join("").slice(0,3).toUpperCase():"";}
 function fmt(iso){if(!iso)return "Time & venue load live";const d=new Date(iso);return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});}
 function byTime(a,b){if(a.dateTimeISO&&b.dateTimeISO)return new Date(a.dateTimeISO)-new Date(b.dateTimeISO);if(a.dateTimeISO)return -1;if(b.dateTimeISO)return 1;return a.id.localeCompare(b.id);}
@@ -183,8 +188,8 @@ function Bracket({field,pk,onPick,colorFn,interactive}){
   function NTeam({x,opp,round,m}){
     if(!x)return <div className="nteam tbd"><span className="nm2">TBD</span></div>;
     const sel=(pk[round]||{})[m]===x.team;
-    const up=opp&&x.seed>opp.seed;
-    const pts=opp?koPotential(round,x.seed,opp.seed):0;
+    const up=opp&&(matchProbFromTitle(TITLE[opp.team],TITLE[x.team])-matchProbFromTitle(TITLE[x.team],TITLE[opp.team]))>=BONUS_MIN_GAP;
+    const pts=opp?koPotential(round,TITLE[x.team],TITLE[opp.team]):0;
     const c=colorFn?colorFn(x.team):"";
     let cl=sel?" win":""; if(c)cl=" "+c;
     return <div className={"nteam"+cl} onClick={()=>interactive&&opp&&onPick(round,m,x.team)}>
@@ -280,41 +285,43 @@ function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatu
 function HowScoring({back}){
   return (<div className="wrap doc"><button className="back" onClick={back}>← Back</button>
     <div className="eyebrow">The rules</div><h1 style={{fontSize:32}}>How scoring works</h1>
-    <p>Every team is ranked <b>1 to 48 by the FIFA World Ranking</b>, locked for the tournament and shown next to each team. Lower number = stronger. Upsets pay off the gap between the two FIFA rankings.</p>
+    <p>The short version: <b>a correct pick is worth 1 point. The bigger the underdog you call, the bigger the bonus — up to +15. In the knockouts, every round multiplies the stakes.</b></p>
+    <p>Bonuses are based on <b>sportsbook win odds</b>, shown on every game. Backing a heavy favorite that wins is still smart — it just earns the flat point. Calling a genuine upset is where the points are.</p>
     <h2>Group stage — per game</h2>
-    <div className="rule"><div className="lab">Correct favorite win<small>higher-ranked team (lower FIFA number) wins</small></div><div className="val">1</div></div>
+    <div className="rule"><div className="lab">Correct favorite win</div><div className="val">1</div></div>
     <div className="rule"><div className="lab">Correct draw</div><div className="val">1</div></div>
-    <div className="rule"><div className="lab">Correct underdog win<small>1 point + the bonus below</small></div><div className="val">1 + bonus</div></div>
-    <table className="kt"><thead><tr><th>FIFA-ranking gap</th><th>Upset bonus</th></tr></thead><tbody>
-      <tr><td>1–3</td><td>+1</td></tr><tr><td>4–7</td><td>+2</td></tr><tr><td>8–10</td><td>+3</td></tr><tr><td>11–15</td><td>+5</td></tr>
-      <tr><td>16–20</td><td>+8</td></tr><tr><td>21–30</td><td>+12</td></tr><tr><td>31–45</td><td>+15</td></tr></tbody></table>
-    <div className="ex">Example: <b>South Africa (#41)</b> beats <b>Mexico (#14)</b> — gap 27 → 1 + 12 = <b>13 points</b>.</div>
+    <div className="rule"><div className="lab">Correct underdog win<small>1 point + an upset bonus</small></div><div className="val">1 + bonus</div></div>
+    <table className="kt"><thead><tr><th>How big an underdog</th><th>Upset bonus</th></tr></thead><tbody>
+      <tr><td>Near-even matchup</td><td>+0</td></tr><tr><td>Slight underdog</td><td>+1–3</td></tr><tr><td>Clear underdog</td><td>+4–6</td></tr>
+      <tr><td>Big underdog</td><td>+7–11</td></tr><tr><td>Huge longshot</td><td>+12–15</td></tr></tbody></table>
+    <div className="ex">Example: a team given a <b>~11% chance</b> beats a heavy favorite — you score <b>about 10 points</b>. Pick the favorite in a coin-flip game and you get the flat <b>1</b>.</div>
     <h2>Advancing to the Round of 32</h2>
     <div className="rule"><div className="lab">Each team you correctly send through<small>your 2 per group + 8 best third-place teams</small></div><div className="val">2</div></div>
     <h2>Knockout — per game</h2>
-    <p>Same idea as the group stage — <b>1 for the winner, +bonus if it's an upset</b> (same gap table) — then <b>× the round multiplier</b>.</p>
+    <p>Same idea — <b>1 for calling the winner, plus an upset bonus</b> based on the odds — then <b>× the round multiplier</b>, so late-round shocks are worth the most.</p>
     <table className="kt"><thead><tr><th>Round</th><th>Multiplier</th></tr></thead><tbody>
       <tr><td>Round of 32</td><td>× 1</td></tr><tr><td>Round of 16</td><td>× 1.5</td></tr><tr><td>Quarterfinal</td><td>× 2</td></tr><tr><td>Semifinal</td><td>× 2.5</td></tr><tr><td>Final / champion</td><td>× 3</td></tr></tbody></table>
-    <div className="ex"><b>Example:</b> you pick <b>#5 to beat #1</b> in the quarterfinal. The gap is 4, which is the +2 tier — so the base is 1 (for the win) + 2 (upset) = 3. The quarterfinal multiplier is ×2, so 3 × 2 = <b>6 points</b>.</div>
+    <div className="ex"><b>Example:</b> you call a clear underdog to win a quarterfinal — say a +5 upset bonus. Base is 1 + 5 = 6, and the quarterfinal multiplier is ×2, so 6 × 2 = <b>12 points</b>. Pull off a longshot in the final and it's worth far more.</div>
     <p className="sub" style={{marginTop:16}}>Group picks lock June 11. The knockout opens after the groups, filled from the real 32 qualifiers — a wrong group call never wrecks your bracket.</p>
     <button className="homebtn" onClick={back}>← Back to home</button></div>);
 }
 
 /* Group picker */
-function Side({team,rk,oppRk,side,selected,onPick,result}){
-  const pts=potential(side,side==="A"?rk:oppRk,side==="A"?oppRk:rk);const upset=(rk-oppRk)>0;
+function Side({team,rk,myProb,oppProb,side,selected,onPick,result}){
+  const pts=potential(side,side==="A"?myProb:oppProb,side==="A"?oppProb:myProb);
+  const upset=(Number(oppProb)-Number(myProb))>=BONUS_MIN_GAP;
   let extra="";if(result&&selected)extra=(result===side)?" correct":" wrong";
   return (<button className={"side"+(selected?" sel":"")+(upset?" upset":"")+extra} onClick={onPick} aria-pressed={selected}>
-    <Crest team={team}/><div className="name">{team}</div><div className="rk">FIFA #{rk}</div><div className="pts"><b>+{pts}</b>{upset?"pts":"pt"}</div></button>);
+    <Crest team={team}/><div className="name">{team}</div><div className="rk">FIFA #{rk}</div><div className="pts"><b>+{pts}</b>{pts===1?"pt":"pts"}</div></button>);
 }
 function Match({g,pick,onPick}){
-  const r=g.result;let earned=0,correct=false;if(r&&pick){correct=(pick===r);earned=correct?potential(pick,g.seedA,g.seedB):0;}
+  const r=g.result;let earned=0,correct=false;if(r&&pick){correct=(pick===r);earned=correct?potential(pick,g.probA,g.probB):0;}
   return (<div className="match">
     <div className="meta"><span className="grp">GROUP {g.group}</span><span>{fmt(g.dateTimeISO)}{g.city?" · "+g.city:""}{g.country?", "+g.country:""}</span></div>
     <div className="rowg">
-      <Side team={g.teamA} rk={g.seedA} oppRk={g.seedB} side="A" selected={pick==="A"} result={r} onPick={()=>onPick(g.id,"A")} />
+      <Side team={g.teamA} rk={g.seedA} myProb={g.probA} oppProb={g.probB} side="A" selected={pick==="A"} result={r} onPick={()=>onPick(g.id,"A")} />
       <div className={"draw"+(pick==="D"?" sel":"")+(r&&pick==="D"?(r==="D"?" correct":" wrong"):"")} role="button" tabIndex="0" onClick={()=>onPick(g.id,"D")} onKeyDown={e=>e.key==="Enter"&&onPick(g.id,"D")}><div className="x">DRAW</div><div className="pts">+1pt</div></div>
-      <Side team={g.teamB} rk={g.seedB} oppRk={g.seedA} side="B" selected={pick==="B"} result={r} onPick={()=>onPick(g.id,"B")} /></div>
+      <Side team={g.teamB} rk={g.seedB} myProb={g.probB} oppProb={g.probA} side="B" selected={pick==="B"} result={r} onPick={()=>onPick(g.id,"B")} /></div>
     {r&&<div className="res"><span className="ft">FT {g.scoreA}–{g.scoreB}</span>{pick?(correct?<span className="g"> · your pick +{earned}</span>:<span className="r"> · your pick 0</span>):<span> · no pick</span>}</div>}
     {!r&&(g.probA||g.probB)&&<div className="odds"><span>{g.teamA}: <b>{Math.round((g.probA||0)*100)}%</b></span><span>{g.teamB}: <b>{Math.round((g.probB||0)*100)}%</b></span></div>}</div>);
 }
@@ -491,6 +498,7 @@ function App(){
   function load(){
     fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
       if(d.teams){d.teams.forEach(t=>{if(t.crestUrl)CREST[t.team]=t.crestUrl;});}
+      if(d.titleOdds){d.titleOdds.forEach(t=>{TITLE[t.team]=Number(t.titleProb);});}
       if(d.fixtures&&d.fixtures.length){const teams={};(d.teams||[]).forEach(t=>teams[t.team]=t);const odds={};(d.odds||[]).forEach(o=>odds[o.fixtureId]=o);
         setFixtures(d.fixtures.map(f=>({...f,seedA:Number((teams[f.teamA]||{}).seed)||RANK[f.teamA],seedB:Number((teams[f.teamB]||{}).seed)||RANK[f.teamB],probA:(odds[f.id]||{}).probA,probB:(odds[f.id]||{}).probB})));}
       setLeaderboard(d.leaderboard||[]);setBL(!!d.bracketLocked);
