@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"html>
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -201,6 +201,21 @@ function Bracket({field,pk,onPick,colorFn,interactive}){
     <div className="bkcol"><div className="ch">R32</div>{[8,9,10,11,12,13,14,15].map(m=>mkNode("R32",m,r32))}</div>
   </div>);}
 
+/* Predicted R32 — simple two-column matchup list, entirely separate from the live knockout Bracket */
+function PredBracket({games,realSet}){
+  const has=realSet&&realSet.size>0;
+  const cl=t=>!has?"":(realSet.has(t)?" alive":" dead");
+  const half=(list,offset)=>list.map(([a,b],i)=>(
+    <div key={i} className="node"><div className="lab">R32 · {offset+i+1}</div>
+      <div className={"nteam"+cl(a)}><Crest team={a}/><span className="nm2">{a}</span><span className="s">#{RANK[a]}</span></div>
+      <div className={"nteam"+cl(b)}><Crest team={b}/><span className="nm2">{b}</span><span className="s">#{RANK[b]}</span></div>
+    </div>));
+  return (<div className="bk">
+    <div className="bkcol"><div className="ch">Left half · 1–8</div>{half(games.slice(0,8),0)}</div>
+    <div className="bkcol"><div className="ch">Right half · 9–16</div>{half(games.slice(8),8)}</div>
+  </div>);
+}
+
 
 /* Auth */
 function Auth({onAuth}){
@@ -226,8 +241,8 @@ function Auth({onAuth}){
 }
 
 /* Home */
-function Home({user,go,onSignOut,picksCount,standingsDone,koStatus,anyLive}){
-  const L=locked();const koTag=koStatus==="done"?"Completed":koStatus==="resume"?"Resume":"Demo";
+function Home({user,go,onSignOut,picksCount,standingsDone,koStatus,koOpen,anyLive}){
+  const L=locked();
   return (<div className="wrap">
     <div className="top"><span className="who">Signed in as <b>{user}</b></span><button className="linkbtn" onClick={onSignOut}>Sign out</button></div>
     <div className="hero"><div className="eyebrow">USA · Canada · Mexico</div><h1>World Cup<br/>Pick 'Em Pool</h1>
@@ -237,7 +252,7 @@ function Home({user,go,onSignOut,picksCount,standingsDone,koStatus,anyLive}){
       <button className="card live" onClick={()=>go("live")}><div><div className="t">Live games</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>
       <button className={"card"+(L?"":" live")} onClick={()=>go("group")}><div><div className="t">Make your group picks</div><div className="d">{picksCount>0?picksCount+" of 72 picked.":"Call all 72 group games. Save as you go."}</div></div><span className="tag">{picksCount>=72?"Completed":L?"View":picksCount>0?"Resume":"Open"}</span></button>
       <button className="card" onClick={()=>go("standings")}><div><div className="t">Group stage standings & predicted bracket</div><div className="d">Your groups, tiebreakers, third-place picks, Round of 32.</div></div><span className="tag">{standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>
-      <button className="card" onClick={()=>go("ko")}><div><div className="t">Knockout bracket</div><div className="d">Pick the Round of 32 through to the final.</div></div><span className={"tag"+(koStatus==="done"?"":" amber")}>{koTag}</span></button>
+      <button className="card" onClick={()=>go("ko")}><div><div className="t">Knockout bracket</div><div className="d">{koOpen?"Pick the Round of 32 through to the final.":"Opens after the group stage."}</div></div><span className={"tag"+(koStatus==="done"?"":koOpen?" amber":" gray")}>{!koOpen?"Locked":koStatus==="done"?"Completed":koStatus==="resume"?"Resume":"Open"}</span></button>
       <button className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>
     </div></div>);
 }
@@ -321,7 +336,12 @@ function Standings({user,fixtures,picks,saved,back}){
   const [showBr,setShowBr]=useState(!!(saved&&saved.orders));const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);
   const realSet=actualR32(fixtures);const L=locked();
   function move(g,i,dir){if(L)return;setOrders(o=>{const arr=o[g].slice();const j=i+dir;if(j<0||j>3)return o;[arr[i],arr[j]]=[arr[j],arr[i]];return{...o,[g]:arr};});setShowBr(false);setMsg("");}
-  function toggleThird(t){if(L)return;setThirds(ts=>ts.includes(t)?ts.filter(x=>x!==t):ts.length<8?[...ts,t]:ts);setShowBr(false);setMsg("");}
+  function toggleThird(t){if(L)return;setThirds(ts=>{
+    if(ts.includes(t))return ts.filter(x=>x!==t);
+    const poolNames=thirdsPool.map(x=>x.team);
+    const pruned=ts.filter(x=>poolNames.indexOf(x)!==-1); // drop teams no longer in 3rd after a reorder
+    return pruned.length<8?[...pruned,t]:pruned;
+  });setShowBr(false);setMsg("");}
   if(made<72) return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
     <div className="eyebrow">Standings</div><h1 style={{fontSize:30}}>Almost there</h1>
     <div className="ok" style={{background:"rgba(232,163,61,.12)",borderColor:"var(--amber)",color:"#f3dcb0"}}>You've made {made}/72 group picks. Finish all 72 to generate your standings and predicted bracket.</div>
@@ -341,7 +361,7 @@ function Standings({user,fixtures,picks,saved,back}){
     const text=`My World Cup 2026 predicted Round of 32:\n\n${lines}`;
     if(navigator.share){navigator.share({title:"My WC2026 bracket",text}).catch(()=>{});}
     else{try{navigator.clipboard.writeText(text);setMsg("Bracket copied — paste into WhatsApp, or screenshot it.");}catch(e){setMsg("Screenshot the bracket to share.");}}}
-  const field=games?games.reduce((a,g)=>a.concat([{team:g[0],seed:RANK[g[0]]},{team:g[1],seed:RANK[g[1]]}]),[]):[];
+  const field=null; // predicted bracket uses games[] directly via PredBracket
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
     <div className="eyebrow">From your picks</div><h1 style={{fontSize:30}}>Standings & bracket</h1>
     <p className="sub">{L?"Locked — tournament has started. View only.":"3 a win, 1 a draw. Reorder with ▲▼ to settle ties — top two (green) advance, third (amber) is a candidate."}</p>
@@ -357,22 +377,18 @@ function Standings({user,fixtures,picks,saved,back}){
     {showBr&&bErr&&<div className="err">{bErr}</div>}
     {showBr&&games&&(<div><div className="ghead">YOUR PREDICTED BRACKET</div>
       {realSet.size>0&&<p className="sub" style={{margin:"0 4px 8px"}}>Green = made the real Round of 32, red = didn't.</p>}
-      <Bracket field={field} pk={{}} onPick={null} colorFn={realSet.size>0?(t=>realSet.has(t)?"alive":"dead"):null} interactive={false} />
+      <PredBracket games={games} realSet={realSet} />
       <button className="sharebtn" onClick={share}>Share my bracket</button>
       <button className="homebtn" onClick={back}>← Back to home</button></div>)}
   </div>);
 }
 
-/* Knockout bracket */
-function koSeedField(){const byNum={};Object.keys(RANK).forEach(t=>byNum[RANK[t]]=t);
-  const ord=[1,32,16,17,8,25,9,24,4,29,13,20,5,28,12,21,2,31,15,18,7,26,10,23,3,30,14,19,6,27,11,22];
-  return ord.map(n=>({team:byNum[n],seed:n}));}
+/* Knockout bracket — only live once the real 32 qualifiers are in the sheet */
 function koIdx(f){const m=String(f.id).match(/(\d+)\s*$/);return m?parseInt(m[1],10):9999;}
 function buildKOField(fixtures){const r32=fixtures.filter(f=>f.round==="R32").sort((a,b)=>koIdx(a)-koIdx(b));
-  if(r32.length===16){const arr=[];r32.forEach(f=>{arr.push({team:f.teamA,seed:RANK[f.teamA]||99});arr.push({team:f.teamB,seed:RANK[f.teamB]||99});});return arr;}
-  return koSeedField();}
+  const arr=[];r32.forEach(f=>{arr.push({team:f.teamA,seed:RANK[f.teamA]||99});arr.push({team:f.teamB,seed:RANK[f.teamB]||99});});return arr;}
 function Knockout({user,fixtures,savedPk,bracketLocked,readOnly,back}){
-  const real=fixtures.some(f=>f.round==="R32");
+  const real=fixtures.filter(f=>f.round==="R32").length===16;
   const [field]=useState(()=>buildKOField(fixtures));
   const [pk,setPk]=useState(savedPk||{});const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);
   const dead=eliminatedSet(fixtures);
@@ -382,9 +398,13 @@ function Knockout({user,fixtures,savedPk,bracketLocked,readOnly,back}){
   async function submit(){setBusy(true);setMsg("");try{const res=await postJSON({action:"saveBracket",username:user,picksJson:JSON.stringify(pk)});
     setMsg(res.error?res.error:"Your bracket was saved. It'll be here when you come back, editable until the knockout starts.");}catch(e){setMsg("Network error submitting.");}setBusy(false);}
   const colorFn=t=>dead.has(t)?"dead":"";
+  if(!real) return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
+    <div className="eyebrow">Knockout</div><h1 style={{fontSize:30}}>Knockout bracket</h1>
+    <div className="ok" style={{background:"rgba(232,163,61,.12)",borderColor:"var(--amber)",color:"#f3dcb0"}}>The knockout bracket opens once the group stage finishes and all 32 qualifiers are set (after June 27). Come back then to fill out your real Round of 32 through the final.</div>
+    <button className="homebtn" onClick={back}>← Back to home</button></div>);
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">{real?"Knockout":"Demo · sample 32-team field"}</div><h1 style={{fontSize:30}}>Knockout bracket</h1>
-    <p className="sub">{readOnly?"View only.":"Tap a team to advance it; scroll sideways. "}Eliminated teams cross out red across your whole bracket.</p>
+    <div className="eyebrow">Knockout</div><h1 style={{fontSize:30}}>Knockout bracket</h1>
+    <p className="sub">{readOnly?"View only.":bracketLocked?"Locked — knockout underway. ":"Tap a team to advance it; scroll sideways. "}Eliminated teams cross out red across your whole bracket.</p>
     <Bracket field={field} pk={pk} onPick={pick} colorFn={colorFn} interactive={!readOnly&&!bracketLocked} />
     {msg&&<div className="ok" style={{marginTop:10}}>{msg}</div>}
     {!readOnly&&!bracketLocked&&<div className="bar"><div className="inner"><span className="count">Champion: <b>{champ?initials(champ):"—"}</b></span>
@@ -405,7 +425,7 @@ function Leaderboard({user,back,bracketLocked,viewBracket}){
     {bracketLocked&&<p className="sub" style={{marginTop:6}}>Tap anyone to see their bracket.</p>}
     {err&&<div className="err" style={{marginTop:12}}>{err}</div>}
     {!rows&&!err&&<p className="sub" style={{marginTop:14}}>Loading…</p>}
-    {rows&&rows.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No scores yet. Run <b style={{color:"var(--text)"}}>simulateGroupResults()</b> then <b style={{color:"var(--text)"}}>recomputeScores()</b> in Apps Script.</div>}
+    {rows&&rows.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No scores yet — the board fills in once games are played.</div>}
     {rows&&rows.map((r,i)=>{const champ=bracketLocked?champOf(r.username):null;
       return (<div key={r.username} className={"lb"+(i<3?" top":"")+(r.username===user?" me":"")+(bracketLocked?" clickable":"")} onClick={()=>bracketLocked&&viewBracket(r.username)}>
       <span className="rk">{r.place}</span>
@@ -421,7 +441,7 @@ function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
   function backers(fid,side){return (allGroupPicks||[]).filter(p=>{try{return JSON.parse(p.picksJson||"{}")[fid]===side;}catch(e){return false;}}).map(p=>p.username);}
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
     <div className="eyebrow">Now playing</div><h1 style={{fontSize:30}}>Live games</h1>
-    {live.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No games are live right now. (Run <b style={{color:"var(--text)"}}>simulateLiveGame()</b> in Apps Script to test.)</div>}
+    {live.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No games are live right now. Check back during match windows.</div>}
     {live.map(f=>{const aB=backers(f.id,"A"),bB=backers(f.id,"B");
       return (<div key={f.id} className="lg">
         <div className="lgtop">
@@ -466,7 +486,7 @@ function App(){
   const standingsDone=!!(advance&&advance.advancers&&advance.advancers.length);
   const champ=bracketPk&&(bracketPk.FINAL||{})[0];
   const koStatus=champ?"done":(bracketPk&&Object.keys(bracketPk).length?"resume":"open");
-  const anyLive=fixtures.some(isLive);const home=()=>{setView("home");setViewUser(null);};
+  const anyLive=fixtures.some(isLive);const koOpen=fixtures.filter(f=>f.round==="R32").length===16;const home=()=>{setView("home");setViewUser(null);};
   if(view==="scoring")return <HowScoring back={home} />;
   if(view==="group")return <Picker user={user} fixtures={gf} picks={picks} setPicks={setPicks} back={home} />;
   if(view==="standings")return <Standings user={user} fixtures={fixtures} picks={picks} saved={advance&&advance.orders?advance:null} back={home} />;
@@ -478,7 +498,7 @@ function App(){
         try{setViewUserPk(d.bracket&&d.bracket.picksJson?JSON.parse(d.bracket.picksJson):{});}catch(e){setViewUserPk({});}setViewUser(u);});}} />;
   }
   if(view==="live")return <LiveGames fixtures={fixtures} allGroupPicks={allGroupPicks} leaderboard={leaderboard} back={home} />;
-  return <Home user={user} go={setView} picksCount={picksCount} standingsDone={standingsDone} koStatus={koStatus} anyLive={anyLive}
+  return <Home user={user} go={setView} picksCount={picksCount} standingsDone={standingsDone} koStatus={koStatus} koOpen={koOpen} anyLive={anyLive}
     onSignOut={()=>{if(typeof localStorage!=="undefined")localStorage.removeItem("wc_user");setUser(null);setPicks({});setAdvance(null);setBracketPk(null);}} />;
 }
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
