@@ -327,10 +327,17 @@ function Match({g,pick,onPick}){
 }
 function Picker({user,fixtures,picks,setPicks,back}){
   const [L]=useState(locked());const [saved,setSaved]=useState(false);const [err,setErr]=useState("");const [busy,setBusy]=useState(false);
-  const onPick=(id,v)=>{if(L)return;setSaved(false);setPicks(p=>({...p,[id]:v}));};
+  const onPick=(id,v)=>{if(L)return;setSaved(false);setErr("");setPicks(p=>({...p,[id]:v}));};
   const made=Object.keys(picks).length,all=made===fixtures.length;
-  async function save(){setErr("");setBusy(true);try{const res=await postJSON({action:"saveGroup",username:user,picksJson:JSON.stringify(picks)});
-    if(res.error)setErr(res.error);else setSaved(true);}catch(e){setErr("Network error — not saved. Try again.");}setBusy(false);}
+  async function save(){setErr("");setBusy(true);
+    const attempt=async()=>{const res=await postJSON({action:"saveGroup",username:user,picksJson:JSON.stringify(picks)});
+      if(res&&res.error)throw new Error(res.error);return res;};
+    try{
+      try{await attempt();}
+      catch(e1){await new Promise(r=>setTimeout(r,1200));await attempt();}
+      setSaved(true);
+    }catch(e){setErr("Couldn't save");}
+    setBusy(false);}
   const byGroup={};fixtures.forEach(f=>{(byGroup[f.group]=byGroup[f.group]||[]).push(f);});Object.keys(byGroup).forEach(g=>byGroup[g].sort(byTime));
   const anyResults=fixtures.some(f=>f.result);
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
@@ -341,8 +348,13 @@ function Picker({user,fixtures,picks,setPicks,back}){
     {Object.keys(byGroup).sort().map(g=>(<div key={g}><div className="ghead">GROUP {g}</div>
       {byGroup[g].map(f=><Match key={f.id} g={f} pick={picks[f.id]} onPick={onPick} />)}</div>))}
     <button className="homebtn" onClick={back}>← Back to home</button>
-    {!L&&<div className="bar"><div className="inner"><span className="count"><b>{made}</b>/72</span>
-      <button className="cta" disabled={made===0||busy} onClick={save}>{busy?"Saving…":all?"Save all picks":`Save progress (${made})`}</button></div></div>}</div>);
+    {!L&&<div className="bar"><div className="inner" style={{flexDirection:"column",alignItems:"stretch",gap:8}}>
+      {err&&<div className="err" style={{margin:0,textAlign:"center"}}>{err} — please try again.</div>}
+      {saved&&!err&&<div className="ok" style={{margin:0,textAlign:"center"}}>Saved — {made}/72 in.{all?" All picked.":""}</div>}
+      <div style={{display:"flex",alignItems:"center",gap:12}}>
+        <span className="count"><b>{made}</b>/72</span>
+        <button className="cta" style={{flex:1}} disabled={made===0||busy} onClick={save}>{busy?"Saving…":all?"Save all picks":`Save progress (${made})`}</button>
+      </div></div></div>}</div>);
 }
 
 /* Standings + predicted bracket */
