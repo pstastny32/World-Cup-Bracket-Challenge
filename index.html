@@ -122,6 +122,15 @@
   .scorebug .livedot{font:700 9px "JetBrains Mono";color:var(--coral);letter-spacing:.1em}
   .backers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
   .backers.backers3{grid-template-columns:1fr 1fr 1fr}
+  .picksec{margin-top:12px}
+  .picksec .psrow{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .picksec .psrow:first-child{margin-top:0}
+  .picksec .pshead{font:700 12px Inter;letter-spacing:.05em;text-transform:uppercase;color:var(--text)}
+  .picksec .pscount{font:700 12px "JetBrains Mono";min-width:24px;text-align:center;padding:2px 8px;border-radius:999px;background:rgba(124,151,168,.16);color:var(--muted)}
+  .picksec .psnames{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .picksec .pn{display:inline-flex;align-items:center;gap:6px;font-size:13px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:4px 9px;color:var(--text)}
+  .picksec .pn b{font:600 10px "JetBrains Mono";color:var(--muted)}
+  .picksec .pnone{font-size:13px;color:var(--muted);font-style:italic}
   .backers .col{font-size:12px}.backers .col h5{margin:0 0 5px;font:600 11px Inter;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
   .backers .col .b{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--line)}
   .backers .col .b .pl{font-family:"JetBrains Mono";color:var(--muted)}
@@ -129,7 +138,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v6</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v7</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
@@ -499,10 +508,13 @@ function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
           <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
         </div>
         <div style={{textAlign:"center"}}><span className="scorebug livedot">● LIVE</span> <span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
-        <div className="backers backers3">
-          <div className="col"><h5>Picked {f.teamA}</h5>{aB.length?aB.map(u=><div key={u} className="b"><span>{u}</span><span className="pl">{placeMap[u]||"—"}</span></div>):<div className="sub">No one</div>}</div>
-          <div className="col"><h5>Picked Draw</h5>{dB.length?dB.map(u=><div key={u} className="b"><span>{u}</span><span className="pl">{placeMap[u]||"—"}</span></div>):<div className="sub">No one</div>}</div>
-          <div className="col"><h5>Picked {f.teamB}</h5>{bB.length?bB.map(u=><div key={u} className="b"><span>{u}</span><span className="pl">{placeMap[u]||"—"}</span></div>):<div className="sub">No one</div>}</div>
+        <div className="picksec">
+          <div className="psrow"><span className="pshead">Picked {f.teamA}</span><span className="pscount">{aB.length}</span></div>
+          <div className="psnames">{aB.length?aB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
+          <div className="psrow"><span className="pshead">Picked Draw</span><span className="pscount">{dB.length}</span></div>
+          <div className="psnames">{dB.length?dB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
+          <div className="psrow"><span className="pshead">Picked {f.teamB}</span><span className="pscount">{bB.length}</span></div>
+          <div className="psnames">{bB.length?bB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
         </div></div>);})}
     <button className="homebtn" onClick={back}>← Back to home</button></div>);
 }
