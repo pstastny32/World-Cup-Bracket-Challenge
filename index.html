@@ -128,7 +128,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v4</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v5</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
@@ -265,7 +265,7 @@ function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatu
     leaderboard:(<button key="leaderboard" className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>),
     live:(<button key="live" className="card live" onClick={()=>go("live")}><div><div className="t">Live games</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>),
     group:(<button key="group" className={"card"+(L?"":" live")} onClick={()=>go("group")}><div><div className="t">Make your group picks</div><div className="d">{picksCount>0?picksCount+" of 72 picked.":"Call all 72 group games. Save as you go."}</div></div><span className="tag">{picksCount>=72?"Completed":L?"View":picksCount>0?"Resume":"Open"}</span></button>),
-    standings:(<button key="standings" className="card" onClick={()=>go("standings")}><div><div className="t">Your group stage standings and Teams to advance</div><div className="d">Your groups, tiebreakers, third-place picks, Round of 32.</div></div><span className={"tag"+(standingsStale?" red":"")}>{standingsStale?"Incomplete":standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>),
+    standings:(<button key="standings" className="card" onClick={()=>go("standings")}><div><div className="t">Pick who advances to Round of 32</div><div className="d">Order your groups, choose the 8 best third-place teams, lock your bracket.</div></div><span className={"tag"+(standingsStale?" red":"")}>{standingsStale?"Incomplete":standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>),
     ko:(<button key="ko" className="card" onClick={()=>phase>=3&&go("ko")} disabled={phase<3} style={phase<3?{opacity:.6,cursor:"default"}:null}><div><div className="t">Knockout bracket</div><div className="d">{phase>=4?(koOpen?"Pick the Round of 32 through to the final.":"Bracket reveals as group results finalize."):phase===3?"Coming soon — opens tonight.":"Opens after the group stage."}</div></div><span className={"tag"+(phase===3?" amber":phase>=4?(koStatus==="done"?"":koOpen?" amber":" gray"):" gray")}>{phase<3?"Locked":phase===3?"Coming soon":koStatus==="done"?"Completed":koOpen?(koStatus==="resume"?"Resume":"Open"):"Live"}</span></button>),
   };
   // Order depends on phase.
@@ -407,8 +407,8 @@ function Standings({user,fixtures,picks,saved,onSaved,back}){
     else{try{navigator.clipboard.writeText(text);setMsg("Bracket copied — paste into WhatsApp, or screenshot it.");}catch(e){setMsg("Screenshot the bracket to share.");}}}
   const field=null; // predicted bracket uses games[] directly via PredBracket
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">From your picks</div><h1 style={{fontSize:30}}>Standings & bracket</h1>
-    <p className="sub">{L?"Locked — tournament has started. View only.":"3 a win, 1 a draw. Reorder with ▲▼ to settle ties — top two (green) advance, third (amber) is a candidate."}</p>
+    <div className="eyebrow">From your picks</div><h1 style={{fontSize:30}}>Who advances to the Round of 32</h1>
+    <p className="sub">{L?"Locked — tournament has started. View only.":"32 teams reach the Round of 32: the top 2 from each group (green), plus the 8 best third-place teams (amber). Your group picks set the points — 3 for a win, 1 for a draw. Use ▲▼ to break any ties, then pick your 8 third-place qualifiers below."}</p>
     {Object.keys(GROUPS).sort().map(g=>{const {pts}=standings(GROUPS[g],groupFx,picks);const ord=orders[g];
       return (<div key={g}><div className="ghead">GROUP {g}</div>
         {ord.map((t,i)=><StRow key={t} pos={i+1} team={t} pts={pts[t]} cls={i<2?"q":i===2?"third":"out"} onUp={()=>move(g,i,-1)} onDown={()=>move(g,i,1)} canUp={i>0&&!L} canDown={i<3&&!L} />)}</div>);})}
