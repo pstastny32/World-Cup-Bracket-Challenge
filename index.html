@@ -128,7 +128,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v3</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
@@ -264,7 +264,7 @@ function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatu
     leaderboard:(<button key="leaderboard" className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>),
     live:(<button key="live" className="card live" onClick={()=>go("live")}><div><div className="t">Live games</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>),
     group:(<button key="group" className={"card"+(L?"":" live")} onClick={()=>go("group")}><div><div className="t">Make your group picks</div><div className="d">{picksCount>0?picksCount+" of 72 picked.":"Call all 72 group games. Save as you go."}</div></div><span className="tag">{picksCount>=72?"Completed":L?"View":picksCount>0?"Resume":"Open"}</span></button>),
-    standings:(<button key="standings" className="card" onClick={()=>go("standings")}><div><div className="t">Your group stage standings and Teams to advance</div><div className="d">Your groups, tiebreakers, third-place picks, Round of 32.</div></div><span className={"tag"+(standingsStale?" amber":"")}>{standingsStale?"Incomplete":standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>),
+    standings:(<button key="standings" className="card" onClick={()=>go("standings")}><div><div className="t">Your group stage standings and Teams to advance</div><div className="d">Your groups, tiebreakers, third-place picks, Round of 32.</div></div><span className={"tag"+(standingsStale?" red":"")}>{standingsStale?"Incomplete":standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>),
     ko:(<button key="ko" className="card" onClick={()=>phase>=3&&go("ko")} disabled={phase<3} style={phase<3?{opacity:.6,cursor:"default"}:null}><div><div className="t">Knockout bracket</div><div className="d">{phase>=4?(koOpen?"Pick the Round of 32 through to the final.":"Bracket reveals as group results finalize."):phase===3?"Coming soon — opens tonight.":"Opens after the group stage."}</div></div><span className={"tag"+(phase===3?" amber":phase>=4?(koStatus==="done"?"":koOpen?" amber":" gray"):" gray")}>{phase<3?"Locked":phase===3?"Coming soon":koStatus==="done"?"Completed":koOpen?(koStatus==="resume"?"Resume":"Open"):"Live"}</span></button>),
   };
   // Order depends on phase.
@@ -531,8 +531,9 @@ function App(){
   const gf=fixtures.filter(f=>(f.round||"GROUP")==="GROUP");
   const picksCount=Object.keys(picks).length;
   const hasStandings=!!(advance&&advance.advancers&&advance.advancers.length);
-  // Stale = standings exist but were generated from a different set of picks than the current ones.
-  const standingsStale=hasStandings&&advance.picksSig!==undefined&&advance.picksSig!==picksSig(picks);
+  // Stale = standings exist but weren't generated from the current picks.
+  // A save with no stored signature (pre-signature save) can't be proven current, so treat it as stale.
+  const standingsStale=hasStandings&&advance.picksSig!==picksSig(picks);
   const standingsDone=hasStandings&&!standingsStale;
   const champ=bracketPk&&(bracketPk.FINAL||{})[0];
   const koStatus=champ?"done":(bracketPk&&Object.keys(bracketPk).length?"resume":"open");
