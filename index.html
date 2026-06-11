@@ -249,11 +249,11 @@ function Home({user,go,onSignOut,picksCount,standingsDone,koStatus,koOpen,anyLiv
       <div className="lockbar"><span className={"dot"+(L?" locked":"")}></span>{L?"Group picks are locked — tournament underway.":"Group picks lock at the first kickoff, June 11."}</div></div>
     <div className="cards">
       <button className="card" onClick={()=>go("scoring")}><div><div className="t">How scoring works</div><div className="d">Tiered upset points, advancement, knockout multipliers.</div></div><span className="arrow">→</span></button>
+      <button className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>
       <button className="card live" onClick={()=>go("live")}><div><div className="t">Live games</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>
       <button className={"card"+(L?"":" live")} onClick={()=>go("group")}><div><div className="t">Make your group picks</div><div className="d">{picksCount>0?picksCount+" of 72 picked.":"Call all 72 group games. Save as you go."}</div></div><span className="tag">{picksCount>=72?"Completed":L?"View":picksCount>0?"Resume":"Open"}</span></button>
-      <button className="card" onClick={()=>go("standings")}><div><div className="t">Group stage standings & predicted bracket</div><div className="d">Your groups, tiebreakers, third-place picks, Round of 32.</div></div><span className="tag">{standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>
+      <button className="card" onClick={()=>go("standings")}><div><div className="t">Your group stage standings and Teams to advance</div><div className="d">Your groups, tiebreakers, third-place picks, Round of 32.</div></div><span className="tag">{standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>
       <button className="card" onClick={()=>go("ko")}><div><div className="t">Knockout bracket</div><div className="d">{koOpen?"Pick the Round of 32 through to the final.":"Opens after the group stage."}</div></div><span className={"tag"+(koStatus==="done"?"":koOpen?" amber":" gray")}>{!koOpen?"Locked":koStatus==="done"?"Completed":koStatus==="resume"?"Resume":"Open"}</span></button>
-      <button className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>
     </div></div>);
 }
 
@@ -276,7 +276,7 @@ function HowScoring({back}){
     <p>Same idea as the group stage — <b>1 for the winner, +bonus if it's an upset</b> (same gap table) — then <b>× the round multiplier</b>.</p>
     <table className="kt"><thead><tr><th>Round</th><th>Multiplier</th></tr></thead><tbody>
       <tr><td>Round of 32</td><td>× 1</td></tr><tr><td>Round of 16</td><td>× 1.5</td></tr><tr><td>Quarterfinal</td><td>× 2</td></tr><tr><td>Semifinal</td><td>× 2.5</td></tr><tr><td>Final / champion</td><td>× 3</td></tr></tbody></table>
-    <div className="ex"><b>#4 beats #1</b> (gap 3 → 2 base): quarterfinal 2 × 2 = <b>4</b>, final 2 × 3 = <b>6</b>. A real shock <b>#20 beats #2</b> (gap 18 → 9 base) in the final = 9 × 3 = <b>27</b>.</div>
+    <div className="ex"><b>Example:</b> you pick <b>#5 to beat #1</b> in the quarterfinal. The gap is 4, which is the +2 tier — so the base is 1 (for the win) + 2 (upset) = 3. The quarterfinal multiplier is ×2, so 3 × 2 = <b>6 points</b>.</div>
     <p className="sub" style={{marginTop:16}}>Group picks lock June 11. The knockout opens after the groups, filled from the real 32 qualifiers — a wrong group call never wrecks your bracket.</p>
     <button className="homebtn" onClick={back}>← Back to home</button></div>);
 }
@@ -325,7 +325,7 @@ function StRow({pos,team,pts,cls,onUp,onDown,canUp,canDown}){
     <span className="nm"><Crest team={team}/>{team}<small>#{RANK[team]}</small></span><span className="pp">{pts}</span>
     <button className="mv" disabled={!canUp} onClick={onUp}>▲</button><button className="mv" disabled={!canDown} onClick={onDown}>▼</button></div>);
 }
-function Standings({user,fixtures,picks,saved,back}){
+function Standings({user,fixtures,picks,saved,onSaved,back}){
   const made=Object.keys(picks).length;
   const groupFx=fixtures.filter(f=>(f.round||"GROUP")==="GROUP");
   const init=saved&&saved.orders?saved.orders:(()=>{const o={};Object.keys(GROUPS).forEach(g=>{o[g]=standings(GROUPS[g],groupFx,picks).order;});return o;})();
@@ -355,8 +355,8 @@ function Standings({user,fixtures,picks,saved,back}){
         games=FIXED_R32.map(([a,b])=>[ref(a),ref(b)]);THIRD_SLOTS.forEach(s=>{if(assign[s.w])games.push([W(s.w),assign[s.w].team]);});}}}
   async function generate(){setShowBr(true);if(L)return;
     const advancers=[];Object.keys(GROUPS).forEach(g=>{advancers.push(orders[g][0],orders[g][1]);});validThirds.forEach(t=>advancers.push(t));
-    setBusy(true);setMsg("");try{const res=await postJSON({action:"saveGroup",username:user,picksJson:JSON.stringify(picks),advanceJson:JSON.stringify({advancers,orders,thirds:validThirds})});
-      setMsg(res.error?res.error:"Your bracket was saved.");}catch(e){setMsg("Network error — bracket not saved.");}setBusy(false);}
+    setBusy(true);setMsg("");try{const advObj={advancers,orders,thirds:validThirds};const res=await postJSON({action:"saveGroup",username:user,picksJson:JSON.stringify(picks),advanceJson:JSON.stringify(advObj)});
+      if(res.error)setMsg(res.error);else{setMsg("Your bracket was saved.");if(onSaved)onSaved(advObj);}}catch(e){setMsg("Network error — bracket not saved.");}setBusy(false);}
   function share(){if(!games)return;const lines=games.map(([a,b],i)=>`${i+1}. ${a} (#${RANK[a]}) v ${b} (#${RANK[b]})`).join("\n");
     const text=`My World Cup 2026 predicted Round of 32:\n\n${lines}`;
     if(navigator.share){navigator.share({title:"My WC2026 bracket",text}).catch(()=>{});}
@@ -416,7 +416,11 @@ function Knockout({user,fixtures,savedPk,bracketLocked,readOnly,back}){
 function Leaderboard({user,back,bracketLocked,viewBracket}){
   const [rows,setRows]=useState(null);const [bp,setBp]=useState({});const [err,setErr]=useState("");
   useEffect(()=>{fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
-    if(d.error){setErr(d.error);return;}setRows(ranksWithTies((d.leaderboard||[]).slice().sort((a,b)=>(b.total||0)-(a.total||0))));}).catch(()=>setErr("Couldn't load."));
+    if(d.error){setErr(d.error);return;}
+    const scored={};(d.leaderboard||[]).forEach(r=>scored[r.username]=r);
+    const all=(d.users||[]).map(u=>scored[u]||{username:u,total:0,groupPts:0,advancePts:0,bracketPts:0});
+    (d.leaderboard||[]).forEach(r=>{if((d.users||[]).indexOf(r.username)===-1)all.push(r);}); // safety: include any scored user missing from Users
+    setRows(ranksWithTies(all.sort((a,b)=>(b.total||0)-(a.total||0)||String(a.username).localeCompare(b.username))));}).catch(()=>setErr("Couldn't load."));
     fetch(API_URL+"?action=mypicks&username="+encodeURIComponent(user)).then(r=>r.json()).then(d=>{const m={};(d.allBracketPicks||[]).forEach(x=>m[x.username]=x.picksJson);setBp(m);}).catch(()=>{});
   },[]);
   function champOf(u){try{const pk=JSON.parse(bp[u]||"{}");return (pk.FINAL||{})[0];}catch(e){return null;}}
@@ -489,7 +493,7 @@ function App(){
   const anyLive=fixtures.some(isLive);const koOpen=fixtures.filter(f=>f.round==="R32").length===16;const home=()=>{setView("home");setViewUser(null);};
   if(view==="scoring")return <HowScoring back={home} />;
   if(view==="group")return <Picker user={user} fixtures={gf} picks={picks} setPicks={setPicks} back={home} />;
-  if(view==="standings")return <Standings user={user} fixtures={fixtures} picks={picks} saved={advance&&advance.orders?advance:null} back={home} />;
+  if(view==="standings")return <Standings user={user} fixtures={fixtures} picks={picks} saved={advance&&advance.orders?advance:null} onSaved={setAdvance} back={home} />;
   if(view==="ko")return <Knockout user={user} fixtures={fixtures} savedPk={bracketPk} bracketLocked={bracketLocked} readOnly={false} back={home} />;
   if(view==="leaderboard"){
     if(viewUser)return <Knockout user={viewUser} fixtures={fixtures} savedPk={viewUserPk||{}} bracketLocked={true} readOnly={true} back={()=>setViewUser(null)} />;
