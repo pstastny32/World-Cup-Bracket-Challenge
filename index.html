@@ -200,15 +200,16 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}.dot,.dot.locked,.tag.red{animation:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v20</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v21</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
 const GROUP_LOCK_ISO = "2026-06-11T15:00:00-04:00";
 const RANK={"Mexico":14,"South Korea":23,"South Africa":41,"Czechia":33,"Canada":27,"Switzerland":18,"Qatar":36,"Bosnia-Herzegovina":43,"Brazil":6,"Morocco":7,"Scotland":31,"Haiti":47,"United States":16,"Paraguay":34,"Australia":24,"Türkiye":20,"Germany":10,"Ecuador":22,"Côte d'Ivoire":29,"Curaçao":46,"Netherlands":8,"Japan":17,"Tunisia":35,"Sweden":32,"Belgium":9,"Iran":19,"Egypt":26,"New Zealand":48,"Spain":2,"Uruguay":12,"Saudi Arabia":39,"Cape Verde":44,"France":3,"Senegal":15,"Norway":28,"Iraq":40,"Argentina":1,"Austria":21,"Algeria":25,"Jordan":42,"Portugal":5,"Colombia":13,"Uzbekistan":38,"DR Congo":37,"England":4,"Croatia":11,"Panama":30,"Ghana":45};
 const GROUPS={A:["Mexico","South Korea","South Africa","Czechia"],B:["Canada","Switzerland","Qatar","Bosnia-Herzegovina"],C:["Brazil","Morocco","Scotland","Haiti"],D:["United States","Paraguay","Australia","Türkiye"],E:["Germany","Ecuador","Côte d'Ivoire","Curaçao"],F:["Netherlands","Japan","Tunisia","Sweden"],G:["Belgium","Iran","Egypt","New Zealand"],H:["Spain","Uruguay","Saudi Arabia","Cape Verde"],I:["France","Senegal","Norway","Iraq"],J:["Argentina","Austria","Algeria","Jordan"],K:["Portugal","Colombia","Uzbekistan","DR Congo"],L:["England","Croatia","Panama","Ghana"]};
-let CREST={};
-(function(){var F={"Mexico":"mx","South Korea":"kr","South Africa":"za","Czechia":"cz","Canada":"ca","Switzerland":"ch","Qatar":"qa","Bosnia-Herzegovina":"ba","Brazil":"br","Morocco":"ma","Scotland":"gb-sct","Haiti":"ht","United States":"us","Paraguay":"py","Australia":"au","Türkiye":"tr","Germany":"de","Ecuador":"ec","Côte d'Ivoire":"ci","Curaçao":"cw","Netherlands":"nl","Japan":"jp","Tunisia":"tn","Sweden":"se","Belgium":"be","Iran":"ir","Egypt":"eg","New Zealand":"nz","Spain":"es","Uruguay":"uy","Saudi Arabia":"sa","Cape Verde":"cv","France":"fr","Senegal":"sn","Norway":"no","Iraq":"iq","Argentina":"ar","Austria":"at","Algeria":"dz","Jordan":"jo","Portugal":"pt","Colombia":"co","Uzbekistan":"uz","DR Congo":"cd","England":"gb-eng","Croatia":"hr","Panama":"pa","Ghana":"gh"};for(var k in F)CREST[k]="https://flagcdn.com/w160/"+F[k]+".png";})();
+const FLAGS={};
+(function(){var F={"Mexico":"mx","South Korea":"kr","South Africa":"za","Czechia":"cz","Canada":"ca","Switzerland":"ch","Qatar":"qa","Bosnia-Herzegovina":"ba","Brazil":"br","Morocco":"ma","Scotland":"gb-sct","Haiti":"ht","United States":"us","Paraguay":"py","Australia":"au","Türkiye":"tr","Germany":"de","Ecuador":"ec","Côte d'Ivoire":"ci","Curaçao":"cw","Netherlands":"nl","Japan":"jp","Tunisia":"tn","Sweden":"se","Belgium":"be","Iran":"ir","Egypt":"eg","New Zealand":"nz","Spain":"es","Uruguay":"uy","Saudi Arabia":"sa","Cape Verde":"cv","France":"fr","Senegal":"sn","Norway":"no","Iraq":"iq","Argentina":"ar","Austria":"at","Algeria":"dz","Jordan":"jo","Portugal":"pt","Colombia":"co","Uzbekistan":"uz","DR Congo":"cd","England":"gb-eng","Croatia":"hr","Panama":"pa","Ghana":"gh"};for(var k in F)FLAGS[k]="https://flagcdn.com/w160/"+F[k]+".png";})();
+let CREST=Object.assign({},FLAGS);
 let TITLE={}; // team -> title-win strength (implied prob), loaded from the TitleOdds tab
 function buildFixtures(){const pairs=[[0,1],[2,3],[0,2],[3,1],[0,3],[1,2]];const out=[];
   Object.keys(GROUPS).forEach(g=>{const t=GROUPS[g];pairs.forEach((p,i)=>out.push({id:g+(i+1),group:g,teamA:t[p[0]],teamB:t[p[1]],seedA:RANK[t[p[0]]],seedB:RANK[t[p[1]]],dateTimeISO:"",city:"",country:""}));});return out;}
@@ -352,7 +353,7 @@ function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatu
       <div className="eyebrow">USA · Canada · Mexico · 2026</div>
       <h1>World Cup<br/>Pick 'Em Pool</h1>
       <div className="emblem" aria-hidden="true"><img src="wc26-logo-dark.png" alt="" onError={e=>{e.target.parentNode.style.display="none";}}/></div>
-      <div className="ribbon" aria-hidden="true"><div className="rbtrack">{Object.keys(CREST).concat(Object.keys(CREST)).map((t,i)=><span key={i} className="rbflag"><img src={CREST[t]} alt=""/></span>)}</div></div>
+      <div className="ribbon" aria-hidden="true"><div className="rbtrack">{Object.keys(FLAGS).concat(Object.keys(FLAGS)).map((t,i)=><span key={i} className="rbflag"><img src={FLAGS[t]} alt=""/></span>)}</div></div>
       <div className="lockbar"><span className={"dot"+(L?" locked":"")}></span>{L?"Group picks are locked — tournament underway.":"Group picks lock at the first kickoff, June 11."}</div></div>
     <div className="cards">
       {order.map(id=>cards[id])}
@@ -631,7 +632,7 @@ function App(){
   const [viewUser,setViewUser]=useState(null);const [viewUserPk,setViewUserPk]=useState(null);
   function load(){
     fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
-      if(d.teams){d.teams.forEach(t=>{if(t.crestUrl&&!CREST[t.team])CREST[t.team]=t.crestUrl;});}
+      if(d.teams){d.teams.forEach(t=>{if(t.crestUrl)CREST[t.team]=t.crestUrl;});}
       if(d.titleOdds){d.titleOdds.forEach(t=>{TITLE[t.team]=Number(t.titleProb);});}
       if(d.fixtures&&d.fixtures.length){const teams={};(d.teams||[]).forEach(t=>teams[t.team]=t);const odds={};(d.odds||[]).forEach(o=>odds[o.fixtureId]=o);
         setFixtures(d.fixtures.map(f=>({...f,seedA:Number((teams[f.teamA]||{}).seed)||RANK[f.teamA],seedB:Number((teams[f.teamB]||{}).seed)||RANK[f.teamB],probA:(odds[f.id]||{}).probA,probB:(odds[f.id]||{}).probB})));}
