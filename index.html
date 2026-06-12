@@ -38,7 +38,7 @@
   .hero h1{font-size:56px;text-shadow:0 6px 30px rgba(244,180,0,.18)}
   .hero h1::after{content:"";display:block;height:5px;width:110px;margin:14px auto 0;border-radius:3px;background:linear-gradient(90deg,#16C7C7,#3E7BFF,#A24BFF,#FF4D8D,#FF8A3E)}
   .emblem{display:flex;justify-content:center;margin:18px 0 4px}
-  .emblem img{width:200px;max-width:62vw;height:auto;filter:drop-shadow(0 10px 30px rgba(244,180,0,.35))}
+  .emblem img{width:176px;max-width:54vw;height:auto;filter:drop-shadow(0 12px 32px rgba(244,180,0,.38))}
   .ribbon{overflow:hidden;margin:14px -14px 4px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
   .rbtrack{display:flex;gap:10px;width:max-content;animation:rb 60s linear infinite}
   .rbflag{width:26px;height:26px;border-radius:50%;overflow:hidden;flex:0 0 auto;box-shadow:0 0 0 1px rgba(255,255,255,.18),0 3px 8px rgba(0,0,0,.5)}
@@ -200,7 +200,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}.dot,.dot.locked,.tag.red{animation:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v14</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v20</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
@@ -631,7 +631,7 @@ function App(){
   const [viewUser,setViewUser]=useState(null);const [viewUserPk,setViewUserPk]=useState(null);
   function load(){
     fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
-      if(d.teams){d.teams.forEach(t=>{if(t.crestUrl)CREST[t.team]=t.crestUrl;});}
+      if(d.teams){d.teams.forEach(t=>{if(t.crestUrl&&!CREST[t.team])CREST[t.team]=t.crestUrl;});}
       if(d.titleOdds){d.titleOdds.forEach(t=>{TITLE[t.team]=Number(t.titleProb);});}
       if(d.fixtures&&d.fixtures.length){const teams={};(d.teams||[]).forEach(t=>teams[t.team]=t);const odds={};(d.odds||[]).forEach(o=>odds[o.fixtureId]=o);
         setFixtures(d.fixtures.map(f=>({...f,seedA:Number((teams[f.teamA]||{}).seed)||RANK[f.teamA],seedB:Number((teams[f.teamB]||{}).seed)||RANK[f.teamB],probA:(odds[f.id]||{}).probA,probB:(odds[f.id]||{}).probB})));}
