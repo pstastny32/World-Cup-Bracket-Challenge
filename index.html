@@ -515,6 +515,18 @@ function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
       <div className="psrow"><span className="pshead">Picked {f.teamB}</span><span className="pscount">{bB.length}</span></div>
       <div className="psnames">{bB.length?bB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
     </div>);}
+  function ptsRow(f){const isKO=f.round&&f.round!=="GROUP";
+    const cells=isKO
+      ?[{lab:f.teamA,p:koPotential(f.round,TITLE[f.teamA],TITLE[f.teamB])},{lab:f.teamB,p:koPotential(f.round,TITLE[f.teamB],TITLE[f.teamA])}]
+      :[{lab:f.teamA,p:potential("A",f.probA,f.probB)},{lab:"Draw",p:potential("D",f.probA,f.probB)},{lab:f.teamB,p:potential("B",f.probA,f.probB)}];
+    return (<div style={{marginTop:12}}>
+      <div className="eyebrow" style={{fontSize:10,marginBottom:6,color:"var(--muted)"}}>Points for a correct call</div>
+      <div style={{display:"flex",gap:8}}>
+        {cells.map((c,i)=>(<div key={i} style={{flex:1,textAlign:"center",background:"var(--surface-2)",border:"1px solid var(--line)",borderRadius:8,padding:"7px 4px"}}>
+          <div style={{font:'700 11px Inter',color:"var(--muted)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.lab}</div>
+          <div style={{font:'700 15px "JetBrains Mono"',color:"var(--text)",marginTop:2}}>+{c.p}<span style={{fontSize:10,color:"var(--muted)"}}> pt{c.p===1?"":"s"}</span></div>
+        </div>))}
+      </div></div>);}
   const koLabel=f=>{const d=new Date(f.dateTimeISO),isTmw=d.toDateString()===tmwStr;
     return (isTmw?"Tomorrow ":"Today ")+d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});};
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
@@ -528,7 +540,7 @@ function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
         <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
       </div>
       <div style={{textAlign:"center"}}><span className="scorebug livedot">● LIVE</span> <span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
-      {picksBlock(f)}</div>))}
+      {ptsRow(f)}{picksBlock(f)}</div>))}
     {upcoming.length>0&&<div className="eyebrow" style={{margin:"24px 0 10px"}}>Upcoming · today & tomorrow</div>}
     {upcoming.map(f=>(<div key={f.id} className="lg">
       <div className="lgtop">
@@ -537,7 +549,7 @@ function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
         <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
       </div>
       <div style={{textAlign:"center"}}><span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
-      {picksBlock(f)}</div>))}
+      {ptsRow(f)}{picksBlock(f)}</div>))}
     <button className="homebtn" onClick={back}>← Back to home</button></div>);
 }
 
