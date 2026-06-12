@@ -273,7 +273,7 @@ function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatu
   const cards={
     scoring:(<button key="scoring" className="card" onClick={()=>go("scoring")}><div><div className="t">How scoring works</div><div className="d">Tiered upset points, advancement, knockout multipliers.</div></div><span className="arrow">→</span></button>),
     leaderboard:(<button key="leaderboard" className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>),
-    live:(<button key="live" className="card live" onClick={()=>go("live")}><div><div className="t">Live games</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>),
+    live:(<button key="live" className="card live" onClick={()=>go("live")}><div><div className="t">Live & Upcoming</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>),
     group:(<button key="group" className={"card"+(L?"":" live")} onClick={()=>go("group")}><div><div className="t">Make your group picks</div><div className="d">{picksCount>0?picksCount+" of 72 picked.":"Call all 72 group games. Save as you go."}</div></div><span className="tag">{picksCount>=72?"Completed":L?"View":picksCount>0?"Resume":"Open"}</span></button>),
     standings:(<button key="standings" className="card" onClick={()=>go("standings")}><div><div className="t">Pick who advances to Round of 32</div><div className="d">Order your groups, choose the 8 best third-place teams, lock your bracket.</div></div><span className={"tag"+(standingsStale?" red":"")}>{standingsStale?"Incomplete":standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>),
     ko:(<button key="ko" className="card" onClick={()=>phase>=3&&go("ko")} disabled={phase<3} style={phase<3?{opacity:.6,cursor:"default"}:null}><div><div className="t">Knockout bracket</div><div className="d">{phase>=4?(koOpen?"Pick the Round of 32 through to the final.":"Bracket reveals as group results finalize."):phase===3?"Coming soon — opens tonight.":"Opens after the group stage."}</div></div><span className={"tag"+(phase===3?" amber":phase>=4?(koStatus==="done"?"":koOpen?" amber":" gray"):" gray")}>{phase<3?"Locked":phase===3?"Coming soon":koStatus==="done"?"Completed":koOpen?(koStatus==="resume"?"Resume":"Open"):"Live"}</span></button>),
@@ -495,33 +495,55 @@ function Leaderboard({user,back,bracketLocked,viewBracket}){
 /* Live games */
 function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
   const live=fixtures.filter(isLive).sort(byTime);
+  const now=new Date(),todayStr=now.toDateString(),tmwStr=new Date(now.getTime()+864e5).toDateString();
+  const liveIds={};live.forEach(f=>liveIds[f.id]=1);
+  const upcoming=fixtures.filter(f=>{
+    if(liveIds[f.id])return false;
+    if(f.status==="FINISHED"||f.result)return false;
+    if(!f.dateTimeISO)return false;
+    const d=new Date(f.dateTimeISO).toDateString();
+    return d===todayStr||d===tmwStr;
+  }).sort(byTime);
   const placeMap={};ranksWithTies((leaderboard||[]).slice().sort((a,b)=>(b.total||0)-(a.total||0))).forEach(r=>placeMap[r.username]=r.place);
   function backers(fid,side){return (allGroupPicks||[]).filter(p=>{try{return JSON.parse(p.picksJson||"{}")[fid]===side;}catch(e){return false;}}).map(p=>p.username);}
+  function picksBlock(f){const aB=backers(f.id,"A"),bB=backers(f.id,"B"),dB=backers(f.id,"D");
+    return (<div className="picksec">
+      <div className="psrow"><span className="pshead">Picked {f.teamA}</span><span className="pscount">{aB.length}</span></div>
+      <div className="psnames">{aB.length?aB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
+      <div className="psrow"><span className="pshead">Picked Draw</span><span className="pscount">{dB.length}</span></div>
+      <div className="psnames">{dB.length?dB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
+      <div className="psrow"><span className="pshead">Picked {f.teamB}</span><span className="pscount">{bB.length}</span></div>
+      <div className="psnames">{bB.length?bB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
+    </div>);}
+  const koLabel=f=>{const d=new Date(f.dateTimeISO),isTmw=d.toDateString()===tmwStr;
+    return (isTmw?"Tomorrow ":"Today ")+d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});};
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">Now playing</div><h1 style={{fontSize:30}}>Live games</h1>
-    {live.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No games are live right now. Check back during match windows.</div>}
-    {live.map(f=>{const aB=backers(f.id,"A"),bB=backers(f.id,"B"),dB=backers(f.id,"D");
-      return (<div key={f.id} className="lg">
-        <div className="lgtop">
-          <div className="lgteam"><Crest team={f.teamA}/><div className="nm">{f.teamA}</div><div className="rk">FIFA #{f.seedA||RANK[f.teamA]}</div></div>
-          <div className="scorebug"><span>{f.scoreA||0}</span><span style={{color:"var(--muted)"}}>–</span><span>{f.scoreB||0}</span></div>
-          <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
-        </div>
-        <div style={{textAlign:"center"}}><span className="scorebug livedot">● LIVE</span> <span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
-        <div className="picksec">
-          <div className="psrow"><span className="pshead">Picked {f.teamA}</span><span className="pscount">{aB.length}</span></div>
-          <div className="psnames">{aB.length?aB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
-          <div className="psrow"><span className="pshead">Picked Draw</span><span className="pscount">{dB.length}</span></div>
-          <div className="psnames">{dB.length?dB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
-          <div className="psrow"><span className="pshead">Picked {f.teamB}</span><span className="pscount">{bB.length}</span></div>
-          <div className="psnames">{bB.length?bB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
-        </div></div>);})}
+    <div className="eyebrow">Now & next</div><h1 style={{fontSize:30}}>Live & Upcoming</h1>
+    {live.length===0&&upcoming.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No live or upcoming games right now. Check back on match days.</div>}
+    {live.length>0&&<div className="eyebrow" style={{margin:"20px 0 10px",color:"var(--coral)"}}>● Live now</div>}
+    {live.map(f=>(<div key={f.id} className="lg">
+      <div className="lgtop">
+        <div className="lgteam"><Crest team={f.teamA}/><div className="nm">{f.teamA}</div><div className="rk">FIFA #{f.seedA||RANK[f.teamA]}</div></div>
+        <div className="scorebug"><span>{f.scoreA||0}</span><span style={{color:"var(--muted)"}}>–</span><span>{f.scoreB||0}</span></div>
+        <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
+      </div>
+      <div style={{textAlign:"center"}}><span className="scorebug livedot">● LIVE</span> <span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
+      {picksBlock(f)}</div>))}
+    {upcoming.length>0&&<div className="eyebrow" style={{margin:"24px 0 10px"}}>Upcoming · today & tomorrow</div>}
+    {upcoming.map(f=>(<div key={f.id} className="lg">
+      <div className="lgtop">
+        <div className="lgteam"><Crest team={f.teamA}/><div className="nm">{f.teamA}</div><div className="rk">FIFA #{f.seedA||RANK[f.teamA]}</div></div>
+        <div style={{fontFamily:'"JetBrains Mono"',fontSize:13,fontWeight:700,color:"var(--muted)",textAlign:"center",whiteSpace:"nowrap"}}>{koLabel(f)}</div>
+        <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
+      </div>
+      <div style={{textAlign:"center"}}><span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
+      {picksBlock(f)}</div>))}
     <button className="homebtn" onClick={back}>← Back to home</button></div>);
 }
 
 /* App */
 function App(){
-  const [user,setUser]=useState(null);const [view,setView]=useState("home");
+  const [user,setUser]=useState((typeof localStorage!=="undefined"&&localStorage.getItem("wc_user"))||null);const [view,setView]=useState("home");
   const [fixtures,setFixtures]=useState(buildFixtures());const [picks,setPicks]=useState({});
   const [advance,setAdvance]=useState(null);const [bracketPk,setBracketPk]=useState(null);
   const [leaderboard,setLeaderboard]=useState([]);const [allGroupPicks,setAllGroupPicks]=useState([]);
