@@ -200,7 +200,7 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}.dot,.dot.locked,.tag.red{animation:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v13</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v14</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
@@ -351,7 +351,7 @@ function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatu
     <div className="hero">
       <div className="eyebrow">USA · Canada · Mexico · 2026</div>
       <h1>World Cup<br/>Pick 'Em Pool</h1>
-      <div className="emblem" aria-hidden="true"><img src="wc26-logo.png.webp" alt="" onError={e=>{e.target.parentNode.style.display="none";}}/></div>
+      <div className="emblem" aria-hidden="true"><img src="wc26-logo-dark.png" alt="" onError={e=>{e.target.parentNode.style.display="none";}}/></div>
       <div className="ribbon" aria-hidden="true"><div className="rbtrack">{Object.keys(CREST).concat(Object.keys(CREST)).map((t,i)=><span key={i} className="rbflag"><img src={CREST[t]} alt=""/></span>)}</div></div>
       <div className="lockbar"><span className={"dot"+(L?" locked":"")}></span>{L?"Group picks are locked — tournament underway.":"Group picks lock at the first kickoff, June 11."}</div></div>
     <div className="cards">
