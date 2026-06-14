@@ -139,19 +139,41 @@
   .chip.sel{background:#fff;border-color:#fff;color:var(--ink)}.chip small{font-family:Inter;color:inherit;opacity:.7}
   /* bracket */
   .bk{display:flex;gap:10px;overflow-x:auto;padding:6px 2px 16px;-webkit-overflow-scrolling:touch}
-  .bkcol{display:flex;flex-direction:column;justify-content:space-around;gap:8px;min-width:152px;flex:0 0 auto}
-  .bkcol.center{justify-content:flex-start;align-items:stretch;min-width:160px}
-  .bkcol .ch{font:600 10px Oswald;color:#FFB200;text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:2px}
+  .bkcol{display:flex;flex-direction:column;min-width:152px;flex:0 0 auto}
+  .bkcol.center{min-width:166px}
+  .bkcol .ch{font:600 10px Oswald;color:#FFB200;text-transform:uppercase;letter-spacing:.08em;text-align:center;height:14px;line-height:14px;margin-bottom:6px;flex:0 0 auto}
+  .bkbody{flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-around;gap:0;min-height:0}
+  .bkbody.cbody{justify-content:center}
+  .cfill{flex:1 1 0;display:flex;min-height:0;width:100%}
+  .cfill.top{align-items:flex-end}.cfill.bot{align-items:flex-start}
+  .cfill>*{width:100%}
   .node{background:#fff;border:0;border-radius:12px;padding:7px 9px;box-shadow:0 6px 16px -12px rgba(8,18,60,.5);color:var(--ink)}
   .node .lab{font:400 10px Anton;color:var(--orange);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
   .nteam{display:flex;align-items:center;gap:6px;padding:6px 7px;border:1px solid var(--line);border-radius:8px;background:#F6F8FC;margin-bottom:4px;font:600 12px Inter;cursor:pointer;color:var(--ink)}
   .nteam:last-child{margin-bottom:0}.nteam .badge{width:18px;height:18px;font-size:8px}
   .nteam .nm2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .nteam .s{font:400 10px Anton;color:var(--mute);margin-left:auto}
+  .nteam .s.sc{font:400 15px Anton;color:var(--ink)}
+  .nteam.won .s.sc{color:#15a14e}.nteam.lost .s.sc{color:var(--ink)}
+  .nteam .s.sc sup{font:700 6px Oswald;color:var(--mute);vertical-align:super;margin-left:1px}
+  .node .lab .lvtag{font:700 8px Oswald;color:#fff;background:var(--red);border-radius:4px;padding:1px 4px;letter-spacing:.05em;margin-left:6px;vertical-align:middle}
+  .survival .svch.champ{background:rgba(244,180,0,.22);color:#ffcf4d}
   .nteam .pb{font:600 10px Inter;color:var(--mute);margin-left:4px}
-  .nteam.win{background:#DDF5E6;border-color:var(--green)}.nteam.win .pb{color:var(--green)}
-  .nteam.alive{border-color:var(--orange)}
-  .nteam.dead{background:#FBE0DE;border-color:var(--red);opacity:.8}.nteam.dead .nm2{text-decoration:line-through;color:var(--red)}
+  .nteam .nm2{display:flex;flex-direction:column;min-width:0}
+  .nteam .tnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nteam .act{font:600 9px Inter;color:#15a14e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nteam .act::before{content:"\2192 ";font-weight:700}
+  .nteam.sel{background:#FFEFD6;border-color:var(--orange)}
+  .nteam.won{background:#DDF5E6;border-color:var(--green)}.nteam.won .pb{color:var(--green)}
+  .nteam.lost{background:#FBE0DE;border-color:var(--red)}.nteam.lost .tnm{text-decoration:line-through;color:var(--red)}
+  .nscore{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:6px;padding-top:6px;border-top:1px solid var(--line);font:400 14px Anton;color:var(--ink)}
+  .nscore .sw{color:var(--ink)}.nscore .dash{color:var(--mute);font-family:Inter}
+  .nscore sup{font:700 6px Oswald;color:var(--mute);vertical-align:super;margin-left:1px}
+  .nscore .lvtag{font:700 8px Oswald;color:#fff;background:var(--red);border-radius:4px;padding:1px 4px;letter-spacing:.06em;margin-left:4px}
+  .node.nlive{box-shadow:0 0 0 2px var(--red),0 6px 16px -12px rgba(8,18,60,.5)}
+  .champcell.out{border-color:var(--red);background:linear-gradient(180deg,#FBE0DE,#fff);box-shadow:0 8px 22px -12px rgba(226,59,59,.6)}
+  .champcell.out .cn{color:var(--red);text-decoration:line-through}.champcell.out .cs{color:var(--red)}
+  .savedok{font:700 13px Oswald;color:#15a14e;background:rgba(21,161,78,.16);border:1px solid #15a14e;border-radius:8px;padding:8px 12px;letter-spacing:.04em;white-space:nowrap}
   .nteam.tbd{opacity:.45;cursor:default}
   .champcell{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:linear-gradient(180deg,#FFF6DD,#fff);border:2px solid var(--gold);border-radius:12px;padding:12px 8px;margin-bottom:10px;color:var(--ink);box-shadow:0 8px 22px -10px rgba(244,180,0,.6)}
   .champcell .badge{width:48px;height:48px;font-size:13px;border-color:var(--gold)}
@@ -160,6 +182,7 @@
   /* leaderboard */
   .lb{display:flex;align-items:center;gap:12px;background:linear-gradient(168deg,#1A1C23,#131419);border:1px solid rgba(255,255,255,.09);border-left:4px solid rgba(255,255,255,.14);border-radius:14px;padding:13px 15px;margin-bottom:8px;color:#E8EBF2}
   .lb.clickable{cursor:pointer}.lb.me{box-shadow:0 0 0 2px var(--orange)}
+  .lb .u small .chx{text-decoration:line-through;color:#ff7a6f}
   .lb .rk{font:400 17px Anton;color:#7B8294;width:34px}
   .lb .u{flex:1;font:600 15px Inter;color:#fff}.lb .u small{display:block;color:#9AA1B2;font-weight:500;font-size:11px;margin-top:2px}
   .lb .tot{font-family:Anton;font-size:24px;color:#fff}
@@ -197,10 +220,18 @@
   @keyframes wcpulseR{0%,100%{box-shadow:0 0 0 0 rgba(255,138,62,.55)}50%{box-shadow:0 0 0 6px rgba(255,138,62,0)}}
   .tag.red{animation:wctag 2s ease-in-out infinite}
   @keyframes wctag{0%,100%{box-shadow:0 0 0 0 rgba(255,59,48,.5)}50%{box-shadow:0 0 10px 0 rgba(255,59,48,.55)}}
+  .survival{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px;padding:10px 12px;background:linear-gradient(168deg,#1A1C23,#131419);border:1px solid rgba(255,255,255,.09);border-radius:12px}
+  .survival .svch{font:400 13px Anton;letter-spacing:.04em;padding:3px 10px;border-radius:999px;background:#23262F;color:#9AA1B2}
+  .survival .svch.on{background:rgba(21,169,78,.18);color:#56e08b}
+  .survival .svch.off{background:rgba(226,59,59,.18);color:#ff7a6f}
+  .survival .svr{font:600 11px Oswald;letter-spacing:.05em;color:#9AA1B2}
+  .survival .svr b{font:400 12px Anton;color:#fff;margin-left:2px}
+  .node.bronze{border:1.5px solid #D08A4E;box-shadow:0 6px 16px -12px rgba(208,138,78,.6)}
+  .node.bronze .lab{color:#D08A4E}
   @media (prefers-reduced-motion: reduce){*{transition:none!important}.dot,.dot.locked,.tag.red{animation:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v21</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v30</div>
 <script type="text/babel">
 const { useState, useEffect } = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
@@ -221,7 +252,11 @@ function drawBonus(probA,probB){probA=Number(probA);probB=Number(probB);if(!(pro
 function potential(pick,probA,probB){if(pick==="D")return 1+drawBonus(probA,probB);const y=pick==="A"?probA:probB,o=pick==="A"?probB:probA;return 1+oddsBonus(y,o);}
 const KOM={R32:1,R16:1.5,QF:2,SF:2.5,FINAL:3};
 function matchProbFromTitle(x,y){const sx=Math.max(Number(x)||0,TITLE_MIN_PROB),sy=Math.max(Number(y)||0,TITLE_MIN_PROB);return sx/(sx+sy);}
-function koPotential(round,pickedTitle,oppTitle){const y=matchProbFromTitle(pickedTitle,oppTitle),o=1-y;return Math.round((1+oddsBonus(y,o))*KOM[round]);}
+// --- KNOCKOUT-ONLY scoring (group scoring above is untouched) ---
+const KO_BASE={R32:2,R16:3,QF:5,SF:7,FINAL:10,BRONZE:3};
+const KO_BONUS_CAP=16,KO_BONUS_HI=0.45,KO_BONUS_LO=0.15;
+function koBonus(yourProb){yourProb=Number(yourProb);if(!(yourProb>=0))return 0;if(yourProb>=KO_BONUS_HI)return 0;if(yourProb<=KO_BONUS_LO)return KO_BONUS_CAP;return Math.round(KO_BONUS_CAP*(KO_BONUS_HI-yourProb)/(KO_BONUS_HI-KO_BONUS_LO));}
+function koPotential(round,pickedTitle,oppTitle){if(round==="BRONZE")return KO_BASE.BRONZE;const y=matchProbFromTitle(pickedTitle,oppTitle);return KO_BASE[round]+koBonus(y);}
 function initials(n){return n?n.replace(/&|\.|-/g," ").split(/\s+/).map(w=>w[0]).join("").slice(0,3).toUpperCase():"";}
 function fmt(iso){if(!iso)return "Time & venue load live";const d=new Date(iso);return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});}
 function byTime(a,b){if(a.dateTimeISO&&b.dateTimeISO)return new Date(a.dateTimeISO)-new Date(b.dateTimeISO);if(a.dateTimeISO)return -1;if(b.dateTimeISO)return 1;return a.id.localeCompare(b.id);}
@@ -253,42 +288,68 @@ const FIXED_R32=[["RU-A","RU-B"],["W-C","RU-F"],["W-F","RU-C"],["RU-E","RU-I"],[
 const ROUND_SEQ=[["R32",16],["R16",8],["QF",4],["SF",2],["FINAL",1]];
 
 /* ===== Bracket: linear paired layout (R32 pairs → R16 → QF → SF → Final) ===== */
-function Bracket({field,pk,onPick,colorFn,interactive}){
+function Bracket({field,pk,onPick,fixtures,interactive}){
   const ROUNDS=[["R32",16],["R16",8],["QF",4],["SF",2],["FINAL",1]];
+  const PREV={R16:"R32",QF:"R16",SF:"QF",FINAL:"SF"};
+  const dead=eliminatedSet(fixtures||[]);
+  function midx(id){const m=String(id||"").match(/(\d+)\s*$/);return m?parseInt(m[1],10)-1:-1;}
+  const real={R32:[],R16:[],QF:[],SF:[],FINAL:[],BRONZE:[]};
+  (fixtures||[]).forEach(f=>{if(real[f.round]!==undefined){const i=midx(f.id);if(i>=0)real[f.round][i]=f;else real[f.round].push(f);}});
+  function gameAt(round,m){return (real[round]||[])[m]||null;}
+  function winnerOf(f){if(!f||!f.result||f.result==="D")return null;return f.result==="A"?f.teamA:f.teamB;}
   function teamsForRound(ri){
     if(ri===0)return field;
     const prev=ROUNDS[ri-1][0];const pt=teamsForRound(ri-1);const out=[];
     for(let m=0;m<pt.length/2;m++){const w=(pk[prev]||{})[m];out.push(w?field.find(f=>f&&f.team===w):null);}
     return out;}
-  function NTeam({x,opp,round,m}){
+  function NTeam({x,opp,round,m,pos}){
     if(!x)return <div className="nteam tbd"><span className="nm2">TBD</span></div>;
     const sel=(pk[round]||{})[m]===x.team;
-    const up=opp&&(matchProbFromTitle(TITLE[opp.team],TITLE[x.team])-matchProbFromTitle(TITLE[x.team],TITLE[opp.team]))>=BONUS_MIN_GAP;
     const pts=opp?koPotential(round,TITLE[x.team],TITLE[opp.team]):0;
-    const c=colorFn?colorFn(x.team):"";
-    let cl=sel?" win":""; if(c)cl=" "+c;
-    return <div className={"nteam"+cl} onClick={()=>interactive&&opp&&onPick(round,m,x.team)}>
-      <Crest team={x.team}/><span className="nm2">{x.team}</span><span className="s">#{x.seed}</span>
-      {opp&&interactive&&<span className="pb">+{pts}{up?"↑":""}</span>}</div>;}
-  // build columns: pair each R32 match with its downstream rounds converging inward
-  // Layout: [R32 left 8] [R16 left 4] [QF left 2] [SF left 1] [FINAL] [SF right 1] [QF right 2] [R16 right 4] [R32 right 8]
-  const r32=teamsForRound(0);const r16=teamsForRound(1);const qf=teamsForRound(2);const sf=teamsForRound(3);const fin=teamsForRound(4);
-  const champ=(pk.FINAL||{})[0];
+    const P=PREV[round];let cl="",actual=null;
+    if(P){const g=gameAt(P,pos),w=(g&&g.result)?winnerOf(g):null;
+      if(w===x.team)cl="won";
+      else if(w!=null){cl="lost";actual=w;}
+      else if(dead.has(x.team))cl="lost";}
+    const scoreTeam=actual||x.team;
+    const g2=gameAt(round,m);let myScore=null,pkMark=false;
+    if(g2&&(g2.result||(g2.scoreA!==""&&g2.scoreA!=null))){
+      let sa=Number(g2.scoreA)||0,sb=Number(g2.scoreB)||0;const isPK=(g2.result==="A"||g2.result==="B")&&sa===sb;if(isPK){sa=1;sb=1;}
+      if(g2.teamA===scoreTeam){myScore=sa;pkMark=isPK&&g2.result==="A";}
+      else if(g2.teamB===scoreTeam){myScore=sb;pkMark=isPK&&g2.result==="B";}}
+    return <div className={"nteam"+(sel&&!cl?" sel":"")+(cl?" "+cl:"")} onClick={()=>interactive&&opp&&onPick(round,m,x.team)}>
+      <Crest team={x.team}/>
+      <span className="nm2"><span className="tnm">{x.team}</span>{actual&&<small className="act">{actual}</small>}</span>
+      {myScore!=null&&<span className="s sc">{myScore}{pkMark&&<sup>(PK)</sup>}</span>}
+      {opp&&interactive&&<span className="pb">+{pts}</span>}</div>;}
   function mkNode(round,m,teams){
-    const a=teams[m*2],b=teams[m*2+1];
-    return <div key={round+m} className="node"><div className="lab">{round} · {m+1}</div>
-      <NTeam x={a} opp={b} round={round} m={m}/><NTeam x={b} opp={a} round={round} m={m}/></div>;}
+    const a=teams[m*2],b=teams[m*2+1];const g=gameAt(round,m);
+    const live=!!(g&&(g.status==="LIVE"||(!g.result&&g.scoreA!==""&&g.scoreA!=null)));
+    return <div key={round+m} className={"node"+(live?" nlive":"")}>
+      <div className="lab">{round} &middot; {m+1}{live&&<span className="lvtag">&#9679; LIVE</span>}</div>
+      <NTeam x={a} opp={b} round={round} m={m} pos={m*2}/>
+      <NTeam x={b} opp={a} round={round} m={m} pos={m*2+1}/></div>;}
+  const r32=teamsForRound(0),r16=teamsForRound(1),qf=teamsForRound(2),sf=teamsForRound(3),fin=teamsForRound(4);
+  const champ=(pk.FINAL||{})[0];const champDead=champ&&dead.has(champ);
+  var l0=(pk.SF||{})[0],l1=(pk.SF||{})[1];
+  var la=l0?(sf[0]&&sf[0].team===l0?sf[1]:sf[0]):null;
+  var lb=l1?(sf[2]&&sf[2].team===l1?sf[3]:sf[2]):null;
   return (<div className="bk">
-    <div className="bkcol"><div className="ch">R32</div>{[0,1,2,3,4,5,6,7].map(m=>mkNode("R32",m,r32))}</div>
-    <div className="bkcol"><div className="ch">R16</div>{[0,1,2,3].map(m=>mkNode("R16",m,r16))}</div>
-    <div className="bkcol"><div className="ch">QF</div>{[0,1].map(m=>mkNode("QF",m,qf))}</div>
-    <div className="bkcol"><div className="ch">SF</div>{[0].map(m=>mkNode("SF",m,sf))}
-      <div className="champcell"><Crest team={champ||""}/><div className="cs">Champion</div><div className="cn">{champ||"TBD"}</div></div>
-      {mkNode("FINAL",0,fin)}</div>
-    <div className="bkcol"><div className="ch">SF</div>{[1].map(m=>mkNode("SF",m,sf))}</div>
-    <div className="bkcol"><div className="ch">QF</div>{[2,3].map(m=>mkNode("QF",m,qf))}</div>
-    <div className="bkcol"><div className="ch">R16</div>{[4,5,6,7].map(m=>mkNode("R16",m,r16))}</div>
-    <div className="bkcol"><div className="ch">R32</div>{[8,9,10,11,12,13,14,15].map(m=>mkNode("R32",m,r32))}</div>
+    <div className="bkcol"><div className="ch">R32</div><div className="bkbody">{[0,1,2,3,4,5,6,7].map(m=>mkNode("R32",m,r32))}</div></div>
+    <div className="bkcol"><div className="ch">R16</div><div className="bkbody">{[0,1,2,3].map(m=>mkNode("R16",m,r16))}</div></div>
+    <div className="bkcol"><div className="ch">QF</div><div className="bkbody">{[0,1].map(m=>mkNode("QF",m,qf))}</div></div>
+    <div className="bkcol"><div className="ch">SF</div><div className="bkbody">{mkNode("SF",0,sf)}</div></div>
+    <div className="bkcol center"><div className="ch">FINAL</div><div className="bkbody cbody">
+      <div className="cfill top"><div className={"champcell"+(champDead?" out":"")}><Crest team={champ||""}/><div className="cs">Champion</div><div className="cn">{champ||"TBD"}</div></div></div>
+      {mkNode("FINAL",0,fin)}
+      <div className="cfill bot"><div className="node bronze"><div className="lab">3RD PLACE &middot; +3</div>
+        <NTeam x={la} opp={lb} round="BRONZE" m={0} pos={0}/>
+        <NTeam x={lb} opp={la} round="BRONZE" m={0} pos={1}/></div></div>
+    </div></div>
+    <div className="bkcol"><div className="ch">SF</div><div className="bkbody">{mkNode("SF",1,sf)}</div></div>
+    <div className="bkcol"><div className="ch">QF</div><div className="bkbody">{[2,3].map(m=>mkNode("QF",m,qf))}</div></div>
+    <div className="bkcol"><div className="ch">R16</div><div className="bkbody">{[4,5,6,7].map(m=>mkNode("R16",m,r16))}</div></div>
+    <div className="bkcol"><div className="ch">R32</div><div className="bkbody">{[8,9,10,11,12,13,14,15].map(m=>mkNode("R32",m,r32))}</div></div>
   </div>);}
 
 /* Predicted R32 — simple two-column matchup list, entirely separate from the live knockout Bracket */
@@ -335,12 +396,12 @@ function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatu
   const L=locked();
   // Each nav card defined once, keyed by id.
   const cards={
-    scoring:(<button key="scoring" className="card" onClick={()=>go("scoring")}><div><div className="t">How scoring works</div><div className="d">Tiered upset points, advancement, knockout multipliers.</div></div><span className="arrow">→</span></button>),
+    scoring:(<button key="scoring" className="card" onClick={()=>go("scoring")}><div><div className="t">How scoring works</div><div className="d">Tiered upset points, advancement, knockout round bonuses.</div></div><span className="arrow">→</span></button>),
     leaderboard:(<button key="leaderboard" className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>),
     live:(<button key="live" className="card live" onClick={()=>go("live")}><div><div className="t">Live & Upcoming</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>),
     group:(<button key="group" className={"card"+(L?"":" live")} onClick={()=>go("group")}><div><div className="t">Make your group picks</div><div className="d">{picksCount>0?picksCount+" of 72 picked.":"Call all 72 group games. Save as you go."}</div></div><span className="tag">{picksCount>=72?"Completed":L?"View":picksCount>0?"Resume":"Open"}</span></button>),
     standings:(<button key="standings" className="card" onClick={()=>go("standings")}><div><div className="t">Pick who advances to Round of 32</div><div className="d">Order your groups, choose the 8 best third-place teams, lock your bracket.</div></div><span className={"tag"+(standingsStale?" red":"")}>{standingsStale?"Incomplete":standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>),
-    ko:(<button key="ko" className="card" onClick={()=>phase>=3&&go("ko")} disabled={phase<3} style={phase<3?{opacity:.6,cursor:"default"}:null}><div><div className="t">Knockout bracket</div><div className="d">{phase>=4?(koOpen?"Pick the Round of 32 through to the final.":"Bracket reveals as group results finalize."):phase===3?"Coming soon — opens tonight.":"Opens after the group stage."}</div></div><span className={"tag"+(phase===3?" amber":phase>=4?(koStatus==="done"?"":koOpen?" amber":" gray"):" gray")}>{phase<3?"Locked":phase===3?"Coming soon":koStatus==="done"?"Completed":koOpen?(koStatus==="resume"?"Resume":"Open"):"Live"}</span></button>),
+    ko:(<button key="ko" className="card" onClick={()=>(phase>=3||koOpen)&&go("ko")} disabled={phase<3&&!koOpen} style={(phase<3&&!koOpen)?{opacity:.6,cursor:"default"}:null}><div><div className="t">Knockout bracket</div><div className="d">{(phase>=4||koOpen)?(koOpen?"Pick the Round of 32 through to the final.":"Bracket reveals as group results finalize."):phase===3?"Coming soon — opens tonight.":"Opens after the group stage."}</div></div><span className={"tag"+((phase===3&&!koOpen)?" amber":(phase>=4||koOpen)?(koStatus==="done"?"":koOpen?" amber":" gray"):" gray")}>{(phase<3&&!koOpen)?"Locked":(phase===3&&!koOpen)?"Coming soon":koStatus==="done"?"Completed":koOpen?(koStatus==="resume"?"Resume":"Open"):"Live"}</span></button>),
   };
   // Order depends on phase.
   let order;
@@ -364,7 +425,7 @@ function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatu
 function HowScoring({back}){
   return (<div className="wrap doc"><button className="back" onClick={back}>← Back</button>
     <div className="eyebrow">The rules</div><h1 style={{fontSize:32}}>How scoring works</h1>
-    <p>The short version: <b>a correct pick is worth 1 point. The bigger the underdog you call, the bigger the bonus — up to +15. In the knockouts, every round multiplies the stakes.</b></p>
+    <p>The short version: <b>a correct pick scores points; the bigger the underdog you call, the bigger the bonus. In the knockouts, each round is worth more and one big upset can swing the whole pool.</b></p>
     <p>Bonuses are based on <b>sportsbook win odds</b>, shown on every game. Backing a heavy favorite that wins is still smart — it just earns the flat point. Calling a genuine upset is where the points are.</p>
     <p><b>Draws count too:</b> calling a draw earns a bonus when one team was heavily favored and got held — the more lopsided the matchup, the bigger the draw bonus (up to +8). It's always worth less than calling the underdog to win outright.</p>
     <h2>Group stage — per game</h2>
@@ -378,10 +439,14 @@ function HowScoring({back}){
     <h2>Advancing to the Round of 32</h2>
     <div className="rule"><div className="lab">Each team you correctly send through<small>your 2 per group + 8 best third-place teams</small></div><div className="val">2</div></div>
     <h2>Knockout — per game</h2>
-    <p>Same idea — <b>1 for calling the winner, plus an upset bonus</b> based on the odds — then <b>× the round multiplier</b>, so late-round shocks are worth the most.</p>
-    <table className="kt"><thead><tr><th>Round</th><th>Multiplier</th></tr></thead><tbody>
-      <tr><td>Round of 32</td><td>× 1</td></tr><tr><td>Round of 16</td><td>× 1.5</td></tr><tr><td>Quarterfinal</td><td>× 2</td></tr><tr><td>Semifinal</td><td>× 2.5</td></tr><tr><td>Final / champion</td><td>× 3</td></tr></tbody></table>
-    <div className="ex"><b>Example:</b> you call a clear underdog to win a quarterfinal — say a +5 upset bonus. Base is 1 + 5 = 6, and the quarterfinal multiplier is ×2, so 6 × 2 = <b>12 points</b>. Pull off a longshot in the final and it's worth far more.</div>
+    <p>Different from the group stage: each round pays a fixed <b>base</b>, and you add an <b>upset bonus (up to +16)</b> when you correctly call an underdog. <b>No multiplier</b> — the base already makes later rounds worth more.</p>
+    <table className="kt"><thead><tr><th>Round</th><th>Base points</th></tr></thead><tbody>
+      <tr><td>Round of 32</td><td>2</td></tr><tr><td>Round of 16</td><td>3</td></tr><tr><td>Quarterfinal</td><td>5</td></tr><tr><td>Semifinal</td><td>7</td></tr><tr><td>Final / champion</td><td>10</td></tr><tr><td>3rd-place game</td><td>3 (no bonus)</td></tr></tbody></table>
+    <p>The upset bonus comes from each team's tournament-winning odds, turned into a match win chance — the longer your team's odds, the bigger the bonus:</p>
+    <table className="kt"><thead><tr><th>Your team's win chance</th><th>Upset bonus</th></tr></thead><tbody>
+      <tr><td>45%+ (favorite / coin-flip)</td><td>+0</td></tr><tr><td>~35%</td><td>+5</td></tr><tr><td>~30%</td><td>+8</td></tr>
+      <tr><td>~25%</td><td>+11</td></tr><tr><td>~20%</td><td>+13</td></tr><tr><td>15% or lower (longshot)</td><td>+16</td></tr></tbody></table>
+    <div className="ex"><b>Example:</b> you back a ~20% underdog to win a <b>quarterfinal</b> — base 5 + bonus 13 = <b>18 points</b>. Call the favorite in that game and you get the flat <b>5</b>. A longshot that wins the <b>final</b> is 10 + 16 = <b>26</b>.</div>
     <p className="sub" style={{marginTop:16}}>Group picks lock June 11. The knockout opens after the groups, filled from the real 32 qualifiers — a wrong group call never wrecks your bracket.</p>
     <button className="homebtn" onClick={back}>← Back to home</button></div>);
 }
@@ -513,14 +578,26 @@ function buildKOField(fixtures){const r32=fixtures.filter(f=>f.round==="R32").so
 function Knockout({user,fixtures,savedPk,bracketLocked,readOnly,back}){
   const real=fixtures.filter(f=>f.round==="R32").length===16;
   const [field]=useState(()=>buildKOField(fixtures));
-  const [pk,setPk]=useState(savedPk||{});const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);
+  const [pk,setPk]=useState(savedPk||{});const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);const [saved,setSaved]=useState(false);
   const dead=eliminatedSet(fixtures);
-  function pick(round,m,team){if(readOnly||bracketLocked)return;setPk(p=>{const r={...(p[round]||{})};r[m]=team;const np={...p,[round]:r};
-    const ri=ROUND_SEQ.findIndex(x=>x[0]===round);for(let k=ri+1;k<ROUND_SEQ.length;k++)delete np[ROUND_SEQ[k][0]];return np;});setMsg("");}
+  function pick(round,m,team){if(readOnly||bracketLocked)return;setPk(p=>{
+    const np=JSON.parse(JSON.stringify(p||{}));np[round]=np[round]||{};np[round][m]=team;
+    const idx=ROUND_SEQ.findIndex(x=>x[0]===round);
+    if(idx>=0){let curM=m;
+      for(let k=idx+1;k<ROUND_SEQ.length;k++){
+        const cur=ROUND_SEQ[k-1][0],nxt=ROUND_SEQ[k][0],nm=Math.floor(curM/2);
+        const fA=(np[cur]||{})[nm*2],fB=(np[cur]||{})[nm*2+1],chosen=(np[nxt]||{})[nm];
+        if(chosen!==fA&&chosen!==fB){if(np[nxt])delete np[nxt][nm];curM=nm;}else break;
+      }}
+    if(round!=="BRONZE"&&np.BRONZE&&np.BRONZE[0]!=null){
+      const qf=np.QF||{},sf=np.SF||{},lo=(w,a,b)=>w==null?null:(w===a?b:w===b?a:null);
+      const l0=lo(sf[0],qf[0],qf[1]),l1=lo(sf[1],qf[2],qf[3]);
+      if(np.BRONZE[0]!==l0&&np.BRONZE[0]!==l1)delete np.BRONZE[0];
+    }
+    return np;});setMsg("");setSaved(false);}
   const champ=(pk.FINAL||{})[0];
   async function submit(){setBusy(true);setMsg("");try{const res=await postJSON({action:"saveBracket",username:user,picksJson:JSON.stringify(pk)});
-    setMsg(res.error?res.error:"Your bracket was saved. It'll be here when you come back, editable until the knockout starts.");}catch(e){setMsg("Network error submitting.");}setBusy(false);}
-  const colorFn=t=>dead.has(t)?"dead":"";
+    if(res.error){setMsg(res.error);setSaved(false);}else{setMsg("");setSaved(true);}}catch(e){setMsg("Network error submitting.");setSaved(false);}setBusy(false);}
   if(!real) return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
     <div className="eyebrow">Knockout</div><h1 style={{fontSize:30}}>Knockout bracket</h1>
     <div className="ok" style={{background:"rgba(232,163,61,.12)",borderColor:"var(--amber)",color:"#f3dcb0"}}>The knockout bracket opens once the group stage finishes and all 32 qualifiers are set (after June 27). Come back then to fill out your real Round of 32 through the final.</div>
@@ -528,15 +605,32 @@ function Knockout({user,fixtures,savedPk,bracketLocked,readOnly,back}){
   return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
     <div className="eyebrow">Knockout</div><h1 style={{fontSize:30}}>Knockout bracket</h1>
     <p className="sub">{readOnly?"View only.":bracketLocked?"Locked — knockout underway. ":"Tap a team to advance it; scroll sideways. "}Eliminated teams cross out red across your whole bracket.</p>
-    <Bracket field={field} pk={pk} onPick={pick} colorFn={colorFn} interactive={!readOnly&&!bracketLocked} />
+    {(bracketLocked||dead.size>0)&&(function(){
+      var RND=[["R32",16],["R16",8],["QF",4],["SF",2],["FINAL",1]];
+      function midx(id){var mm=String(id||"").match(/(\d+)\s*$/);return mm?parseInt(mm[1],10)-1:-1;}
+      var realW={},played={};
+      fixtures.forEach(function(f){if(f.result&&["R32","R16","QF","SF","FINAL"].indexOf(f.round)>=0){played[f.round]=true;if(f.result!=="D"){var i=midx(f.id);realW[f.round]=realW[f.round]||{};realW[f.round][i]=(f.result==="A"?f.teamA:f.teamB);}}});
+      var champ=(pk.FINAL||{})[0],champDead=champ&&dead.has(champ),realChamp=(realW.FINAL||{})[0];
+      var st=!champ?"":(realChamp&&realChamp===champ?"CHAMPION":champDead?"OUT":"ALIVE");
+      var cc=st==="CHAMPION"?"on champ":st==="OUT"?"off":st==="ALIVE"?"on":"";
+      return <div className="survival">
+        <span className={"svch "+cc}>{champ?champ+" "+st:"No champion"}</span>
+        {RND.map(function(rn){var round=rn[0],tot=rn[1];
+          if(!played[round])return <span key={round} className="svr">{round} <b>&ndash;/{tot}</b></span>;
+          var picks=pk[round]||{},right=0;
+          for(var m=0;m<tot;m++){if(picks[m]&&realW[round]&&realW[round][m]===picks[m])right++;}
+          return <span key={round} className="svr">{round} <b>{right}/{tot}</b></span>;})}
+      </div>;})()}
+    <Bracket field={field} pk={pk} onPick={pick} fixtures={fixtures} interactive={!readOnly&&!bracketLocked} />
     {msg&&<div className="ok" style={{marginTop:10}}>{msg}</div>}
-    {!readOnly&&!bracketLocked&&<div className="bar"><div className="inner"><span className="count">Champion: <b>{champ?initials(champ):"—"}</b></span>
-      <button className="cta" disabled={!champ||busy} onClick={submit}>{busy?"Saving…":champ?"Submit bracket":"Pick to the final"}</button></div></div>}
+    {!readOnly&&!bracketLocked&&<div className="bar"><div className="inner">{saved&&<span className="savedok">&#10003; Saved</span>}
+      <button className="cta" disabled={!champ||busy} onClick={submit}>{busy?"Saving…":saved?"Saved ✓ — submit again":champ?"Submit bracket":"Pick to the final"}</button></div></div>}
     {(readOnly||bracketLocked)&&<button className="homebtn" onClick={back}>← Back to home</button>}</div>);
 }
 
 /* Leaderboard */
-function Leaderboard({user,back,bracketLocked,viewBracket}){
+function Leaderboard({user,back,bracketLocked,fixtures,viewBracket}){
+  const dead=eliminatedSet(fixtures||[]);
   const [rows,setRows]=useState(null);const [bp,setBp]=useState({});const [err,setErr]=useState("");
   useEffect(()=>{fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
     if(d.error){setErr(d.error);return;}
@@ -556,7 +650,7 @@ function Leaderboard({user,back,bracketLocked,viewBracket}){
     {rows&&rows.map((r,i)=>{const champ=bracketLocked?champOf(r.username):null;
       return (<div key={r.username} className={"lb"+(i<3?" top":"")+(i===0?" p1":i===1?" p2":i===2?" p3":"")+(r.username===user?" me":"")+(bracketLocked?" clickable":"")} onClick={()=>bracketLocked&&viewBracket(r.username)}>
       <span className="rk">{r.place}</span>
-      <span className="u">{r.username}{r.username===user?" (you)":""}<small>group {r.groupPts||0} · advance {r.advancePts||0} · bracket {r.bracketPts||0}{champ?" · champ: "+champ:""}</small></span>
+      <span className="u">{r.username}{r.username===user?" (you)":""}<small>group {r.groupPts||0} · advance {r.advancePts||0} · bracket {r.bracketPts||0}{champ?(<span> &middot; champ: <span className={dead.has(champ)?"chx":""}>{champ}</span></span>):""}</small></span>
       <span className="tot">{r.total||0}</span></div>);})}
     <button className="homebtn" onClick={back}>← Back to home</button></div>);
 }
@@ -660,10 +754,10 @@ function App(){
   if(view==="scoring")return <HowScoring back={home} />;
   if(view==="group")return <Picker user={user} fixtures={gf} picks={picks} setPicks={setPicks} back={home} />;
   if(view==="standings")return <Standings user={user} fixtures={fixtures} picks={picks} saved={advance&&advance.orders?advance:null} onSaved={setAdvance} back={home} />;
-  if(view==="ko"&&navPhase()>=3)return <Knockout user={user} fixtures={fixtures} savedPk={bracketPk} bracketLocked={bracketLocked} readOnly={false} back={home} />;
+  if(view==="ko"&&(navPhase()>=3||koOpen))return <Knockout user={user} fixtures={fixtures} savedPk={bracketPk} bracketLocked={bracketLocked} readOnly={false} back={home} />;
   if(view==="leaderboard"){
     if(viewUser)return <Knockout user={viewUser} fixtures={fixtures} savedPk={viewUserPk||{}} bracketLocked={true} readOnly={true} back={()=>setViewUser(null)} />;
-    return <Leaderboard user={user} back={home} bracketLocked={bracketLocked} viewBracket={(u)=>{
+    return <Leaderboard user={user} back={home} bracketLocked={bracketLocked} fixtures={fixtures} viewBracket={(u)=>{
       fetch(API_URL+"?action=mypicks&username="+encodeURIComponent(u)).then(r=>r.json()).then(d=>{
         try{setViewUserPk(d.bracket&&d.bracket.picksJson?JSON.parse(d.bracket.picksJson):{});}catch(e){setViewUserPk({});}setViewUser(u);});}} />;
   }
