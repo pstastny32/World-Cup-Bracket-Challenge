@@ -6,9 +6,8 @@
 <title>World Cup 2026 Pool</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 <style>
   :root{
     --blue:#0A0A0C;--navy:#15161C;--orange:#FF6A00;--ink:#0B1330;--mute:#5C6680;--line:#E2E7F1;--green:#15A94E;--red:#E23B3B;--gold:#F4B400;--gold-lt:#FFD64D;
@@ -231,539 +230,2162 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important}.dot,.dot.locked,.tag.red{animation:none!important}}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v30</div>
-<script type="text/babel">
-const { useState, useEffect } = React;
+<body><div id="root"></div><div class="wm">created by pstastny · v31</div>
+<script>
+const {
+  useState,
+  useEffect
+} = React;
 const API_URL = "https://script.google.com/macros/s/AKfycbxYEbeHPzOfjXtf1xJo2Yara2jv05SwzLZuvAFXF5kpuhpiKQVZu65gIs7ZbcShfzE8/exec";
 const GROUP_LOCK_ISO = "2026-06-11T15:00:00-04:00";
-const RANK={"Mexico":14,"South Korea":23,"South Africa":41,"Czechia":33,"Canada":27,"Switzerland":18,"Qatar":36,"Bosnia-Herzegovina":43,"Brazil":6,"Morocco":7,"Scotland":31,"Haiti":47,"United States":16,"Paraguay":34,"Australia":24,"Türkiye":20,"Germany":10,"Ecuador":22,"Côte d'Ivoire":29,"Curaçao":46,"Netherlands":8,"Japan":17,"Tunisia":35,"Sweden":32,"Belgium":9,"Iran":19,"Egypt":26,"New Zealand":48,"Spain":2,"Uruguay":12,"Saudi Arabia":39,"Cape Verde":44,"France":3,"Senegal":15,"Norway":28,"Iraq":40,"Argentina":1,"Austria":21,"Algeria":25,"Jordan":42,"Portugal":5,"Colombia":13,"Uzbekistan":38,"DR Congo":37,"England":4,"Croatia":11,"Panama":30,"Ghana":45};
-const GROUPS={A:["Mexico","South Korea","South Africa","Czechia"],B:["Canada","Switzerland","Qatar","Bosnia-Herzegovina"],C:["Brazil","Morocco","Scotland","Haiti"],D:["United States","Paraguay","Australia","Türkiye"],E:["Germany","Ecuador","Côte d'Ivoire","Curaçao"],F:["Netherlands","Japan","Tunisia","Sweden"],G:["Belgium","Iran","Egypt","New Zealand"],H:["Spain","Uruguay","Saudi Arabia","Cape Verde"],I:["France","Senegal","Norway","Iraq"],J:["Argentina","Austria","Algeria","Jordan"],K:["Portugal","Colombia","Uzbekistan","DR Congo"],L:["England","Croatia","Panama","Ghana"]};
-const FLAGS={};
-(function(){var F={"Mexico":"mx","South Korea":"kr","South Africa":"za","Czechia":"cz","Canada":"ca","Switzerland":"ch","Qatar":"qa","Bosnia-Herzegovina":"ba","Brazil":"br","Morocco":"ma","Scotland":"gb-sct","Haiti":"ht","United States":"us","Paraguay":"py","Australia":"au","Türkiye":"tr","Germany":"de","Ecuador":"ec","Côte d'Ivoire":"ci","Curaçao":"cw","Netherlands":"nl","Japan":"jp","Tunisia":"tn","Sweden":"se","Belgium":"be","Iran":"ir","Egypt":"eg","New Zealand":"nz","Spain":"es","Uruguay":"uy","Saudi Arabia":"sa","Cape Verde":"cv","France":"fr","Senegal":"sn","Norway":"no","Iraq":"iq","Argentina":"ar","Austria":"at","Algeria":"dz","Jordan":"jo","Portugal":"pt","Colombia":"co","Uzbekistan":"uz","DR Congo":"cd","England":"gb-eng","Croatia":"hr","Panama":"pa","Ghana":"gh"};for(var k in F)FLAGS[k]="https://flagcdn.com/w160/"+F[k]+".png";})();
-let CREST=Object.assign({},FLAGS);
-let TITLE={}; // team -> title-win strength (implied prob), loaded from the TitleOdds tab
-function buildFixtures(){const pairs=[[0,1],[2,3],[0,2],[3,1],[0,3],[1,2]];const out=[];
-  Object.keys(GROUPS).forEach(g=>{const t=GROUPS[g];pairs.forEach((p,i)=>out.push({id:g+(i+1),group:g,teamA:t[p[0]],teamB:t[p[1]],seedA:RANK[t[p[0]]],seedB:RANK[t[p[1]]],dateTimeISO:"",city:"",country:""}));});return out;}
+const RANK = {
+  "Mexico": 14,
+  "South Korea": 23,
+  "South Africa": 41,
+  "Czechia": 33,
+  "Canada": 27,
+  "Switzerland": 18,
+  "Qatar": 36,
+  "Bosnia-Herzegovina": 43,
+  "Brazil": 6,
+  "Morocco": 7,
+  "Scotland": 31,
+  "Haiti": 47,
+  "United States": 16,
+  "Paraguay": 34,
+  "Australia": 24,
+  "Türkiye": 20,
+  "Germany": 10,
+  "Ecuador": 22,
+  "Côte d'Ivoire": 29,
+  "Curaçao": 46,
+  "Netherlands": 8,
+  "Japan": 17,
+  "Tunisia": 35,
+  "Sweden": 32,
+  "Belgium": 9,
+  "Iran": 19,
+  "Egypt": 26,
+  "New Zealand": 48,
+  "Spain": 2,
+  "Uruguay": 12,
+  "Saudi Arabia": 39,
+  "Cape Verde": 44,
+  "France": 3,
+  "Senegal": 15,
+  "Norway": 28,
+  "Iraq": 40,
+  "Argentina": 1,
+  "Austria": 21,
+  "Algeria": 25,
+  "Jordan": 42,
+  "Portugal": 5,
+  "Colombia": 13,
+  "Uzbekistan": 38,
+  "DR Congo": 37,
+  "England": 4,
+  "Croatia": 11,
+  "Panama": 30,
+  "Ghana": 45
+};
+const GROUPS = {
+  A: ["Mexico", "South Korea", "South Africa", "Czechia"],
+  B: ["Canada", "Switzerland", "Qatar", "Bosnia-Herzegovina"],
+  C: ["Brazil", "Morocco", "Scotland", "Haiti"],
+  D: ["United States", "Paraguay", "Australia", "Türkiye"],
+  E: ["Germany", "Ecuador", "Côte d'Ivoire", "Curaçao"],
+  F: ["Netherlands", "Japan", "Tunisia", "Sweden"],
+  G: ["Belgium", "Iran", "Egypt", "New Zealand"],
+  H: ["Spain", "Uruguay", "Saudi Arabia", "Cape Verde"],
+  I: ["France", "Senegal", "Norway", "Iraq"],
+  J: ["Argentina", "Austria", "Algeria", "Jordan"],
+  K: ["Portugal", "Colombia", "Uzbekistan", "DR Congo"],
+  L: ["England", "Croatia", "Panama", "Ghana"]
+};
+const FLAGS = {};
+(function () {
+  var F = {
+    "Mexico": "mx",
+    "South Korea": "kr",
+    "South Africa": "za",
+    "Czechia": "cz",
+    "Canada": "ca",
+    "Switzerland": "ch",
+    "Qatar": "qa",
+    "Bosnia-Herzegovina": "ba",
+    "Brazil": "br",
+    "Morocco": "ma",
+    "Scotland": "gb-sct",
+    "Haiti": "ht",
+    "United States": "us",
+    "Paraguay": "py",
+    "Australia": "au",
+    "Türkiye": "tr",
+    "Germany": "de",
+    "Ecuador": "ec",
+    "Côte d'Ivoire": "ci",
+    "Curaçao": "cw",
+    "Netherlands": "nl",
+    "Japan": "jp",
+    "Tunisia": "tn",
+    "Sweden": "se",
+    "Belgium": "be",
+    "Iran": "ir",
+    "Egypt": "eg",
+    "New Zealand": "nz",
+    "Spain": "es",
+    "Uruguay": "uy",
+    "Saudi Arabia": "sa",
+    "Cape Verde": "cv",
+    "France": "fr",
+    "Senegal": "sn",
+    "Norway": "no",
+    "Iraq": "iq",
+    "Argentina": "ar",
+    "Austria": "at",
+    "Algeria": "dz",
+    "Jordan": "jo",
+    "Portugal": "pt",
+    "Colombia": "co",
+    "Uzbekistan": "uz",
+    "DR Congo": "cd",
+    "England": "gb-eng",
+    "Croatia": "hr",
+    "Panama": "pa",
+    "Ghana": "gh"
+  };
+  for (var k in F) FLAGS[k] = "https://flagcdn.com/w160/" + F[k] + ".png";
+})();
+let CREST = Object.assign({}, FLAGS);
+let TITLE = {}; // team -> title-win strength (implied prob), loaded from the TitleOdds tab
+function buildFixtures() {
+  const pairs = [[0, 1], [2, 3], [0, 2], [3, 1], [0, 3], [1, 2]];
+  const out = [];
+  Object.keys(GROUPS).forEach(g => {
+    const t = GROUPS[g];
+    pairs.forEach((p, i) => out.push({
+      id: g + (i + 1),
+      group: g,
+      teamA: t[p[0]],
+      teamB: t[p[1]],
+      seedA: RANK[t[p[0]]],
+      seedB: RANK[t[p[1]]],
+      dateTimeISO: "",
+      city: "",
+      country: ""
+    }));
+  });
+  return out;
+}
 // Display scoring mirrors the backend (Code.gs). Bonus from the win-probability gap.
-const BONUS_SCALE=20,BONUS_CAP=15,BONUS_MIN_GAP=0.05,TITLE_MIN_PROB=0.003,DRAW_SCALE=12,DRAW_CAP=8;
-function oddsBonus(yourProb,oppProb){yourProb=Number(yourProb);oppProb=Number(oppProb);if(!(yourProb>=0)||!(oppProb>=0))return 0;const gap=oppProb-yourProb;if(gap<BONUS_MIN_GAP)return 0;return Math.max(0,Math.min(BONUS_CAP,Math.round(gap*BONUS_SCALE)));}
-function drawBonus(probA,probB){probA=Number(probA);probB=Number(probB);if(!(probA>=0)||!(probB>=0))return 0;return Math.max(0,Math.min(DRAW_CAP,Math.round(Math.abs(probA-probB)*DRAW_SCALE)));}
+const BONUS_SCALE = 20,
+  BONUS_CAP = 15,
+  BONUS_MIN_GAP = 0.05,
+  TITLE_MIN_PROB = 0.003,
+  DRAW_SCALE = 12,
+  DRAW_CAP = 8;
+function oddsBonus(yourProb, oppProb) {
+  yourProb = Number(yourProb);
+  oppProb = Number(oppProb);
+  if (!(yourProb >= 0) || !(oppProb >= 0)) return 0;
+  const gap = oppProb - yourProb;
+  if (gap < BONUS_MIN_GAP) return 0;
+  return Math.max(0, Math.min(BONUS_CAP, Math.round(gap * BONUS_SCALE)));
+}
+function drawBonus(probA, probB) {
+  probA = Number(probA);
+  probB = Number(probB);
+  if (!(probA >= 0) || !(probB >= 0)) return 0;
+  return Math.max(0, Math.min(DRAW_CAP, Math.round(Math.abs(probA - probB) * DRAW_SCALE)));
+}
 // pts if the chosen side wins: 1 + bonus. Draw = 1 + draw bonus. probA/probB are 0..1 win odds for this fixture.
-function potential(pick,probA,probB){if(pick==="D")return 1+drawBonus(probA,probB);const y=pick==="A"?probA:probB,o=pick==="A"?probB:probA;return 1+oddsBonus(y,o);}
-const KOM={R32:1,R16:1.5,QF:2,SF:2.5,FINAL:3};
-function matchProbFromTitle(x,y){const sx=Math.max(Number(x)||0,TITLE_MIN_PROB),sy=Math.max(Number(y)||0,TITLE_MIN_PROB);return sx/(sx+sy);}
+function potential(pick, probA, probB) {
+  if (pick === "D") return 1 + drawBonus(probA, probB);
+  const y = pick === "A" ? probA : probB,
+    o = pick === "A" ? probB : probA;
+  return 1 + oddsBonus(y, o);
+}
+const KOM = {
+  R32: 1,
+  R16: 1.5,
+  QF: 2,
+  SF: 2.5,
+  FINAL: 3
+};
+function matchProbFromTitle(x, y) {
+  const sx = Math.max(Number(x) || 0, TITLE_MIN_PROB),
+    sy = Math.max(Number(y) || 0, TITLE_MIN_PROB);
+  return sx / (sx + sy);
+}
 // --- KNOCKOUT-ONLY scoring (group scoring above is untouched) ---
-const KO_BASE={R32:2,R16:3,QF:5,SF:7,FINAL:10,BRONZE:3};
-const KO_BONUS_CAP=16,KO_BONUS_HI=0.45,KO_BONUS_LO=0.15;
-function koBonus(yourProb){yourProb=Number(yourProb);if(!(yourProb>=0))return 0;if(yourProb>=KO_BONUS_HI)return 0;if(yourProb<=KO_BONUS_LO)return KO_BONUS_CAP;return Math.round(KO_BONUS_CAP*(KO_BONUS_HI-yourProb)/(KO_BONUS_HI-KO_BONUS_LO));}
-function koPotential(round,pickedTitle,oppTitle){if(round==="BRONZE")return KO_BASE.BRONZE;const y=matchProbFromTitle(pickedTitle,oppTitle);return KO_BASE[round]+koBonus(y);}
-function initials(n){return n?n.replace(/&|\.|-/g," ").split(/\s+/).map(w=>w[0]).join("").slice(0,3).toUpperCase():"";}
-function fmt(iso){if(!iso)return "Time & venue load live";const d=new Date(iso);return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+" · "+d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"});}
-function byTime(a,b){if(a.dateTimeISO&&b.dateTimeISO)return new Date(a.dateTimeISO)-new Date(b.dateTimeISO);if(a.dateTimeISO)return -1;if(b.dateTimeISO)return 1;return a.id.localeCompare(b.id);}
+const KO_BASE = {
+  R32: 2,
+  R16: 3,
+  QF: 5,
+  SF: 7,
+  FINAL: 10,
+  BRONZE: 3
+};
+const KO_BONUS_CAP = 16,
+  KO_BONUS_HI = 0.45,
+  KO_BONUS_LO = 0.15;
+function koBonus(yourProb) {
+  yourProb = Number(yourProb);
+  if (!(yourProb >= 0)) return 0;
+  if (yourProb >= KO_BONUS_HI) return 0;
+  if (yourProb <= KO_BONUS_LO) return KO_BONUS_CAP;
+  return Math.round(KO_BONUS_CAP * (KO_BONUS_HI - yourProb) / (KO_BONUS_HI - KO_BONUS_LO));
+}
+function koPotential(round, pickedTitle, oppTitle) {
+  if (round === "BRONZE") return KO_BASE.BRONZE;
+  const y = matchProbFromTitle(pickedTitle, oppTitle);
+  return KO_BASE[round] + koBonus(y);
+}
+function initials(n) {
+  return n ? n.replace(/&|\.|-/g, " ").split(/\s+/).map(w => w[0]).join("").slice(0, 3).toUpperCase() : "";
+}
+function fmt(iso) {
+  if (!iso) return "Time & venue load live";
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  }) + " · " + d.toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+function byTime(a, b) {
+  if (a.dateTimeISO && b.dateTimeISO) return new Date(a.dateTimeISO) - new Date(b.dateTimeISO);
+  if (a.dateTimeISO) return -1;
+  if (b.dateTimeISO) return 1;
+  return a.id.localeCompare(b.id);
+}
 // Stable signature of a picks object — order-independent, so we can tell if standings were built from the current picks.
-function picksSig(p){return Object.keys(p||{}).sort().map(k=>k+":"+p[k]).join("|");}
-async function postJSON(b){const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)});return r.json();}
+function picksSig(p) {
+  return Object.keys(p || {}).sort().map(k => k + ":" + p[k]).join("|");
+}
+async function postJSON(b) {
+  const r = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify(b)
+  });
+  return r.json();
+}
 const KO_SOON_ISO = "2026-06-27T09:00:00-06:00"; // June 27, 9:00 AM Mountain — knockout card shows "Coming soon"
 const KO_LIVE_ISO = "2026-06-27T23:59:00-06:00"; // June 27, 11:59 PM Mountain — knockout goes live
-function locked(){return new Date()>=new Date(GROUP_LOCK_ISO);}
+function locked() {
+  return new Date() >= new Date(GROUP_LOCK_ISO);
+}
 // Navigation phase: 1 = pre group lock, 2 = group stage underway, 3 = knockout soon, 4 = knockout live
-function navPhase(){const now=new Date();
-  if(now>=new Date(KO_LIVE_ISO))return 4;
-  if(now>=new Date(KO_SOON_ISO))return 3;
-  if(now>=new Date(GROUP_LOCK_ISO))return 2;
-  return 1;}
-function isLive(f){if(f.status==="LIVE")return true;if(f.status==="FINISHED")return false;if(!f.dateTimeISO)return false;const k=new Date(f.dateTimeISO),now=new Date();return now>=k&&now<=new Date(k.getTime()+2.25*3600*1000);}
-function eliminatedSet(fixtures){const s=new Set();fixtures.forEach(f=>{if(f.round&&f.round!=="GROUP"&&f.result){const loser=f.result==="A"?f.teamB:f.result==="B"?f.teamA:null;if(loser)s.add(loser);}});return s;}
-function actualR32(fixtures){const s=new Set();fixtures.forEach(f=>{if(f.round==="R32"){if(f.teamA)s.add(f.teamA);if(f.teamB)s.add(f.teamB);}});return s;}
-function ranksWithTies(rows){let last=null,place=0;const counts={};rows.forEach(r=>counts[r.total]=(counts[r.total]||0)+1);
-  return rows.map((r,i)=>{if(r.total!==last){place=i+1;last=r.total;}return{...r,place:(counts[r.total]>1?"T":"")+place};});}
-function Crest({team,cls}){const u=CREST[team];return <span className={"badge "+(cls||"")}>{u?<img src={u} alt=""/>:initials(team)}</span>;}
-function standings(teams,fixtures,picks){const pts={};teams.forEach(t=>pts[t]=0);
-  fixtures.filter(f=>teams.includes(f.teamA)).forEach(f=>{const p=picks[f.id];if(!p)return;
-    if(p==="A")pts[f.teamA]+=3;else if(p==="B")pts[f.teamB]+=3;else{pts[f.teamA]+=1;pts[f.teamB]+=1;}});
-  return{order:teams.slice().sort((a,b)=>pts[b]-pts[a]||RANK[a]-RANK[b]),pts};}
-const THIRD_SLOTS=[{w:'E',e:['A','B','C','D','F']},{w:'I',e:['C','D','F','G','H']},{w:'A',e:['C','E','F','H','I']},{w:'L',e:['E','H','I','J','K']},{w:'G',e:['A','E','H','I','J']},{w:'D',e:['B','E','F','I','J']},{w:'B',e:['E','F','G','I','J']},{w:'K',e:['D','E','I','J','L']}];
-function matchThirds(chosen){const used=Array(8).fill(false),res={};function bt(i){if(i===chosen.length)return true;for(let s=0;s<8;s++){if(!used[s]&&THIRD_SLOTS[s].e.includes(chosen[i].group)){used[s]=true;res[THIRD_SLOTS[s].w]=chosen[i];if(bt(i+1))return true;used[s]=false;delete res[THIRD_SLOTS[s].w];}}return false;}return bt(0)?res:null;}
-const FIXED_R32=[["RU-A","RU-B"],["W-C","RU-F"],["W-F","RU-C"],["RU-E","RU-I"],["W-H","RU-J"],["RU-K","RU-L"],["RU-D","RU-G"],["W-J","RU-H"]];
-const ROUND_SEQ=[["R32",16],["R16",8],["QF",4],["SF",2],["FINAL",1]];
+function navPhase() {
+  const now = new Date();
+  if (now >= new Date(KO_LIVE_ISO)) return 4;
+  if (now >= new Date(KO_SOON_ISO)) return 3;
+  if (now >= new Date(GROUP_LOCK_ISO)) return 2;
+  return 1;
+}
+function isLive(f) {
+  if (f.status === "LIVE") return true;
+  if (f.status === "FINISHED") return false;
+  if (!f.dateTimeISO) return false;
+  const k = new Date(f.dateTimeISO),
+    now = new Date();
+  return now >= k && now <= new Date(k.getTime() + 2.25 * 3600 * 1000);
+}
+function eliminatedSet(fixtures) {
+  const s = new Set();
+  fixtures.forEach(f => {
+    if (f.round && f.round !== "GROUP" && f.result) {
+      const loser = f.result === "A" ? f.teamB : f.result === "B" ? f.teamA : null;
+      if (loser) s.add(loser);
+    }
+  });
+  return s;
+}
+function actualR32(fixtures) {
+  const s = new Set();
+  fixtures.forEach(f => {
+    if (f.round === "R32") {
+      if (f.teamA) s.add(f.teamA);
+      if (f.teamB) s.add(f.teamB);
+    }
+  });
+  return s;
+}
+function ranksWithTies(rows) {
+  let last = null,
+    place = 0;
+  const counts = {};
+  rows.forEach(r => counts[r.total] = (counts[r.total] || 0) + 1);
+  return rows.map((r, i) => {
+    if (r.total !== last) {
+      place = i + 1;
+      last = r.total;
+    }
+    return {
+      ...r,
+      place: (counts[r.total] > 1 ? "T" : "") + place
+    };
+  });
+}
+function Crest({
+  team,
+  cls
+}) {
+  const u = CREST[team];
+  return /*#__PURE__*/React.createElement("span", {
+    className: "badge " + (cls || "")
+  }, u ? /*#__PURE__*/React.createElement("img", {
+    src: u,
+    alt: ""
+  }) : initials(team));
+}
+function standings(teams, fixtures, picks) {
+  const pts = {};
+  teams.forEach(t => pts[t] = 0);
+  fixtures.filter(f => teams.includes(f.teamA)).forEach(f => {
+    const p = picks[f.id];
+    if (!p) return;
+    if (p === "A") pts[f.teamA] += 3;else if (p === "B") pts[f.teamB] += 3;else {
+      pts[f.teamA] += 1;
+      pts[f.teamB] += 1;
+    }
+  });
+  return {
+    order: teams.slice().sort((a, b) => pts[b] - pts[a] || RANK[a] - RANK[b]),
+    pts
+  };
+}
+const THIRD_SLOTS = [{
+  w: 'E',
+  e: ['A', 'B', 'C', 'D', 'F']
+}, {
+  w: 'I',
+  e: ['C', 'D', 'F', 'G', 'H']
+}, {
+  w: 'A',
+  e: ['C', 'E', 'F', 'H', 'I']
+}, {
+  w: 'L',
+  e: ['E', 'H', 'I', 'J', 'K']
+}, {
+  w: 'G',
+  e: ['A', 'E', 'H', 'I', 'J']
+}, {
+  w: 'D',
+  e: ['B', 'E', 'F', 'I', 'J']
+}, {
+  w: 'B',
+  e: ['E', 'F', 'G', 'I', 'J']
+}, {
+  w: 'K',
+  e: ['D', 'E', 'I', 'J', 'L']
+}];
+function matchThirds(chosen) {
+  const used = Array(8).fill(false),
+    res = {};
+  function bt(i) {
+    if (i === chosen.length) return true;
+    for (let s = 0; s < 8; s++) {
+      if (!used[s] && THIRD_SLOTS[s].e.includes(chosen[i].group)) {
+        used[s] = true;
+        res[THIRD_SLOTS[s].w] = chosen[i];
+        if (bt(i + 1)) return true;
+        used[s] = false;
+        delete res[THIRD_SLOTS[s].w];
+      }
+    }
+    return false;
+  }
+  return bt(0) ? res : null;
+}
+const FIXED_R32 = [["RU-A", "RU-B"], ["W-C", "RU-F"], ["W-F", "RU-C"], ["RU-E", "RU-I"], ["W-H", "RU-J"], ["RU-K", "RU-L"], ["RU-D", "RU-G"], ["W-J", "RU-H"]];
+const ROUND_SEQ = [["R32", 16], ["R16", 8], ["QF", 4], ["SF", 2], ["FINAL", 1]];
 
 /* ===== Bracket: linear paired layout (R32 pairs → R16 → QF → SF → Final) ===== */
-function Bracket({field,pk,onPick,fixtures,interactive}){
-  const ROUNDS=[["R32",16],["R16",8],["QF",4],["SF",2],["FINAL",1]];
-  const PREV={R16:"R32",QF:"R16",SF:"QF",FINAL:"SF"};
-  const dead=eliminatedSet(fixtures||[]);
-  function midx(id){const m=String(id||"").match(/(\d+)\s*$/);return m?parseInt(m[1],10)-1:-1;}
-  const real={R32:[],R16:[],QF:[],SF:[],FINAL:[],BRONZE:[]};
-  (fixtures||[]).forEach(f=>{if(real[f.round]!==undefined){const i=midx(f.id);if(i>=0)real[f.round][i]=f;else real[f.round].push(f);}});
-  function gameAt(round,m){return (real[round]||[])[m]||null;}
-  function winnerOf(f){if(!f||!f.result||f.result==="D")return null;return f.result==="A"?f.teamA:f.teamB;}
-  function teamsForRound(ri){
-    if(ri===0)return field;
-    const prev=ROUNDS[ri-1][0];const pt=teamsForRound(ri-1);const out=[];
-    for(let m=0;m<pt.length/2;m++){const w=(pk[prev]||{})[m];out.push(w?field.find(f=>f&&f.team===w):null);}
-    return out;}
-  function NTeam({x,opp,round,m,pos}){
-    if(!x)return <div className="nteam tbd"><span className="nm2">TBD</span></div>;
-    const sel=(pk[round]||{})[m]===x.team;
-    const pts=opp?koPotential(round,TITLE[x.team],TITLE[opp.team]):0;
-    const P=PREV[round];let cl="",actual=null;
-    if(P){const g=gameAt(P,pos),w=(g&&g.result)?winnerOf(g):null;
-      if(w===x.team)cl="won";
-      else if(w!=null){cl="lost";actual=w;}
-      else if(dead.has(x.team))cl="lost";}
-    const scoreTeam=actual||x.team;
-    const g2=gameAt(round,m);let myScore=null,pkMark=false;
-    if(g2&&(g2.result||(g2.scoreA!==""&&g2.scoreA!=null))){
-      let sa=Number(g2.scoreA)||0,sb=Number(g2.scoreB)||0;const isPK=(g2.result==="A"||g2.result==="B")&&sa===sb;if(isPK){sa=1;sb=1;}
-      if(g2.teamA===scoreTeam){myScore=sa;pkMark=isPK&&g2.result==="A";}
-      else if(g2.teamB===scoreTeam){myScore=sb;pkMark=isPK&&g2.result==="B";}}
-    return <div className={"nteam"+(sel&&!cl?" sel":"")+(cl?" "+cl:"")} onClick={()=>interactive&&opp&&onPick(round,m,x.team)}>
-      <Crest team={x.team}/>
-      <span className="nm2"><span className="tnm">{x.team}</span>{actual&&<small className="act">{actual}</small>}</span>
-      {myScore!=null&&<span className="s sc">{myScore}{pkMark&&<sup>(PK)</sup>}</span>}
-      {opp&&interactive&&<span className="pb">+{pts}</span>}</div>;}
-  function mkNode(round,m,teams){
-    const a=teams[m*2],b=teams[m*2+1];const g=gameAt(round,m);
-    const live=!!(g&&(g.status==="LIVE"||(!g.result&&g.scoreA!==""&&g.scoreA!=null)));
-    return <div key={round+m} className={"node"+(live?" nlive":"")}>
-      <div className="lab">{round} &middot; {m+1}{live&&<span className="lvtag">&#9679; LIVE</span>}</div>
-      <NTeam x={a} opp={b} round={round} m={m} pos={m*2}/>
-      <NTeam x={b} opp={a} round={round} m={m} pos={m*2+1}/></div>;}
-  const r32=teamsForRound(0),r16=teamsForRound(1),qf=teamsForRound(2),sf=teamsForRound(3),fin=teamsForRound(4);
-  const champ=(pk.FINAL||{})[0];const champDead=champ&&dead.has(champ);
-  var l0=(pk.SF||{})[0],l1=(pk.SF||{})[1];
-  var la=l0?(sf[0]&&sf[0].team===l0?sf[1]:sf[0]):null;
-  var lb=l1?(sf[2]&&sf[2].team===l1?sf[3]:sf[2]):null;
-  return (<div className="bk">
-    <div className="bkcol"><div className="ch">R32</div><div className="bkbody">{[0,1,2,3,4,5,6,7].map(m=>mkNode("R32",m,r32))}</div></div>
-    <div className="bkcol"><div className="ch">R16</div><div className="bkbody">{[0,1,2,3].map(m=>mkNode("R16",m,r16))}</div></div>
-    <div className="bkcol"><div className="ch">QF</div><div className="bkbody">{[0,1].map(m=>mkNode("QF",m,qf))}</div></div>
-    <div className="bkcol"><div className="ch">SF</div><div className="bkbody">{mkNode("SF",0,sf)}</div></div>
-    <div className="bkcol center"><div className="ch">FINAL</div><div className="bkbody cbody">
-      <div className="cfill top"><div className={"champcell"+(champDead?" out":"")}><Crest team={champ||""}/><div className="cs">Champion</div><div className="cn">{champ||"TBD"}</div></div></div>
-      {mkNode("FINAL",0,fin)}
-      <div className="cfill bot"><div className="node bronze"><div className="lab">3RD PLACE &middot; +3</div>
-        <NTeam x={la} opp={lb} round="BRONZE" m={0} pos={0}/>
-        <NTeam x={lb} opp={la} round="BRONZE" m={0} pos={1}/></div></div>
-    </div></div>
-    <div className="bkcol"><div className="ch">SF</div><div className="bkbody">{mkNode("SF",1,sf)}</div></div>
-    <div className="bkcol"><div className="ch">QF</div><div className="bkbody">{[2,3].map(m=>mkNode("QF",m,qf))}</div></div>
-    <div className="bkcol"><div className="ch">R16</div><div className="bkbody">{[4,5,6,7].map(m=>mkNode("R16",m,r16))}</div></div>
-    <div className="bkcol"><div className="ch">R32</div><div className="bkbody">{[8,9,10,11,12,13,14,15].map(m=>mkNode("R32",m,r32))}</div></div>
-  </div>);}
-
-/* Predicted R32 — simple two-column matchup list, entirely separate from the live knockout Bracket */
-function PredBracket({games,realSet}){
-  const has=realSet&&realSet.size>0;
-  const cl=t=>!has?"":(realSet.has(t)?" alive":" dead");
-  const half=(list,offset)=>list.map(([a,b],i)=>(
-    <div key={i} className="node"><div className="lab">R32 · {offset+i+1}</div>
-      <div className={"nteam"+cl(a)}><Crest team={a}/><span className="nm2">{a}</span><span className="s">#{RANK[a]}</span></div>
-      <div className={"nteam"+cl(b)}><Crest team={b}/><span className="nm2">{b}</span><span className="s">#{RANK[b]}</span></div>
-    </div>));
-  return (<div className="bk">
-    <div className="bkcol"><div className="ch">Left half · 1–8</div>{half(games.slice(0,8),0)}</div>
-    <div className="bkcol"><div className="ch">Right half · 9–16</div>{half(games.slice(8),8)}</div>
-  </div>);
+function Bracket({
+  field,
+  pk,
+  onPick,
+  fixtures,
+  interactive
+}) {
+  const ROUNDS = [["R32", 16], ["R16", 8], ["QF", 4], ["SF", 2], ["FINAL", 1]];
+  const PREV = {
+    R16: "R32",
+    QF: "R16",
+    SF: "QF",
+    FINAL: "SF"
+  };
+  const dead = eliminatedSet(fixtures || []);
+  function midx(id) {
+    const m = String(id || "").match(/(\d+)\s*$/);
+    return m ? parseInt(m[1], 10) - 1 : -1;
+  }
+  const real = {
+    R32: [],
+    R16: [],
+    QF: [],
+    SF: [],
+    FINAL: [],
+    BRONZE: []
+  };
+  (fixtures || []).forEach(f => {
+    if (real[f.round] !== undefined) {
+      const i = midx(f.id);
+      if (i >= 0) real[f.round][i] = f;else real[f.round].push(f);
+    }
+  });
+  function gameAt(round, m) {
+    return (real[round] || [])[m] || null;
+  }
+  function winnerOf(f) {
+    if (!f || !f.result || f.result === "D") return null;
+    return f.result === "A" ? f.teamA : f.teamB;
+  }
+  function teamsForRound(ri) {
+    if (ri === 0) return field;
+    const prev = ROUNDS[ri - 1][0];
+    const pt = teamsForRound(ri - 1);
+    const out = [];
+    for (let m = 0; m < pt.length / 2; m++) {
+      const w = (pk[prev] || {})[m];
+      out.push(w ? field.find(f => f && f.team === w) : null);
+    }
+    return out;
+  }
+  function NTeam({
+    x,
+    opp,
+    round,
+    m,
+    pos
+  }) {
+    if (!x) return /*#__PURE__*/React.createElement("div", {
+      className: "nteam tbd"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "nm2"
+    }, "TBD"));
+    const sel = (pk[round] || {})[m] === x.team;
+    const pts = opp ? koPotential(round, TITLE[x.team], TITLE[opp.team]) : 0;
+    const P = PREV[round];
+    let cl = "",
+      actual = null;
+    if (P) {
+      const g = gameAt(P, pos),
+        w = g && g.result ? winnerOf(g) : null;
+      if (w === x.team) cl = "won";else if (w != null) {
+        cl = "lost";
+        actual = w;
+      } else if (dead.has(x.team)) cl = "lost";
+    }
+    const scoreTeam = actual || x.team;
+    const g2 = gameAt(round, m);
+    let myScore = null,
+      pkMark = false;
+    if (g2 && (g2.result || g2.scoreA !== "" && g2.scoreA != null)) {
+      let sa = Number(g2.scoreA) || 0,
+        sb = Number(g2.scoreB) || 0;
+      const isPK = (g2.result === "A" || g2.result === "B") && sa === sb;
+      if (isPK) {
+        sa = 1;
+        sb = 1;
+      }
+      if (g2.teamA === scoreTeam) {
+        myScore = sa;
+        pkMark = isPK && g2.result === "A";
+      } else if (g2.teamB === scoreTeam) {
+        myScore = sb;
+        pkMark = isPK && g2.result === "B";
+      }
+    }
+    return /*#__PURE__*/React.createElement("div", {
+      className: "nteam" + (sel && !cl ? " sel" : "") + (cl ? " " + cl : ""),
+      onClick: () => interactive && opp && onPick(round, m, x.team)
+    }, /*#__PURE__*/React.createElement(Crest, {
+      team: x.team
+    }), /*#__PURE__*/React.createElement("span", {
+      className: "nm2"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "tnm"
+    }, x.team), actual && /*#__PURE__*/React.createElement("small", {
+      className: "act"
+    }, actual)), myScore != null && /*#__PURE__*/React.createElement("span", {
+      className: "s sc"
+    }, myScore, pkMark && /*#__PURE__*/React.createElement("sup", null, "(PK)")), opp && interactive && /*#__PURE__*/React.createElement("span", {
+      className: "pb"
+    }, "+", pts));
+  }
+  function mkNode(round, m, teams) {
+    const a = teams[m * 2],
+      b = teams[m * 2 + 1];
+    const g = gameAt(round, m);
+    const live = !!(g && (g.status === "LIVE" || !g.result && g.scoreA !== "" && g.scoreA != null));
+    return /*#__PURE__*/React.createElement("div", {
+      key: round + m,
+      className: "node" + (live ? " nlive" : "")
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "lab"
+    }, round, " · ", m + 1, live && /*#__PURE__*/React.createElement("span", {
+      className: "lvtag"
+    }, "● LIVE")), /*#__PURE__*/React.createElement(NTeam, {
+      x: a,
+      opp: b,
+      round: round,
+      m: m,
+      pos: m * 2
+    }), /*#__PURE__*/React.createElement(NTeam, {
+      x: b,
+      opp: a,
+      round: round,
+      m: m,
+      pos: m * 2 + 1
+    }));
+  }
+  const r32 = teamsForRound(0),
+    r16 = teamsForRound(1),
+    qf = teamsForRound(2),
+    sf = teamsForRound(3),
+    fin = teamsForRound(4);
+  const champ = (pk.FINAL || {})[0];
+  const champDead = champ && dead.has(champ);
+  var l0 = (pk.SF || {})[0],
+    l1 = (pk.SF || {})[1];
+  var la = l0 ? sf[0] && sf[0].team === l0 ? sf[1] : sf[0] : null;
+  var lb = l1 ? sf[2] && sf[2].team === l1 ? sf[3] : sf[2] : null;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bk"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "R32"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody"
+  }, [0, 1, 2, 3, 4, 5, 6, 7].map(m => mkNode("R32", m, r32)))), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "R16"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody"
+  }, [0, 1, 2, 3].map(m => mkNode("R16", m, r16)))), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "QF"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody"
+  }, [0, 1].map(m => mkNode("QF", m, qf)))), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "SF"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody"
+  }, mkNode("SF", 0, sf))), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol center"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "FINAL"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody cbody"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "cfill top"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "champcell" + (champDead ? " out" : "")
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: champ || ""
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "cs"
+  }, "Champion"), /*#__PURE__*/React.createElement("div", {
+    className: "cn"
+  }, champ || "TBD"))), mkNode("FINAL", 0, fin), /*#__PURE__*/React.createElement("div", {
+    className: "cfill bot"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "node bronze"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lab"
+  }, "3RD PLACE · +3"), /*#__PURE__*/React.createElement(NTeam, {
+    x: la,
+    opp: lb,
+    round: "BRONZE",
+    m: 0,
+    pos: 0
+  }), /*#__PURE__*/React.createElement(NTeam, {
+    x: lb,
+    opp: la,
+    round: "BRONZE",
+    m: 0,
+    pos: 1
+  }))))), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "SF"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody"
+  }, mkNode("SF", 1, sf))), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "QF"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody"
+  }, [2, 3].map(m => mkNode("QF", m, qf)))), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "R16"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody"
+  }, [4, 5, 6, 7].map(m => mkNode("R16", m, r16)))), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "R32"), /*#__PURE__*/React.createElement("div", {
+    className: "bkbody"
+  }, [8, 9, 10, 11, 12, 13, 14, 15].map(m => mkNode("R32", m, r32)))));
 }
 
+/* Predicted R32 — simple two-column matchup list, entirely separate from the live knockout Bracket */
+function PredBracket({
+  games,
+  realSet
+}) {
+  const has = realSet && realSet.size > 0;
+  const cl = t => !has ? "" : realSet.has(t) ? " alive" : " dead";
+  const half = (list, offset) => list.map(([a, b], i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "node"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lab"
+  }, "R32 · ", offset + i + 1), /*#__PURE__*/React.createElement("div", {
+    className: "nteam" + cl(a)
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: a
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "nm2"
+  }, a), /*#__PURE__*/React.createElement("span", {
+    className: "s"
+  }, "#", RANK[a])), /*#__PURE__*/React.createElement("div", {
+    className: "nteam" + cl(b)
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: b
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "nm2"
+  }, b), /*#__PURE__*/React.createElement("span", {
+    className: "s"
+  }, "#", RANK[b]))));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "bk"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "Left half · 1–8"), half(games.slice(0, 8), 0)), /*#__PURE__*/React.createElement("div", {
+    className: "bkcol"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ch"
+  }, "Right half · 9–16"), half(games.slice(8), 8)));
+}
 
 /* Auth */
-function Auth({onAuth}){
-  const remembered=(typeof localStorage!=="undefined")?localStorage.getItem("wc_user"):null;
-  const [mode,setMode]=useState(remembered?"returning":"login");
-  const [u,setU]=useState(remembered||"");const [p,setP]=useState("");const [err,setErr]=useState("");const [busy,setBusy]=useState(false);
-  async function go(signup){setErr("");const name=(mode==="returning"?remembered:u).trim();
-    if(!name||!p){setErr("Enter your "+(mode==="returning"?"passcode.":"username and passcode."));return;}
-    setBusy(true);try{const res=await postJSON({action:signup?"signup":"login",username:name,passcode:p});
-      if(res.error){setErr(res.error);}else{if(typeof localStorage!=="undefined")localStorage.setItem("wc_user",res.username);onAuth(res.username);}
-    }catch(e){setErr("Network error — try again.");}setBusy(false);}
-  return (<div className="auth"><div className="eyebrow">World Cup 2026 Pool</div>
-    <h1 style={{fontSize:34,margin:"8px 0 18px"}}>{mode==="returning"?"Welcome back":mode==="signup"?"Create account":"Sign in"}</h1>
-    {err&&<div className="err">{err}</div>}
-    {mode==="returning"?(<div className="field"><label>Passcode for <b style={{color:"var(--text)"}}>{remembered}</b></label>
-      <input type="password" value={p} onChange={e=>setP(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go(false)} autoFocus /></div>
-    ):(<><div className="field"><label>Username</label><input value={u} onChange={e=>setU(e.target.value)} autoCapitalize="none" /></div>
-      <div className="field"><label>Passcode</label><input type="password" value={p} onChange={e=>setP(e.target.value)} onKeyDown={e=>e.key==="Enter"&&go(mode==="signup")} /></div></>)}
-    <button className="cta" style={{width:"100%"}} disabled={busy} onClick={()=>go(mode==="signup")}>{busy?"…":mode==="returning"?"Continue":mode==="signup"?"Create account":"Sign in"}</button>
-    <div className="toggle">{mode==="returning"&&<button onClick={()=>{setMode("login");setU("");setErr("");}}>Not {remembered}? Switch user</button>}
-      {mode==="login"&&<span>New here? <button onClick={()=>{setMode("signup");setErr("");}}>Create an account</button></span>}
-      {mode==="signup"&&<span>Already in? <button onClick={()=>{setMode("login");setErr("");}}>Sign in</button></span>}</div></div>);
+function Auth({
+  onAuth
+}) {
+  const remembered = typeof localStorage !== "undefined" ? localStorage.getItem("wc_user") : null;
+  const [mode, setMode] = useState(remembered ? "returning" : "login");
+  const [u, setU] = useState(remembered || "");
+  const [p, setP] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function go(signup) {
+    setErr("");
+    const name = (mode === "returning" ? remembered : u).trim();
+    if (!name || !p) {
+      setErr("Enter your " + (mode === "returning" ? "passcode." : "username and passcode."));
+      return;
+    }
+    setBusy(true);
+    try {
+      const res = await postJSON({
+        action: signup ? "signup" : "login",
+        username: name,
+        passcode: p
+      });
+      if (res.error) {
+        setErr(res.error);
+      } else {
+        if (typeof localStorage !== "undefined") localStorage.setItem("wc_user", res.username);
+        onAuth(res.username);
+      }
+    } catch (e) {
+      setErr("Network error — try again.");
+    }
+    setBusy(false);
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "auth"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "World Cup 2026 Pool"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 34,
+      margin: "8px 0 18px"
+    }
+  }, mode === "returning" ? "Welcome back" : mode === "signup" ? "Create account" : "Sign in"), err && /*#__PURE__*/React.createElement("div", {
+    className: "err"
+  }, err), mode === "returning" ? /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("label", null, "Passcode for ", /*#__PURE__*/React.createElement("b", {
+    style: {
+      color: "var(--text)"
+    }
+  }, remembered)), /*#__PURE__*/React.createElement("input", {
+    type: "password",
+    value: p,
+    onChange: e => setP(e.target.value),
+    onKeyDown: e => e.key === "Enter" && go(false),
+    autoFocus: true
+  })) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("label", null, "Username"), /*#__PURE__*/React.createElement("input", {
+    value: u,
+    onChange: e => setU(e.target.value),
+    autoCapitalize: "none"
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "field"
+  }, /*#__PURE__*/React.createElement("label", null, "Passcode"), /*#__PURE__*/React.createElement("input", {
+    type: "password",
+    value: p,
+    onChange: e => setP(e.target.value),
+    onKeyDown: e => e.key === "Enter" && go(mode === "signup")
+  }))), /*#__PURE__*/React.createElement("button", {
+    className: "cta",
+    style: {
+      width: "100%"
+    },
+    disabled: busy,
+    onClick: () => go(mode === "signup")
+  }, busy ? "…" : mode === "returning" ? "Continue" : mode === "signup" ? "Create account" : "Sign in"), /*#__PURE__*/React.createElement("div", {
+    className: "toggle"
+  }, mode === "returning" && /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setMode("login");
+      setU("");
+      setErr("");
+    }
+  }, "Not ", remembered, "? Switch user"), mode === "login" && /*#__PURE__*/React.createElement("span", null, "New here? ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setMode("signup");
+      setErr("");
+    }
+  }, "Create an account")), mode === "signup" && /*#__PURE__*/React.createElement("span", null, "Already in? ", /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setMode("login");
+      setErr("");
+    }
+  }, "Sign in"))));
 }
 
 /* Home */
-function Home({user,go,onSignOut,picksCount,standingsDone,standingsStale,koStatus,koOpen,anyLive,phase}){
-  const L=locked();
+function Home({
+  user,
+  go,
+  onSignOut,
+  picksCount,
+  standingsDone,
+  standingsStale,
+  koStatus,
+  koOpen,
+  anyLive,
+  phase
+}) {
+  const L = locked();
   // Each nav card defined once, keyed by id.
-  const cards={
-    scoring:(<button key="scoring" className="card" onClick={()=>go("scoring")}><div><div className="t">How scoring works</div><div className="d">Tiered upset points, advancement, knockout round bonuses.</div></div><span className="arrow">→</span></button>),
-    leaderboard:(<button key="leaderboard" className="card" onClick={()=>go("leaderboard")}><div><div className="t">Leaderboard</div><div className="d">Live standings across everyone in the pool.</div></div><span className="arrow">→</span></button>),
-    live:(<button key="live" className="card live" onClick={()=>go("live")}><div><div className="t">Live & Upcoming</div><div className="d">Scores and who picked what, as games play.</div></div><span className={"tag"+(anyLive?" red":" gray")}>{anyLive?"LIVE":"No games live"}</span></button>),
-    group:(<button key="group" className={"card"+(L?"":" live")} onClick={()=>go("group")}><div><div className="t">Make your group picks</div><div className="d">{picksCount>0?picksCount+" of 72 picked.":"Call all 72 group games. Save as you go."}</div></div><span className="tag">{picksCount>=72?"Completed":L?"View":picksCount>0?"Resume":"Open"}</span></button>),
-    standings:(<button key="standings" className="card" onClick={()=>go("standings")}><div><div className="t">Pick who advances to Round of 32</div><div className="d">Order your groups, choose the 8 best third-place teams, lock your bracket.</div></div><span className={"tag"+(standingsStale?" red":"")}>{standingsStale?"Incomplete":standingsDone?"Completed":picksCount>=72?"Resume":"Locked"}</span></button>),
-    ko:(<button key="ko" className="card" onClick={()=>(phase>=3||koOpen)&&go("ko")} disabled={phase<3&&!koOpen} style={(phase<3&&!koOpen)?{opacity:.6,cursor:"default"}:null}><div><div className="t">Knockout bracket</div><div className="d">{(phase>=4||koOpen)?(koOpen?"Pick the Round of 32 through to the final.":"Bracket reveals as group results finalize."):phase===3?"Coming soon — opens tonight.":"Opens after the group stage."}</div></div><span className={"tag"+((phase===3&&!koOpen)?" amber":(phase>=4||koOpen)?(koStatus==="done"?"":koOpen?" amber":" gray"):" gray")}>{(phase<3&&!koOpen)?"Locked":(phase===3&&!koOpen)?"Coming soon":koStatus==="done"?"Completed":koOpen?(koStatus==="resume"?"Resume":"Open"):"Live"}</span></button>),
+  const cards = {
+    scoring: /*#__PURE__*/React.createElement("button", {
+      key: "scoring",
+      className: "card",
+      onClick: () => go("scoring")
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "t"
+    }, "How scoring works"), /*#__PURE__*/React.createElement("div", {
+      className: "d"
+    }, "Tiered upset points, advancement, knockout round bonuses.")), /*#__PURE__*/React.createElement("span", {
+      className: "arrow"
+    }, "→")),
+    leaderboard: /*#__PURE__*/React.createElement("button", {
+      key: "leaderboard",
+      className: "card",
+      onClick: () => go("leaderboard")
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "t"
+    }, "Leaderboard"), /*#__PURE__*/React.createElement("div", {
+      className: "d"
+    }, "Live standings across everyone in the pool.")), /*#__PURE__*/React.createElement("span", {
+      className: "arrow"
+    }, "→")),
+    live: /*#__PURE__*/React.createElement("button", {
+      key: "live",
+      className: "card live",
+      onClick: () => go("live")
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "t"
+    }, "Live & Upcoming"), /*#__PURE__*/React.createElement("div", {
+      className: "d"
+    }, "Scores and who picked what, as games play.")), /*#__PURE__*/React.createElement("span", {
+      className: "tag" + (anyLive ? " red" : " gray")
+    }, anyLive ? "LIVE" : "No games live")),
+    group: /*#__PURE__*/React.createElement("button", {
+      key: "group",
+      className: "card" + (L ? "" : " live"),
+      onClick: () => go("group")
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "t"
+    }, "Make your group picks"), /*#__PURE__*/React.createElement("div", {
+      className: "d"
+    }, picksCount > 0 ? picksCount + " of 72 picked." : "Call all 72 group games. Save as you go.")), /*#__PURE__*/React.createElement("span", {
+      className: "tag"
+    }, picksCount >= 72 ? "Completed" : L ? "View" : picksCount > 0 ? "Resume" : "Open")),
+    standings: /*#__PURE__*/React.createElement("button", {
+      key: "standings",
+      className: "card",
+      onClick: () => go("standings")
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "t"
+    }, "Pick who advances to Round of 32"), /*#__PURE__*/React.createElement("div", {
+      className: "d"
+    }, "Order your groups, choose the 8 best third-place teams, lock your bracket.")), /*#__PURE__*/React.createElement("span", {
+      className: "tag" + (standingsStale ? " red" : "")
+    }, standingsStale ? "Incomplete" : standingsDone ? "Completed" : picksCount >= 72 ? "Resume" : "Locked")),
+    ko: /*#__PURE__*/React.createElement("button", {
+      key: "ko",
+      className: "card",
+      onClick: () => (phase >= 3 || koOpen) && go("ko"),
+      disabled: phase < 3 && !koOpen,
+      style: phase < 3 && !koOpen ? {
+        opacity: .6,
+        cursor: "default"
+      } : null
+    }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+      className: "t"
+    }, "Knockout bracket"), /*#__PURE__*/React.createElement("div", {
+      className: "d"
+    }, phase >= 4 || koOpen ? koOpen ? "Pick the Round of 32 through to the final." : "Bracket reveals as group results finalize." : phase === 3 ? "Coming soon — opens tonight." : "Opens after the group stage.")), /*#__PURE__*/React.createElement("span", {
+      className: "tag" + (phase === 3 && !koOpen ? " amber" : phase >= 4 || koOpen ? koStatus === "done" ? "" : koOpen ? " amber" : " gray" : " gray")
+    }, phase < 3 && !koOpen ? "Locked" : phase === 3 && !koOpen ? "Coming soon" : koStatus === "done" ? "Completed" : koOpen ? koStatus === "resume" ? "Resume" : "Open" : "Live"))
   };
   // Order depends on phase.
   let order;
-  if(phase===1)      order=["scoring","group","standings","leaderboard","live","ko"];
-  else if(phase===2) order=["scoring","leaderboard","live","group","standings","ko"];
-  else               order=["scoring","leaderboard","live","ko","group","standings"]; // phases 3 & 4
-  return (<div className="wrap">
-    <div className="top"><span className="who">Signed in as <b>{user}</b></span><button className="linkbtn" onClick={onSignOut}>Sign out</button></div>
-    <div className="hero">
-      <div className="eyebrow">USA · Canada · Mexico · 2026</div>
-      <h1>World Cup<br/>Pick 'Em Pool</h1>
-      <div className="emblem" aria-hidden="true"><img src="wc26-logo-dark.png" alt="" onError={e=>{e.target.parentNode.style.display="none";}}/></div>
-      <div className="ribbon" aria-hidden="true"><div className="rbtrack">{Object.keys(FLAGS).concat(Object.keys(FLAGS)).map((t,i)=><span key={i} className="rbflag"><img src={FLAGS[t]} alt=""/></span>)}</div></div>
-      <div className="lockbar"><span className={"dot"+(L?" locked":"")}></span>{L?"Group picks are locked — tournament underway.":"Group picks lock at the first kickoff, June 11."}</div></div>
-    <div className="cards">
-      {order.map(id=>cards[id])}
-    </div></div>);
+  if (phase === 1) order = ["scoring", "group", "standings", "leaderboard", "live", "ko"];else if (phase === 2) order = ["scoring", "leaderboard", "live", "group", "standings", "ko"];else order = ["scoring", "leaderboard", "live", "ko", "group", "standings"]; // phases 3 & 4
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "top"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "who"
+  }, "Signed in as ", /*#__PURE__*/React.createElement("b", null, user)), /*#__PURE__*/React.createElement("button", {
+    className: "linkbtn",
+    onClick: onSignOut
+  }, "Sign out")), /*#__PURE__*/React.createElement("div", {
+    className: "hero"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "USA · Canada · Mexico · 2026"), /*#__PURE__*/React.createElement("h1", null, "World Cup", /*#__PURE__*/React.createElement("br", null), "Pick 'Em Pool"), /*#__PURE__*/React.createElement("div", {
+    className: "emblem",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: "wc26-logo-dark.png",
+    alt: "",
+    onError: e => {
+      e.target.parentNode.style.display = "none";
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "ribbon",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "rbtrack"
+  }, Object.keys(FLAGS).concat(Object.keys(FLAGS)).map((t, i) => /*#__PURE__*/React.createElement("span", {
+    key: i,
+    className: "rbflag"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: FLAGS[t],
+    alt: ""
+  }))))), /*#__PURE__*/React.createElement("div", {
+    className: "lockbar"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "dot" + (L ? " locked" : "")
+  }), L ? "Group picks are locked — tournament underway." : "Group picks lock at the first kickoff, June 11.")), /*#__PURE__*/React.createElement("div", {
+    className: "cards"
+  }, order.map(id => cards[id])));
 }
 
 /* How scoring */
-function HowScoring({back}){
-  return (<div className="wrap doc"><button className="back" onClick={back}>← Back</button>
-    <div className="eyebrow">The rules</div><h1 style={{fontSize:32}}>How scoring works</h1>
-    <p>The short version: <b>a correct pick scores points; the bigger the underdog you call, the bigger the bonus. In the knockouts, each round is worth more and one big upset can swing the whole pool.</b></p>
-    <p>Bonuses are based on <b>sportsbook win odds</b>, shown on every game. Backing a heavy favorite that wins is still smart — it just earns the flat point. Calling a genuine upset is where the points are.</p>
-    <p><b>Draws count too:</b> calling a draw earns a bonus when one team was heavily favored and got held — the more lopsided the matchup, the bigger the draw bonus (up to +8). It's always worth less than calling the underdog to win outright.</p>
-    <h2>Group stage — per game</h2>
-    <div className="rule"><div className="lab">Correct favorite win</div><div className="val">1</div></div>
-    <div className="rule"><div className="lab">Correct draw<small>bigger bonus when a heavy favorite gets held</small></div><div className="val">1 + bonus</div></div>
-    <div className="rule"><div className="lab">Correct underdog win<small>1 point + an upset bonus</small></div><div className="val">1 + bonus</div></div>
-    <table className="kt"><thead><tr><th>How big an underdog</th><th>Upset bonus</th></tr></thead><tbody>
-      <tr><td>Near-even matchup</td><td>+0</td></tr><tr><td>Slight underdog</td><td>+1–3</td></tr><tr><td>Clear underdog</td><td>+4–6</td></tr>
-      <tr><td>Big underdog</td><td>+7–11</td></tr><tr><td>Huge longshot</td><td>+12–15</td></tr></tbody></table>
-    <div className="ex">Example: a team given a <b>~11% chance</b> beats a heavy favorite — you score <b>about 10 points</b>. Pick the favorite in a coin-flip game and you get the flat <b>1</b>.</div>
-    <h2>Advancing to the Round of 32</h2>
-    <div className="rule"><div className="lab">Each team you correctly send through<small>your 2 per group + 8 best third-place teams</small></div><div className="val">2</div></div>
-    <h2>Knockout — per game</h2>
-    <p>Different from the group stage: each round pays a fixed <b>base</b>, and you add an <b>upset bonus (up to +16)</b> when you correctly call an underdog. <b>No multiplier</b> — the base already makes later rounds worth more.</p>
-    <table className="kt"><thead><tr><th>Round</th><th>Base points</th></tr></thead><tbody>
-      <tr><td>Round of 32</td><td>2</td></tr><tr><td>Round of 16</td><td>3</td></tr><tr><td>Quarterfinal</td><td>5</td></tr><tr><td>Semifinal</td><td>7</td></tr><tr><td>Final / champion</td><td>10</td></tr><tr><td>3rd-place game</td><td>3 (no bonus)</td></tr></tbody></table>
-    <p>The upset bonus comes from each team's tournament-winning odds, turned into a match win chance — the longer your team's odds, the bigger the bonus:</p>
-    <table className="kt"><thead><tr><th>Your team's win chance</th><th>Upset bonus</th></tr></thead><tbody>
-      <tr><td>45%+ (favorite / coin-flip)</td><td>+0</td></tr><tr><td>~35%</td><td>+5</td></tr><tr><td>~30%</td><td>+8</td></tr>
-      <tr><td>~25%</td><td>+11</td></tr><tr><td>~20%</td><td>+13</td></tr><tr><td>15% or lower (longshot)</td><td>+16</td></tr></tbody></table>
-    <div className="ex"><b>Example:</b> you back a ~20% underdog to win a <b>quarterfinal</b> — base 5 + bonus 13 = <b>18 points</b>. Call the favorite in that game and you get the flat <b>5</b>. A longshot that wins the <b>final</b> is 10 + 16 = <b>26</b>.</div>
-    <p className="sub" style={{marginTop:16}}>Group picks lock June 11. The knockout opens after the groups, filled from the real 32 qualifiers — a wrong group call never wrecks your bracket.</p>
-    <button className="homebtn" onClick={back}>← Back to home</button></div>);
+function HowScoring({
+  back
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wrap doc"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "back",
+    onClick: back
+  }, "← Back"), /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "The rules"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 32
+    }
+  }, "How scoring works"), /*#__PURE__*/React.createElement("p", null, "The short version: ", /*#__PURE__*/React.createElement("b", null, "a correct pick scores points; the bigger the underdog you call, the bigger the bonus. In the knockouts, each round is worth more and one big upset can swing the whole pool.")), /*#__PURE__*/React.createElement("p", null, "Bonuses are based on ", /*#__PURE__*/React.createElement("b", null, "sportsbook win odds"), ", shown on every game. Backing a heavy favorite that wins is still smart — it just earns the flat point. Calling a genuine upset is where the points are."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Draws count too:"), " calling a draw earns a bonus when one team was heavily favored and got held — the more lopsided the matchup, the bigger the draw bonus (up to +8). It's always worth less than calling the underdog to win outright."), /*#__PURE__*/React.createElement("h2", null, "Group stage — per game"), /*#__PURE__*/React.createElement("div", {
+    className: "rule"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lab"
+  }, "Correct favorite win"), /*#__PURE__*/React.createElement("div", {
+    className: "val"
+  }, "1")), /*#__PURE__*/React.createElement("div", {
+    className: "rule"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lab"
+  }, "Correct draw", /*#__PURE__*/React.createElement("small", null, "bigger bonus when a heavy favorite gets held")), /*#__PURE__*/React.createElement("div", {
+    className: "val"
+  }, "1 + bonus")), /*#__PURE__*/React.createElement("div", {
+    className: "rule"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lab"
+  }, "Correct underdog win", /*#__PURE__*/React.createElement("small", null, "1 point + an upset bonus")), /*#__PURE__*/React.createElement("div", {
+    className: "val"
+  }, "1 + bonus")), /*#__PURE__*/React.createElement("table", {
+    className: "kt"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "How big an underdog"), /*#__PURE__*/React.createElement("th", null, "Upset bonus"))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Near-even matchup"), /*#__PURE__*/React.createElement("td", null, "+0")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Slight underdog"), /*#__PURE__*/React.createElement("td", null, "+1–3")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Clear underdog"), /*#__PURE__*/React.createElement("td", null, "+4–6")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Big underdog"), /*#__PURE__*/React.createElement("td", null, "+7–11")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Huge longshot"), /*#__PURE__*/React.createElement("td", null, "+12–15")))), /*#__PURE__*/React.createElement("div", {
+    className: "ex"
+  }, "Example: a team given a ", /*#__PURE__*/React.createElement("b", null, "~11% chance"), " beats a heavy favorite — you score ", /*#__PURE__*/React.createElement("b", null, "about 10 points"), ". Pick the favorite in a coin-flip game and you get the flat ", /*#__PURE__*/React.createElement("b", null, "1"), "."), /*#__PURE__*/React.createElement("h2", null, "Advancing to the Round of 32"), /*#__PURE__*/React.createElement("div", {
+    className: "rule"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lab"
+  }, "Each team you correctly send through", /*#__PURE__*/React.createElement("small", null, "your 2 per group + 8 best third-place teams")), /*#__PURE__*/React.createElement("div", {
+    className: "val"
+  }, "2")), /*#__PURE__*/React.createElement("h2", null, "Knockout — per game"), /*#__PURE__*/React.createElement("p", null, "Different from the group stage: each round pays a fixed ", /*#__PURE__*/React.createElement("b", null, "base"), ", and you add an ", /*#__PURE__*/React.createElement("b", null, "upset bonus (up to +16)"), " when you correctly call an underdog. ", /*#__PURE__*/React.createElement("b", null, "No multiplier"), " — the base already makes later rounds worth more."), /*#__PURE__*/React.createElement("table", {
+    className: "kt"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Round"), /*#__PURE__*/React.createElement("th", null, "Base points"))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Round of 32"), /*#__PURE__*/React.createElement("td", null, "2")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Round of 16"), /*#__PURE__*/React.createElement("td", null, "3")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Quarterfinal"), /*#__PURE__*/React.createElement("td", null, "5")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Semifinal"), /*#__PURE__*/React.createElement("td", null, "7")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Final / champion"), /*#__PURE__*/React.createElement("td", null, "10")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "3rd-place game"), /*#__PURE__*/React.createElement("td", null, "3 (no bonus)")))), /*#__PURE__*/React.createElement("p", null, "The upset bonus comes from each team's tournament-winning odds, turned into a match win chance — the longer your team's odds, the bigger the bonus:"), /*#__PURE__*/React.createElement("table", {
+    className: "kt"
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Your team's win chance"), /*#__PURE__*/React.createElement("th", null, "Upset bonus"))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "45%+ (favorite / coin-flip)"), /*#__PURE__*/React.createElement("td", null, "+0")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "~35%"), /*#__PURE__*/React.createElement("td", null, "+5")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "~30%"), /*#__PURE__*/React.createElement("td", null, "+8")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "~25%"), /*#__PURE__*/React.createElement("td", null, "+11")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "~20%"), /*#__PURE__*/React.createElement("td", null, "+13")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "15% or lower (longshot)"), /*#__PURE__*/React.createElement("td", null, "+16")))), /*#__PURE__*/React.createElement("div", {
+    className: "ex"
+  }, /*#__PURE__*/React.createElement("b", null, "Example:"), " you back a ~20% underdog to win a ", /*#__PURE__*/React.createElement("b", null, "quarterfinal"), " — base 5 + bonus 13 = ", /*#__PURE__*/React.createElement("b", null, "18 points"), ". Call the favorite in that game and you get the flat ", /*#__PURE__*/React.createElement("b", null, "5"), ". A longshot that wins the ", /*#__PURE__*/React.createElement("b", null, "final"), " is 10 + 16 = ", /*#__PURE__*/React.createElement("b", null, "26"), "."), /*#__PURE__*/React.createElement("p", {
+    className: "sub",
+    style: {
+      marginTop: 16
+    }
+  }, "Group picks lock June 11. The knockout opens after the groups, filled from the real 32 qualifiers — a wrong group call never wrecks your bracket."), /*#__PURE__*/React.createElement("button", {
+    className: "homebtn",
+    onClick: back
+  }, "← Back to home"));
 }
 
 /* Group picker */
-function Side({team,rk,myProb,oppProb,side,selected,onPick,result}){
-  const pts=potential(side,side==="A"?myProb:oppProb,side==="A"?oppProb:myProb);
-  const upset=(Number(oppProb)-Number(myProb))>=BONUS_MIN_GAP;
-  let extra="";if(result&&selected)extra=(result===side)?" correct":" wrong";
-  return (<button className={"side"+(selected?" sel":"")+(upset?" upset":"")+extra} onClick={onPick} aria-pressed={selected}>
-    <Crest team={team}/><div className="name">{team}</div><div className="rk">FIFA #{rk}</div><div className="pts"><b>+{pts}</b>{pts===1?"pt":"pts"}</div></button>);
+function Side({
+  team,
+  rk,
+  myProb,
+  oppProb,
+  side,
+  selected,
+  onPick,
+  result
+}) {
+  const pts = potential(side, side === "A" ? myProb : oppProb, side === "A" ? oppProb : myProb);
+  const upset = Number(oppProb) - Number(myProb) >= BONUS_MIN_GAP;
+  let extra = "";
+  if (result && selected) extra = result === side ? " correct" : " wrong";
+  return /*#__PURE__*/React.createElement("button", {
+    className: "side" + (selected ? " sel" : "") + (upset ? " upset" : "") + extra,
+    onClick: onPick,
+    "aria-pressed": selected
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: team
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "name"
+  }, team), /*#__PURE__*/React.createElement("div", {
+    className: "rk"
+  }, "FIFA #", rk), /*#__PURE__*/React.createElement("div", {
+    className: "pts"
+  }, /*#__PURE__*/React.createElement("b", null, "+", pts), pts === 1 ? "pt" : "pts"));
 }
-function Match({g,pick,onPick}){
-  const r=g.result;let earned=0,correct=false;if(r&&pick){correct=(pick===r);earned=correct?potential(pick,g.probA,g.probB):0;}
-  return (<div className="match">
-    <div className="meta"><span className="grp">GROUP {g.group}</span><span>{fmt(g.dateTimeISO)}{g.city?" · "+g.city:""}{g.country?", "+g.country:""}</span></div>
-    <div className="rowg">
-      <Side team={g.teamA} rk={g.seedA} myProb={g.probA} oppProb={g.probB} side="A" selected={pick==="A"} result={r} onPick={()=>onPick(g.id,"A")} />
-      <div className={"draw"+(pick==="D"?" sel":"")+(r&&pick==="D"?(r==="D"?" correct":" wrong"):"")} role="button" tabIndex="0" onClick={()=>onPick(g.id,"D")} onKeyDown={e=>e.key==="Enter"&&onPick(g.id,"D")}><div className="x">DRAW</div><div className="pts">+{potential("D",g.probA,g.probB)}pt{potential("D",g.probA,g.probB)===1?"":"s"}</div></div>
-      <Side team={g.teamB} rk={g.seedB} myProb={g.probB} oppProb={g.probA} side="B" selected={pick==="B"} result={r} onPick={()=>onPick(g.id,"B")} /></div>
-    {r&&<div className="res"><span className="ft">FT {g.scoreA}–{g.scoreB}</span>{pick?(correct?<span className="g"> · your pick +{earned}</span>:<span className="r"> · your pick 0</span>):<span> · no pick</span>}</div>}
-    {!r&&(g.probA||g.probB)&&<div className="odds"><span>{g.teamA}: <b>{Math.round((g.probA||0)*100)}%</b></span><span>{g.teamB}: <b>{Math.round((g.probB||0)*100)}%</b></span></div>}</div>);
+function Match({
+  g,
+  pick,
+  onPick
+}) {
+  const r = g.result;
+  let earned = 0,
+    correct = false;
+  if (r && pick) {
+    correct = pick === r;
+    earned = correct ? potential(pick, g.probA, g.probB) : 0;
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "match"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "meta"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "grp"
+  }, "GROUP ", g.group), /*#__PURE__*/React.createElement("span", null, fmt(g.dateTimeISO), g.city ? " · " + g.city : "", g.country ? ", " + g.country : "")), /*#__PURE__*/React.createElement("div", {
+    className: "rowg"
+  }, /*#__PURE__*/React.createElement(Side, {
+    team: g.teamA,
+    rk: g.seedA,
+    myProb: g.probA,
+    oppProb: g.probB,
+    side: "A",
+    selected: pick === "A",
+    result: r,
+    onPick: () => onPick(g.id, "A")
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "draw" + (pick === "D" ? " sel" : "") + (r && pick === "D" ? r === "D" ? " correct" : " wrong" : ""),
+    role: "button",
+    tabIndex: "0",
+    onClick: () => onPick(g.id, "D"),
+    onKeyDown: e => e.key === "Enter" && onPick(g.id, "D")
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "x"
+  }, "DRAW"), /*#__PURE__*/React.createElement("div", {
+    className: "pts"
+  }, "+", potential("D", g.probA, g.probB), "pt", potential("D", g.probA, g.probB) === 1 ? "" : "s")), /*#__PURE__*/React.createElement(Side, {
+    team: g.teamB,
+    rk: g.seedB,
+    myProb: g.probB,
+    oppProb: g.probA,
+    side: "B",
+    selected: pick === "B",
+    result: r,
+    onPick: () => onPick(g.id, "B")
+  })), r && /*#__PURE__*/React.createElement("div", {
+    className: "res"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ft"
+  }, "FT ", g.scoreA, "–", g.scoreB), pick ? correct ? /*#__PURE__*/React.createElement("span", {
+    className: "g"
+  }, " · your pick +", earned) : /*#__PURE__*/React.createElement("span", {
+    className: "r"
+  }, " · your pick 0") : /*#__PURE__*/React.createElement("span", null, " · no pick")), !r && (g.probA || g.probB) && /*#__PURE__*/React.createElement("div", {
+    className: "odds"
+  }, /*#__PURE__*/React.createElement("span", null, g.teamA, ": ", /*#__PURE__*/React.createElement("b", null, Math.round((g.probA || 0) * 100), "%")), /*#__PURE__*/React.createElement("span", null, g.teamB, ": ", /*#__PURE__*/React.createElement("b", null, Math.round((g.probB || 0) * 100), "%"))));
 }
-function Picker({user,fixtures,picks,setPicks,back}){
-  const [L]=useState(locked());const [saved,setSaved]=useState(false);const [err,setErr]=useState("");const [busy,setBusy]=useState(false);
-  const onPick=(id,v)=>{if(L)return;setSaved(false);setErr("");setPicks(p=>({...p,[id]:v}));};
-  const made=Object.keys(picks).length,all=made===fixtures.length;
-  async function save(){setErr("");setBusy(true);
-    const attempt=async()=>{const res=await postJSON({action:"saveGroup",username:user,picksJson:JSON.stringify(picks)});
-      if(res&&res.error)throw new Error(res.error);return res;};
-    try{
-      try{await attempt();}
-      catch(e1){await new Promise(r=>setTimeout(r,1200));await attempt();}
+function Picker({
+  user,
+  fixtures,
+  picks,
+  setPicks,
+  back
+}) {
+  const [L] = useState(locked());
+  const [saved, setSaved] = useState(false);
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const onPick = (id, v) => {
+    if (L) return;
+    setSaved(false);
+    setErr("");
+    setPicks(p => ({
+      ...p,
+      [id]: v
+    }));
+  };
+  const made = Object.keys(picks).length,
+    all = made === fixtures.length;
+  async function save() {
+    setErr("");
+    setBusy(true);
+    const attempt = async () => {
+      const res = await postJSON({
+        action: "saveGroup",
+        username: user,
+        picksJson: JSON.stringify(picks)
+      });
+      if (res && res.error) throw new Error(res.error);
+      return res;
+    };
+    try {
+      try {
+        await attempt();
+      } catch (e1) {
+        await new Promise(r => setTimeout(r, 1200));
+        await attempt();
+      }
       setSaved(true);
-    }catch(e){setErr("Couldn't save");}
-    setBusy(false);}
-  const sorted=fixtures.slice().sort(byTime);
-  const byDay={},dayOrder=[];sorted.forEach(f=>{const k=f.dateTimeISO?new Date(f.dateTimeISO).toDateString():"TBD";if(!byDay[k]){byDay[k]=[];dayOrder.push(k);}byDay[k].push(f);});
-  const anyResults=fixtures.some(f=>f.result);
-  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">Group Stage</div><h1 style={{fontSize:30}}>{all?"Your picks":"Pick all 72"}</h1>
-    <p className="sub">{L?(anyResults?"Locked. Green = correct, red = missed.":"Locked — first match has kicked off."):"Tap a team or Draw. Save anytime; edit until June 11."}</p>
-    {err&&<div className="err" style={{marginTop:12}}>{err}</div>}
-    {saved&&<div className="ok" style={{marginTop:12}}>Saved — {made}/72 in.{all?" All picked.":" Come back to finish."}</div>}
-    {dayOrder.map(k=>(<div key={k}><div className="ghead">{k==="TBD"?"DATE TBD":new Date(k).toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"})}</div>
-      {byDay[k].map(f=><Match key={f.id} g={f} pick={picks[f.id]} onPick={onPick} />)}</div>))}
-    <button className="homebtn" onClick={back}>← Back to home</button>
-    {!L&&<div className="bar"><div className="inner" style={{flexDirection:"column",alignItems:"stretch",gap:8}}>
-      {err&&<div className="err" style={{margin:0,textAlign:"center"}}>{err} — please try again.</div>}
-      {saved&&!err&&<div className="ok" style={{margin:0,textAlign:"center"}}>Saved — {made}/72 in.{all?" All picked.":""}</div>}
-      <div style={{display:"flex",alignItems:"center",gap:12}}>
-        <span className="count"><b>{made}</b>/72</span>
-        <button className="cta" style={{flex:1}} disabled={made===0||busy} onClick={save}>{busy?"Saving…":all?"Save all picks":`Save progress (${made})`}</button>
-      </div></div></div>}</div>);
+    } catch (e) {
+      setErr("Couldn't save");
+    }
+    setBusy(false);
+  }
+  const sorted = fixtures.slice().sort(byTime);
+  const byDay = {},
+    dayOrder = [];
+  sorted.forEach(f => {
+    const k = f.dateTimeISO ? new Date(f.dateTimeISO).toDateString() : "TBD";
+    if (!byDay[k]) {
+      byDay[k] = [];
+      dayOrder.push(k);
+    }
+    byDay[k].push(f);
+  });
+  const anyResults = fixtures.some(f => f.result);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "back",
+    onClick: back
+  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Group Stage"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 30
+    }
+  }, all ? "Your picks" : "Pick all 72"), /*#__PURE__*/React.createElement("p", {
+    className: "sub"
+  }, L ? anyResults ? "Locked. Green = correct, red = missed." : "Locked — first match has kicked off." : "Tap a team or Draw. Save anytime; edit until June 11."), err && /*#__PURE__*/React.createElement("div", {
+    className: "err",
+    style: {
+      marginTop: 12
+    }
+  }, err), saved && /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      marginTop: 12
+    }
+  }, "Saved — ", made, "/72 in.", all ? " All picked." : " Come back to finish."), dayOrder.map(k => /*#__PURE__*/React.createElement("div", {
+    key: k
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ghead"
+  }, k === "TBD" ? "DATE TBD" : new Date(k).toLocaleDateString([], {
+    weekday: "long",
+    month: "long",
+    day: "numeric"
+  })), byDay[k].map(f => /*#__PURE__*/React.createElement(Match, {
+    key: f.id,
+    g: f,
+    pick: picks[f.id],
+    onPick: onPick
+  })))), /*#__PURE__*/React.createElement("button", {
+    className: "homebtn",
+    onClick: back
+  }, "← Back to home"), !L && /*#__PURE__*/React.createElement("div", {
+    className: "bar"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "inner",
+    style: {
+      flexDirection: "column",
+      alignItems: "stretch",
+      gap: 8
+    }
+  }, err && /*#__PURE__*/React.createElement("div", {
+    className: "err",
+    style: {
+      margin: 0,
+      textAlign: "center"
+    }
+  }, err, " — please try again."), saved && !err && /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      margin: 0,
+      textAlign: "center"
+    }
+  }, "Saved — ", made, "/72 in.", all ? " All picked." : ""), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "count"
+  }, /*#__PURE__*/React.createElement("b", null, made), "/72"), /*#__PURE__*/React.createElement("button", {
+    className: "cta",
+    style: {
+      flex: 1
+    },
+    disabled: made === 0 || busy,
+    onClick: save
+  }, busy ? "Saving…" : all ? "Save all picks" : `Save progress (${made})`)))));
 }
 
 /* Standings + predicted bracket */
-function StRow({pos,team,pts,cls,onUp,onDown,canUp,canDown}){
-  return (<div className={"strow "+cls}><span className="pos">{pos}</span>
-    <span className="nm"><Crest team={team}/>{team}<small>#{RANK[team]}</small></span><span className="pp">{pts}</span>
-    <button className="mv" disabled={!canUp} onClick={onUp}>▲</button><button className="mv" disabled={!canDown} onClick={onDown}>▼</button></div>);
+function StRow({
+  pos,
+  team,
+  pts,
+  cls,
+  onUp,
+  onDown,
+  canUp,
+  canDown
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    className: "strow " + cls
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "pos"
+  }, pos), /*#__PURE__*/React.createElement("span", {
+    className: "nm"
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: team
+  }), team, /*#__PURE__*/React.createElement("small", null, "#", RANK[team])), /*#__PURE__*/React.createElement("span", {
+    className: "pp"
+  }, pts), /*#__PURE__*/React.createElement("button", {
+    className: "mv",
+    disabled: !canUp,
+    onClick: onUp
+  }, "▲"), /*#__PURE__*/React.createElement("button", {
+    className: "mv",
+    disabled: !canDown,
+    onClick: onDown
+  }, "▼"));
 }
-function Standings({user,fixtures,picks,saved,onSaved,back}){
-  const made=Object.keys(picks).length;
-  const groupFx=fixtures.filter(f=>(f.round||"GROUP")==="GROUP");
+function Standings({
+  user,
+  fixtures,
+  picks,
+  saved,
+  onSaved,
+  back
+}) {
+  const made = Object.keys(picks).length;
+  const groupFx = fixtures.filter(f => (f.round || "GROUP") === "GROUP");
   // Fresh ordering computed from the CURRENT picks (points desc, FIFA rank as tiebreak).
-  const freshOrders=()=>{const o={};Object.keys(GROUPS).forEach(g=>{o[g]=standings(GROUPS[g],groupFx,picks).order;});return o;};
+  const freshOrders = () => {
+    const o = {};
+    Object.keys(GROUPS).forEach(g => {
+      o[g] = standings(GROUPS[g], groupFx, picks).order;
+    });
+    return o;
+  };
   // Use the saved manual order ONLY if it was built from these same picks; otherwise re-seed from current picks.
-  const savedMatchesPicks=saved&&saved.orders&&saved.picksSig!==undefined&&saved.picksSig===picksSig(picks);
-  const init=savedMatchesPicks?saved.orders:freshOrders();
-  const [orders,setOrders]=useState(init);
-  const thirdsPool=Object.keys(GROUPS).map(g=>({team:orders[g][2],group:g})).filter(x=>x.team);
-  const [thirds,setThirds]=useState(()=>saved&&saved.thirds?saved.thirds:thirdsPool.map(x=>x.team).sort((a,b)=>RANK[a]-RANK[b]).slice(0,8));
-  const validThirds=thirds.filter(t=>thirdsPool.some(x=>x.team===t));
-  const [showBr,setShowBr]=useState(!!savedMatchesPicks);const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);
-  const realSet=actualR32(fixtures);const L=locked();
-  function move(g,i,dir){if(L)return;setOrders(o=>{const arr=o[g].slice();const j=i+dir;if(j<0||j>3)return o;[arr[i],arr[j]]=[arr[j],arr[i]];return{...o,[g]:arr};});setShowBr(false);setMsg("");}
-  function toggleThird(t){if(L)return;setThirds(ts=>{
-    if(ts.includes(t))return ts.filter(x=>x!==t);
-    const poolNames=thirdsPool.map(x=>x.team);
-    const pruned=ts.filter(x=>poolNames.indexOf(x)!==-1); // drop teams no longer in 3rd after a reorder
-    return pruned.length<8?[...pruned,t]:pruned;
-  });setShowBr(false);setMsg("");}
-  if(made<72) return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">Standings</div><h1 style={{fontSize:30}}>Almost there</h1>
-    <div className="ok" style={{background:"rgba(232,163,61,.12)",borderColor:"var(--amber)",color:"#f3dcb0"}}>You've made {made}/72 group picks. Finish all 72 to generate your standings and predicted bracket.</div>
-    <button className="homebtn" onClick={back}>← Back to home</button></div>);
-  let games=null,bErr="";
-  if(showBr){const chosen=validThirds.map(t=>({team:t,group:thirdsPool.find(x=>x.team===t).group}));
-    if(chosen.length!==8)bErr="Pick exactly 8 third-place teams.";
-    else{const assign=matchThirds(chosen);
-      if(!assign)bErr="This set of third-place teams can't be slotted — swap one or two.";
-      else{const W=g=>orders[g][0],RU=g=>orders[g][1];const ref=t=>{const p=t.split("-");return p[0]==="W"?W(p[1]):RU(p[1]);};
-        games=FIXED_R32.map(([a,b])=>[ref(a),ref(b)]);THIRD_SLOTS.forEach(s=>{if(assign[s.w])games.push([W(s.w),assign[s.w].team]);});}}}
-  async function generate(){setShowBr(true);if(L)return;
-    const advancers=[];Object.keys(GROUPS).forEach(g=>{advancers.push(orders[g][0],orders[g][1]);});validThirds.forEach(t=>advancers.push(t));
-    setBusy(true);setMsg("");try{const advObj={advancers,orders,thirds:validThirds,picksSig:picksSig(picks)};const res=await postJSON({action:"saveGroup",username:user,picksJson:JSON.stringify(picks),advanceJson:JSON.stringify(advObj)});
-      if(res.error)setMsg(res.error);else{setMsg("Your bracket was saved.");if(onSaved)onSaved(advObj);}}catch(e){setMsg("Network error — bracket not saved.");}setBusy(false);}
-  function share(){if(!games)return;const lines=games.map(([a,b],i)=>`${i+1}. ${a} (#${RANK[a]}) v ${b} (#${RANK[b]})`).join("\n");
-    const text=`My World Cup 2026 predicted Round of 32:\n\n${lines}`;
-    if(navigator.share){navigator.share({title:"My WC2026 bracket",text}).catch(()=>{});}
-    else{try{navigator.clipboard.writeText(text);setMsg("Bracket copied — paste into WhatsApp, or screenshot it.");}catch(e){setMsg("Screenshot the bracket to share.");}}}
-  const field=null; // predicted bracket uses games[] directly via PredBracket
-  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">From your picks</div><h1 style={{fontSize:30}}>Who advances to the Round of 32</h1>
-    <p className="sub">{L?"Locked — tournament has started. View only.":"32 teams reach the Round of 32: the top 2 from each group (green), plus the 8 best third-place teams (amber). Your group picks set the points — 3 for a win, 1 for a draw. Use ▲▼ to break any ties, then pick your 8 third-place qualifiers below."}</p>
-    {Object.keys(GROUPS).sort().map(g=>{const {pts}=standings(GROUPS[g],groupFx,picks);const ord=orders[g];
-      return (<div key={g}><div className="ghead">GROUP {g}</div>
-        {ord.map((t,i)=><StRow key={t} pos={i+1} team={t} pts={pts[t]} cls={i<2?"q":i===2?"third":"out"} onUp={()=>move(g,i,-1)} onDown={()=>move(g,i,1)} canUp={i>0&&!L} canDown={i<3&&!L} />)}</div>);})}
-    <div className="ghead">PICK 8 OF 12 THIRD-PLACE TEAMS</div>
-    <p className="sub" style={{marginBottom:8}}>{validThirds.length}/8 selected · FIFA ranks shown to help</p>
-    <div>{thirdsPool.slice().sort((a,b)=>RANK[a.team]-RANK[b.team]).map(x=>(
-      <span key={x.team} className={"chip"+(thirds.includes(x.team)?" sel":"")} onClick={()=>toggleThird(x.team)}><Crest team={x.team}/>{x.team} <small>#{RANK[x.team]}·{x.group}</small></span>))}</div>
-    <div style={{margin:"18px 0"}}><button className="cta" style={{width:"100%"}} disabled={validThirds.length!==8||busy} onClick={generate}>{busy?"Saving…":validThirds.length!==8?`Pick ${8-validThirds.length} more`:L?"View my Round of 32":"Generate my Round of 32"}</button></div>
-    {msg&&<div className="ok" style={{marginBottom:12}}>{msg}</div>}
-    {showBr&&bErr&&<div className="err">{bErr}</div>}
-    {showBr&&games&&(<div><div className="ghead">YOUR PREDICTED BRACKET</div>
-      {realSet.size>0&&<p className="sub" style={{margin:"0 4px 8px"}}>Green = made the real Round of 32, red = didn't.</p>}
-      <PredBracket games={games} realSet={realSet} />
-      <button className="sharebtn" onClick={share}>Share my bracket</button>
-      <button className="homebtn" onClick={back}>← Back to home</button></div>)}
-  </div>);
+  const savedMatchesPicks = saved && saved.orders && saved.picksSig !== undefined && saved.picksSig === picksSig(picks);
+  const init = savedMatchesPicks ? saved.orders : freshOrders();
+  const [orders, setOrders] = useState(init);
+  const thirdsPool = Object.keys(GROUPS).map(g => ({
+    team: orders[g][2],
+    group: g
+  })).filter(x => x.team);
+  const [thirds, setThirds] = useState(() => saved && saved.thirds ? saved.thirds : thirdsPool.map(x => x.team).sort((a, b) => RANK[a] - RANK[b]).slice(0, 8));
+  const validThirds = thirds.filter(t => thirdsPool.some(x => x.team === t));
+  const [showBr, setShowBr] = useState(!!savedMatchesPicks);
+  const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
+  const realSet = actualR32(fixtures);
+  const L = locked();
+  function move(g, i, dir) {
+    if (L) return;
+    setOrders(o => {
+      const arr = o[g].slice();
+      const j = i + dir;
+      if (j < 0 || j > 3) return o;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+      return {
+        ...o,
+        [g]: arr
+      };
+    });
+    setShowBr(false);
+    setMsg("");
+  }
+  function toggleThird(t) {
+    if (L) return;
+    setThirds(ts => {
+      if (ts.includes(t)) return ts.filter(x => x !== t);
+      const poolNames = thirdsPool.map(x => x.team);
+      const pruned = ts.filter(x => poolNames.indexOf(x) !== -1); // drop teams no longer in 3rd after a reorder
+      return pruned.length < 8 ? [...pruned, t] : pruned;
+    });
+    setShowBr(false);
+    setMsg("");
+  }
+  if (made < 72) return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "back",
+    onClick: back
+  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Standings"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 30
+    }
+  }, "Almost there"), /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      background: "rgba(232,163,61,.12)",
+      borderColor: "var(--amber)",
+      color: "#f3dcb0"
+    }
+  }, "You've made ", made, "/72 group picks. Finish all 72 to generate your standings and predicted bracket."), /*#__PURE__*/React.createElement("button", {
+    className: "homebtn",
+    onClick: back
+  }, "← Back to home"));
+  let games = null,
+    bErr = "";
+  if (showBr) {
+    const chosen = validThirds.map(t => ({
+      team: t,
+      group: thirdsPool.find(x => x.team === t).group
+    }));
+    if (chosen.length !== 8) bErr = "Pick exactly 8 third-place teams.";else {
+      const assign = matchThirds(chosen);
+      if (!assign) bErr = "This set of third-place teams can't be slotted — swap one or two.";else {
+        const W = g => orders[g][0],
+          RU = g => orders[g][1];
+        const ref = t => {
+          const p = t.split("-");
+          return p[0] === "W" ? W(p[1]) : RU(p[1]);
+        };
+        games = FIXED_R32.map(([a, b]) => [ref(a), ref(b)]);
+        THIRD_SLOTS.forEach(s => {
+          if (assign[s.w]) games.push([W(s.w), assign[s.w].team]);
+        });
+      }
+    }
+  }
+  async function generate() {
+    setShowBr(true);
+    if (L) return;
+    const advancers = [];
+    Object.keys(GROUPS).forEach(g => {
+      advancers.push(orders[g][0], orders[g][1]);
+    });
+    validThirds.forEach(t => advancers.push(t));
+    setBusy(true);
+    setMsg("");
+    try {
+      const advObj = {
+        advancers,
+        orders,
+        thirds: validThirds,
+        picksSig: picksSig(picks)
+      };
+      const res = await postJSON({
+        action: "saveGroup",
+        username: user,
+        picksJson: JSON.stringify(picks),
+        advanceJson: JSON.stringify(advObj)
+      });
+      if (res.error) setMsg(res.error);else {
+        setMsg("Your bracket was saved.");
+        if (onSaved) onSaved(advObj);
+      }
+    } catch (e) {
+      setMsg("Network error — bracket not saved.");
+    }
+    setBusy(false);
+  }
+  function share() {
+    if (!games) return;
+    const lines = games.map(([a, b], i) => `${i + 1}. ${a} (#${RANK[a]}) v ${b} (#${RANK[b]})`).join("\n");
+    const text = `My World Cup 2026 predicted Round of 32:\n\n${lines}`;
+    if (navigator.share) {
+      navigator.share({
+        title: "My WC2026 bracket",
+        text
+      }).catch(() => {});
+    } else {
+      try {
+        navigator.clipboard.writeText(text);
+        setMsg("Bracket copied — paste into WhatsApp, or screenshot it.");
+      } catch (e) {
+        setMsg("Screenshot the bracket to share.");
+      }
+    }
+  }
+  const field = null; // predicted bracket uses games[] directly via PredBracket
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "back",
+    onClick: back
+  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "From your picks"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 30
+    }
+  }, "Who advances to the Round of 32"), /*#__PURE__*/React.createElement("p", {
+    className: "sub"
+  }, L ? "Locked — tournament has started. View only." : "32 teams reach the Round of 32: the top 2 from each group (green), plus the 8 best third-place teams (amber). Your group picks set the points — 3 for a win, 1 for a draw. Use ▲▼ to break any ties, then pick your 8 third-place qualifiers below."), Object.keys(GROUPS).sort().map(g => {
+    const {
+      pts
+    } = standings(GROUPS[g], groupFx, picks);
+    const ord = orders[g];
+    return /*#__PURE__*/React.createElement("div", {
+      key: g
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "ghead"
+    }, "GROUP ", g), ord.map((t, i) => /*#__PURE__*/React.createElement(StRow, {
+      key: t,
+      pos: i + 1,
+      team: t,
+      pts: pts[t],
+      cls: i < 2 ? "q" : i === 2 ? "third" : "out",
+      onUp: () => move(g, i, -1),
+      onDown: () => move(g, i, 1),
+      canUp: i > 0 && !L,
+      canDown: i < 3 && !L
+    })));
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "ghead"
+  }, "PICK 8 OF 12 THIRD-PLACE TEAMS"), /*#__PURE__*/React.createElement("p", {
+    className: "sub",
+    style: {
+      marginBottom: 8
+    }
+  }, validThirds.length, "/8 selected · FIFA ranks shown to help"), /*#__PURE__*/React.createElement("div", null, thirdsPool.slice().sort((a, b) => RANK[a.team] - RANK[b.team]).map(x => /*#__PURE__*/React.createElement("span", {
+    key: x.team,
+    className: "chip" + (thirds.includes(x.team) ? " sel" : ""),
+    onClick: () => toggleThird(x.team)
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: x.team
+  }), x.team, " ", /*#__PURE__*/React.createElement("small", null, "#", RANK[x.team], "·", x.group)))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      margin: "18px 0"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "cta",
+    style: {
+      width: "100%"
+    },
+    disabled: validThirds.length !== 8 || busy,
+    onClick: generate
+  }, busy ? "Saving…" : validThirds.length !== 8 ? `Pick ${8 - validThirds.length} more` : L ? "View my Round of 32" : "Generate my Round of 32")), msg && /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      marginBottom: 12
+    }
+  }, msg), showBr && bErr && /*#__PURE__*/React.createElement("div", {
+    className: "err"
+  }, bErr), showBr && games && /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    className: "ghead"
+  }, "YOUR PREDICTED BRACKET"), realSet.size > 0 && /*#__PURE__*/React.createElement("p", {
+    className: "sub",
+    style: {
+      margin: "0 4px 8px"
+    }
+  }, "Green = made the real Round of 32, red = didn't."), /*#__PURE__*/React.createElement(PredBracket, {
+    games: games,
+    realSet: realSet
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "sharebtn",
+    onClick: share
+  }, "Share my bracket"), /*#__PURE__*/React.createElement("button", {
+    className: "homebtn",
+    onClick: back
+  }, "← Back to home")));
 }
 
 /* Knockout bracket — only live once the real 32 qualifiers are in the sheet */
-function koIdx(f){const m=String(f.id).match(/(\d+)\s*$/);return m?parseInt(m[1],10):9999;}
-function buildKOField(fixtures){const r32=fixtures.filter(f=>f.round==="R32").sort((a,b)=>koIdx(a)-koIdx(b));
-  const arr=[];r32.forEach(f=>{arr.push({team:f.teamA,seed:RANK[f.teamA]||99});arr.push({team:f.teamB,seed:RANK[f.teamB]||99});});return arr;}
-function Knockout({user,fixtures,savedPk,bracketLocked,readOnly,back}){
-  const real=fixtures.filter(f=>f.round==="R32").length===16;
-  const [field]=useState(()=>buildKOField(fixtures));
-  const [pk,setPk]=useState(savedPk||{});const [msg,setMsg]=useState("");const [busy,setBusy]=useState(false);const [saved,setSaved]=useState(false);
-  const dead=eliminatedSet(fixtures);
-  function pick(round,m,team){if(readOnly||bracketLocked)return;setPk(p=>{
-    const np=JSON.parse(JSON.stringify(p||{}));np[round]=np[round]||{};np[round][m]=team;
-    const idx=ROUND_SEQ.findIndex(x=>x[0]===round);
-    if(idx>=0){let curM=m;
-      for(let k=idx+1;k<ROUND_SEQ.length;k++){
-        const cur=ROUND_SEQ[k-1][0],nxt=ROUND_SEQ[k][0],nm=Math.floor(curM/2);
-        const fA=(np[cur]||{})[nm*2],fB=(np[cur]||{})[nm*2+1],chosen=(np[nxt]||{})[nm];
-        if(chosen!==fA&&chosen!==fB){if(np[nxt])delete np[nxt][nm];curM=nm;}else break;
-      }}
-    if(round!=="BRONZE"&&np.BRONZE&&np.BRONZE[0]!=null){
-      const qf=np.QF||{},sf=np.SF||{},lo=(w,a,b)=>w==null?null:(w===a?b:w===b?a:null);
-      const l0=lo(sf[0],qf[0],qf[1]),l1=lo(sf[1],qf[2],qf[3]);
-      if(np.BRONZE[0]!==l0&&np.BRONZE[0]!==l1)delete np.BRONZE[0];
+function koIdx(f) {
+  const m = String(f.id).match(/(\d+)\s*$/);
+  return m ? parseInt(m[1], 10) : 9999;
+}
+function buildKOField(fixtures) {
+  const r32 = fixtures.filter(f => f.round === "R32").sort((a, b) => koIdx(a) - koIdx(b));
+  const arr = [];
+  r32.forEach(f => {
+    arr.push({
+      team: f.teamA,
+      seed: RANK[f.teamA] || 99
+    });
+    arr.push({
+      team: f.teamB,
+      seed: RANK[f.teamB] || 99
+    });
+  });
+  return arr;
+}
+function Knockout({
+  user,
+  fixtures,
+  savedPk,
+  bracketLocked,
+  readOnly,
+  back
+}) {
+  const real = fixtures.filter(f => f.round === "R32").length === 16;
+  const [field] = useState(() => buildKOField(fixtures));
+  const [pk, setPk] = useState(savedPk || {});
+  const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const dead = eliminatedSet(fixtures);
+  function pick(round, m, team) {
+    if (readOnly || bracketLocked) return;
+    setPk(p => {
+      const np = JSON.parse(JSON.stringify(p || {}));
+      np[round] = np[round] || {};
+      np[round][m] = team;
+      const idx = ROUND_SEQ.findIndex(x => x[0] === round);
+      if (idx >= 0) {
+        let curM = m;
+        for (let k = idx + 1; k < ROUND_SEQ.length; k++) {
+          const cur = ROUND_SEQ[k - 1][0],
+            nxt = ROUND_SEQ[k][0],
+            nm = Math.floor(curM / 2);
+          const fA = (np[cur] || {})[nm * 2],
+            fB = (np[cur] || {})[nm * 2 + 1],
+            chosen = (np[nxt] || {})[nm];
+          if (chosen !== fA && chosen !== fB) {
+            if (np[nxt]) delete np[nxt][nm];
+            curM = nm;
+          } else break;
+        }
+      }
+      if (round !== "BRONZE" && np.BRONZE && np.BRONZE[0] != null) {
+        const qf = np.QF || {},
+          sf = np.SF || {},
+          lo = (w, a, b) => w == null ? null : w === a ? b : w === b ? a : null;
+        const l0 = lo(sf[0], qf[0], qf[1]),
+          l1 = lo(sf[1], qf[2], qf[3]);
+        if (np.BRONZE[0] !== l0 && np.BRONZE[0] !== l1) delete np.BRONZE[0];
+      }
+      return np;
+    });
+    setMsg("");
+    setSaved(false);
+  }
+  const champ = (pk.FINAL || {})[0];
+  async function submit() {
+    setBusy(true);
+    setMsg("");
+    try {
+      const res = await postJSON({
+        action: "saveBracket",
+        username: user,
+        picksJson: JSON.stringify(pk)
+      });
+      if (res.error) {
+        setMsg(res.error);
+        setSaved(false);
+      } else {
+        setMsg("");
+        setSaved(true);
+      }
+    } catch (e) {
+      setMsg("Network error submitting.");
+      setSaved(false);
     }
-    return np;});setMsg("");setSaved(false);}
-  const champ=(pk.FINAL||{})[0];
-  async function submit(){setBusy(true);setMsg("");try{const res=await postJSON({action:"saveBracket",username:user,picksJson:JSON.stringify(pk)});
-    if(res.error){setMsg(res.error);setSaved(false);}else{setMsg("");setSaved(true);}}catch(e){setMsg("Network error submitting.");setSaved(false);}setBusy(false);}
-  if(!real) return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">Knockout</div><h1 style={{fontSize:30}}>Knockout bracket</h1>
-    <div className="ok" style={{background:"rgba(232,163,61,.12)",borderColor:"var(--amber)",color:"#f3dcb0"}}>The knockout bracket opens once the group stage finishes and all 32 qualifiers are set (after June 27). Come back then to fill out your real Round of 32 through the final.</div>
-    <button className="homebtn" onClick={back}>← Back to home</button></div>);
-  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">Knockout</div><h1 style={{fontSize:30}}>Knockout bracket</h1>
-    <p className="sub">{readOnly?"View only.":bracketLocked?"Locked — knockout underway. ":"Tap a team to advance it; scroll sideways. "}Eliminated teams cross out red across your whole bracket.</p>
-    {(bracketLocked||dead.size>0)&&(function(){
-      var RND=[["R32",16],["R16",8],["QF",4],["SF",2],["FINAL",1]];
-      function midx(id){var mm=String(id||"").match(/(\d+)\s*$/);return mm?parseInt(mm[1],10)-1:-1;}
-      var realW={},played={};
-      fixtures.forEach(function(f){if(f.result&&["R32","R16","QF","SF","FINAL"].indexOf(f.round)>=0){played[f.round]=true;if(f.result!=="D"){var i=midx(f.id);realW[f.round]=realW[f.round]||{};realW[f.round][i]=(f.result==="A"?f.teamA:f.teamB);}}});
-      var champ=(pk.FINAL||{})[0],champDead=champ&&dead.has(champ),realChamp=(realW.FINAL||{})[0];
-      var st=!champ?"":(realChamp&&realChamp===champ?"CHAMPION":champDead?"OUT":"ALIVE");
-      var cc=st==="CHAMPION"?"on champ":st==="OUT"?"off":st==="ALIVE"?"on":"";
-      return <div className="survival">
-        <span className={"svch "+cc}>{champ?champ+" "+st:"No champion"}</span>
-        {RND.map(function(rn){var round=rn[0],tot=rn[1];
-          if(!played[round])return <span key={round} className="svr">{round} <b>&ndash;/{tot}</b></span>;
-          var picks=pk[round]||{},right=0;
-          for(var m=0;m<tot;m++){if(picks[m]&&realW[round]&&realW[round][m]===picks[m])right++;}
-          return <span key={round} className="svr">{round} <b>{right}/{tot}</b></span>;})}
-      </div>;})()}
-    <Bracket field={field} pk={pk} onPick={pick} fixtures={fixtures} interactive={!readOnly&&!bracketLocked} />
-    {msg&&<div className="ok" style={{marginTop:10}}>{msg}</div>}
-    {!readOnly&&!bracketLocked&&<div className="bar"><div className="inner">{saved&&<span className="savedok">&#10003; Saved</span>}
-      <button className="cta" disabled={!champ||busy} onClick={submit}>{busy?"Saving…":saved?"Saved ✓ — submit again":champ?"Submit bracket":"Pick to the final"}</button></div></div>}
-    {(readOnly||bracketLocked)&&<button className="homebtn" onClick={back}>← Back to home</button>}</div>);
+    setBusy(false);
+  }
+  if (!real) return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "back",
+    onClick: back
+  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Knockout"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 30
+    }
+  }, "Knockout bracket"), /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      background: "rgba(232,163,61,.12)",
+      borderColor: "var(--amber)",
+      color: "#f3dcb0"
+    }
+  }, "The knockout bracket opens once the group stage finishes and all 32 qualifiers are set (after June 27). Come back then to fill out your real Round of 32 through the final."), /*#__PURE__*/React.createElement("button", {
+    className: "homebtn",
+    onClick: back
+  }, "← Back to home"));
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "back",
+    onClick: back
+  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Knockout"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 30
+    }
+  }, "Knockout bracket"), /*#__PURE__*/React.createElement("p", {
+    className: "sub"
+  }, readOnly ? "View only." : bracketLocked ? "Locked — knockout underway. " : "Tap a team to advance it; scroll sideways. ", "Eliminated teams cross out red across your whole bracket."), (bracketLocked || dead.size > 0) && function () {
+    var RND = [["R32", 16], ["R16", 8], ["QF", 4], ["SF", 2], ["FINAL", 1]];
+    function midx(id) {
+      var mm = String(id || "").match(/(\d+)\s*$/);
+      return mm ? parseInt(mm[1], 10) - 1 : -1;
+    }
+    var realW = {},
+      played = {};
+    fixtures.forEach(function (f) {
+      if (f.result && ["R32", "R16", "QF", "SF", "FINAL"].indexOf(f.round) >= 0) {
+        played[f.round] = true;
+        if (f.result !== "D") {
+          var i = midx(f.id);
+          realW[f.round] = realW[f.round] || {};
+          realW[f.round][i] = f.result === "A" ? f.teamA : f.teamB;
+        }
+      }
+    });
+    var champ = (pk.FINAL || {})[0],
+      champDead = champ && dead.has(champ),
+      realChamp = (realW.FINAL || {})[0];
+    var st = !champ ? "" : realChamp && realChamp === champ ? "CHAMPION" : champDead ? "OUT" : "ALIVE";
+    var cc = st === "CHAMPION" ? "on champ" : st === "OUT" ? "off" : st === "ALIVE" ? "on" : "";
+    return /*#__PURE__*/React.createElement("div", {
+      className: "survival"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "svch " + cc
+    }, champ ? champ + " " + st : "No champion"), RND.map(function (rn) {
+      var round = rn[0],
+        tot = rn[1];
+      if (!played[round]) return /*#__PURE__*/React.createElement("span", {
+        key: round,
+        className: "svr"
+      }, round, " ", /*#__PURE__*/React.createElement("b", null, "–/", tot));
+      var picks = pk[round] || {},
+        right = 0;
+      for (var m = 0; m < tot; m++) {
+        if (picks[m] && realW[round] && realW[round][m] === picks[m]) right++;
+      }
+      return /*#__PURE__*/React.createElement("span", {
+        key: round,
+        className: "svr"
+      }, round, " ", /*#__PURE__*/React.createElement("b", null, right, "/", tot));
+    }));
+  }(), /*#__PURE__*/React.createElement(Bracket, {
+    field: field,
+    pk: pk,
+    onPick: pick,
+    fixtures: fixtures,
+    interactive: !readOnly && !bracketLocked
+  }), msg && /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      marginTop: 10
+    }
+  }, msg), !readOnly && !bracketLocked && /*#__PURE__*/React.createElement("div", {
+    className: "bar"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "inner"
+  }, saved && /*#__PURE__*/React.createElement("span", {
+    className: "savedok"
+  }, "✓ Saved"), /*#__PURE__*/React.createElement("button", {
+    className: "cta",
+    disabled: !champ || busy,
+    onClick: submit
+  }, busy ? "Saving…" : saved ? "Saved ✓ — submit again" : champ ? "Submit bracket" : "Pick to the final"))), (readOnly || bracketLocked) && /*#__PURE__*/React.createElement("button", {
+    className: "homebtn",
+    onClick: back
+  }, "← Back to home"));
 }
 
 /* Leaderboard */
-function Leaderboard({user,back,bracketLocked,fixtures,viewBracket}){
-  const dead=eliminatedSet(fixtures||[]);
-  const [rows,setRows]=useState(null);const [bp,setBp]=useState({});const [err,setErr]=useState("");
-  useEffect(()=>{fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
-    if(d.error){setErr(d.error);return;}
-    const scored={};(d.leaderboard||[]).forEach(r=>scored[r.username]=r);
-    const all=(d.users||[]).map(u=>scored[u]||{username:u,total:0,groupPts:0,advancePts:0,bracketPts:0});
-    (d.leaderboard||[]).forEach(r=>{if((d.users||[]).indexOf(r.username)===-1)all.push(r);}); // safety: include any scored user missing from Users
-    setRows(ranksWithTies(all.sort((a,b)=>(b.total||0)-(a.total||0)||String(a.username).localeCompare(b.username))));}).catch(()=>setErr("Couldn't load."));
-    fetch(API_URL+"?action=mypicks&username="+encodeURIComponent(user)).then(r=>r.json()).then(d=>{const m={};(d.allBracketPicks||[]).forEach(x=>m[x.username]=x.picksJson);setBp(m);}).catch(()=>{});
-  },[]);
-  function champOf(u){try{const pk=JSON.parse(bp[u]||"{}");return (pk.FINAL||{})[0];}catch(e){return null;}}
-  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">Standings</div><h1 style={{fontSize:30}}>Leaderboard</h1>
-    {bracketLocked&&<p className="sub" style={{marginTop:6}}>Tap anyone to see their bracket.</p>}
-    {err&&<div className="err" style={{marginTop:12}}>{err}</div>}
-    {!rows&&!err&&<p className="sub" style={{marginTop:14}}>Loading…</p>}
-    {rows&&rows.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No scores yet — the board fills in once games are played.</div>}
-    {rows&&rows.map((r,i)=>{const champ=bracketLocked?champOf(r.username):null;
-      return (<div key={r.username} className={"lb"+(i<3?" top":"")+(i===0?" p1":i===1?" p2":i===2?" p3":"")+(r.username===user?" me":"")+(bracketLocked?" clickable":"")} onClick={()=>bracketLocked&&viewBracket(r.username)}>
-      <span className="rk">{r.place}</span>
-      <span className="u">{r.username}{r.username===user?" (you)":""}<small>group {r.groupPts||0} · advance {r.advancePts||0} · bracket {r.bracketPts||0}{champ?(<span> &middot; champ: <span className={dead.has(champ)?"chx":""}>{champ}</span></span>):""}</small></span>
-      <span className="tot">{r.total||0}</span></div>);})}
-    <button className="homebtn" onClick={back}>← Back to home</button></div>);
+function Leaderboard({
+  user,
+  back,
+  bracketLocked,
+  fixtures,
+  viewBracket
+}) {
+  const dead = eliminatedSet(fixtures || []);
+  const [rows, setRows] = useState(null);
+  const [bp, setBp] = useState({});
+  const [err, setErr] = useState("");
+  useEffect(() => {
+    fetch(API_URL + "?action=bootstrap").then(r => r.json()).then(d => {
+      if (d.error) {
+        setErr(d.error);
+        return;
+      }
+      const scored = {};
+      (d.leaderboard || []).forEach(r => scored[r.username] = r);
+      const all = (d.users || []).map(u => scored[u] || {
+        username: u,
+        total: 0,
+        groupPts: 0,
+        advancePts: 0,
+        bracketPts: 0
+      });
+      (d.leaderboard || []).forEach(r => {
+        if ((d.users || []).indexOf(r.username) === -1) all.push(r);
+      }); // safety: include any scored user missing from Users
+      setRows(ranksWithTies(all.sort((a, b) => (b.total || 0) - (a.total || 0) || String(a.username).localeCompare(b.username))));
+    }).catch(() => setErr("Couldn't load."));
+    fetch(API_URL + "?action=mypicks&username=" + encodeURIComponent(user)).then(r => r.json()).then(d => {
+      const m = {};
+      (d.allBracketPicks || []).forEach(x => m[x.username] = x.picksJson);
+      setBp(m);
+    }).catch(() => {});
+  }, []);
+  function champOf(u) {
+    try {
+      const pk = JSON.parse(bp[u] || "{}");
+      return (pk.FINAL || {})[0];
+    } catch (e) {
+      return null;
+    }
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "back",
+    onClick: back
+  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Standings"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 30
+    }
+  }, "Leaderboard"), bracketLocked && /*#__PURE__*/React.createElement("p", {
+    className: "sub",
+    style: {
+      marginTop: 6
+    }
+  }, "Tap anyone to see their bracket."), err && /*#__PURE__*/React.createElement("div", {
+    className: "err",
+    style: {
+      marginTop: 12
+    }
+  }, err), !rows && !err && /*#__PURE__*/React.createElement("p", {
+    className: "sub",
+    style: {
+      marginTop: 14
+    }
+  }, "Loading…"), rows && rows.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      background: "rgba(124,151,168,.1)",
+      borderColor: "var(--line)",
+      color: "var(--muted)"
+    }
+  }, "No scores yet — the board fills in once games are played."), rows && rows.map((r, i) => {
+    const champ = bracketLocked ? champOf(r.username) : null;
+    return /*#__PURE__*/React.createElement("div", {
+      key: r.username,
+      className: "lb" + (i < 3 ? " top" : "") + (i === 0 ? " p1" : i === 1 ? " p2" : i === 2 ? " p3" : "") + (r.username === user ? " me" : "") + (bracketLocked ? " clickable" : ""),
+      onClick: () => bracketLocked && viewBracket(r.username)
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "rk"
+    }, r.place), /*#__PURE__*/React.createElement("span", {
+      className: "u"
+    }, r.username, r.username === user ? " (you)" : "", /*#__PURE__*/React.createElement("small", null, "group ", r.groupPts || 0, " · advance ", r.advancePts || 0, " · bracket ", r.bracketPts || 0, champ ? /*#__PURE__*/React.createElement("span", null, " · champ: ", /*#__PURE__*/React.createElement("span", {
+      className: dead.has(champ) ? "chx" : ""
+    }, champ)) : "")), /*#__PURE__*/React.createElement("span", {
+      className: "tot"
+    }, r.total || 0));
+  }), /*#__PURE__*/React.createElement("button", {
+    className: "homebtn",
+    onClick: back
+  }, "← Back to home"));
 }
 
 /* Live games */
-function LiveGames({fixtures,allGroupPicks,leaderboard,back}){
-  const live=fixtures.filter(isLive).sort(byTime);
-  const now=new Date(),todayStr=now.toDateString(),tmwStr=new Date(now.getTime()+864e5).toDateString();
-  const liveIds={};live.forEach(f=>liveIds[f.id]=1);
-  const upcoming=fixtures.filter(f=>{
-    if(liveIds[f.id])return false;
-    if(f.status==="FINISHED"||f.result)return false;
-    if(!f.dateTimeISO)return false;
-    const d=new Date(f.dateTimeISO).toDateString();
-    return d===todayStr||d===tmwStr;
+function LiveGames({
+  fixtures,
+  allGroupPicks,
+  leaderboard,
+  back
+}) {
+  const live = fixtures.filter(isLive).sort(byTime);
+  const now = new Date(),
+    todayStr = now.toDateString(),
+    tmwStr = new Date(now.getTime() + 864e5).toDateString();
+  const liveIds = {};
+  live.forEach(f => liveIds[f.id] = 1);
+  const upcoming = fixtures.filter(f => {
+    if (liveIds[f.id]) return false;
+    if (f.status === "FINISHED" || f.result) return false;
+    if (!f.dateTimeISO) return false;
+    const d = new Date(f.dateTimeISO).toDateString();
+    return d === todayStr || d === tmwStr;
   }).sort(byTime);
-  const placeMap={};ranksWithTies((leaderboard||[]).slice().sort((a,b)=>(b.total||0)-(a.total||0))).forEach(r=>placeMap[r.username]=r.place);
-  function backers(fid,side){return (allGroupPicks||[]).filter(p=>{try{return JSON.parse(p.picksJson||"{}")[fid]===side;}catch(e){return false;}}).map(p=>p.username);}
-  function picksBlock(f){const aB=backers(f.id,"A"),bB=backers(f.id,"B"),dB=backers(f.id,"D");
-    return (<div className="picksec">
-      <div className="psrow"><span className="pshead">Picked {f.teamA}</span><span className="pscount">{aB.length}</span></div>
-      <div className="psnames">{aB.length?aB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
-      <div className="psrow"><span className="pshead">Picked Draw</span><span className="pscount">{dB.length}</span></div>
-      <div className="psnames">{dB.length?dB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
-      <div className="psrow"><span className="pshead">Picked {f.teamB}</span><span className="pscount">{bB.length}</span></div>
-      <div className="psnames">{bB.length?bB.map(u=><span key={u} className="pn">{u}<b>{placeMap[u]||"—"}</b></span>):<span className="pnone">No one yet</span>}</div>
-    </div>);}
-  function ptsRow(f){const isKO=f.round&&f.round!=="GROUP";
-    const cells=isKO
-      ?[{lab:f.teamA,p:koPotential(f.round,TITLE[f.teamA],TITLE[f.teamB])},{lab:f.teamB,p:koPotential(f.round,TITLE[f.teamB],TITLE[f.teamA])}]
-      :[{lab:f.teamA,p:potential("A",f.probA,f.probB)},{lab:"Draw",p:potential("D",f.probA,f.probB)},{lab:f.teamB,p:potential("B",f.probA,f.probB)}];
-    return (<div style={{marginTop:12}}>
-      <div className="eyebrow" style={{fontSize:10,marginBottom:6,color:"var(--muted)"}}>Points for a correct call</div>
-      <div style={{display:"flex",gap:8}}>
-        {cells.map((c,i)=>(<div key={i} style={{flex:1,textAlign:"center",background:"var(--surface-2)",border:"1px solid var(--line)",borderRadius:8,padding:"7px 4px"}}>
-          <div style={{font:'700 11px Inter',color:"var(--muted)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.lab}</div>
-          <div style={{font:'700 15px "JetBrains Mono"',color:"var(--text)",marginTop:2}}>+{c.p}<span style={{fontSize:10,color:"var(--muted)"}}> pt{c.p===1?"":"s"}</span></div>
-        </div>))}
-      </div></div>);}
-  const koLabel=f=>{const d=new Date(f.dateTimeISO),isTmw=d.toDateString()===tmwStr;
-    return (isTmw?"Tomorrow ":"Today ")+d.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});};
-  return (<div className="wrap"><button className="back" onClick={back}>← Home</button>
-    <div className="eyebrow">Now & next</div><h1 style={{fontSize:30}}>Live & Upcoming</h1>
-    {live.length===0&&upcoming.length===0&&<div className="ok" style={{background:"rgba(124,151,168,.1)",borderColor:"var(--line)",color:"var(--muted)"}}>No live or upcoming games right now. Check back on match days.</div>}
-    {live.length>0&&<div className="eyebrow" style={{margin:"20px 0 10px",color:"var(--coral)"}}>● Live now</div>}
-    {live.map(f=>(<div key={f.id} className="lg">
-      <div className="lgtop">
-        <div className="lgteam"><Crest team={f.teamA}/><div className="nm">{f.teamA}</div><div className="rk">FIFA #{f.seedA||RANK[f.teamA]}</div></div>
-        <div className="scorebug"><span>{f.scoreA||0}</span><span style={{color:"var(--muted)"}}>–</span><span>{f.scoreB||0}</span></div>
-        <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
-      </div>
-      <div style={{textAlign:"center"}}><span className="scorebug livedot">● LIVE</span> <span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
-      {ptsRow(f)}{picksBlock(f)}</div>))}
-    {upcoming.length>0&&<div className="eyebrow" style={{margin:"24px 0 10px"}}>Upcoming · today & tomorrow</div>}
-    {upcoming.map(f=>(<div key={f.id} className="lg">
-      <div className="lgtop">
-        <div className="lgteam"><Crest team={f.teamA}/><div className="nm">{f.teamA}</div><div className="rk">FIFA #{f.seedA||RANK[f.teamA]}</div></div>
-        <div style={{fontFamily:'"JetBrains Mono"',fontSize:13,fontWeight:700,color:"var(--muted)",textAlign:"center",whiteSpace:"nowrap"}}>{koLabel(f)}</div>
-        <div className="lgteam"><Crest team={f.teamB}/><div className="nm">{f.teamB}</div><div className="rk">FIFA #{f.seedB||RANK[f.teamB]}</div></div>
-      </div>
-      <div style={{textAlign:"center"}}><span className="sub">{f.city}{f.country?", "+f.country:""}</span></div>
-      {ptsRow(f)}{picksBlock(f)}</div>))}
-    <button className="homebtn" onClick={back}>← Back to home</button></div>);
+  const placeMap = {};
+  ranksWithTies((leaderboard || []).slice().sort((a, b) => (b.total || 0) - (a.total || 0))).forEach(r => placeMap[r.username] = r.place);
+  function backers(fid, side) {
+    return (allGroupPicks || []).filter(p => {
+      try {
+        return JSON.parse(p.picksJson || "{}")[fid] === side;
+      } catch (e) {
+        return false;
+      }
+    }).map(p => p.username);
+  }
+  function picksBlock(f) {
+    const aB = backers(f.id, "A"),
+      bB = backers(f.id, "B"),
+      dB = backers(f.id, "D");
+    return /*#__PURE__*/React.createElement("div", {
+      className: "picksec"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "psrow"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pshead"
+    }, "Picked ", f.teamA), /*#__PURE__*/React.createElement("span", {
+      className: "pscount"
+    }, aB.length)), /*#__PURE__*/React.createElement("div", {
+      className: "psnames"
+    }, aB.length ? aB.map(u => /*#__PURE__*/React.createElement("span", {
+      key: u,
+      className: "pn"
+    }, u, /*#__PURE__*/React.createElement("b", null, placeMap[u] || "—"))) : /*#__PURE__*/React.createElement("span", {
+      className: "pnone"
+    }, "No one yet")), /*#__PURE__*/React.createElement("div", {
+      className: "psrow"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pshead"
+    }, "Picked Draw"), /*#__PURE__*/React.createElement("span", {
+      className: "pscount"
+    }, dB.length)), /*#__PURE__*/React.createElement("div", {
+      className: "psnames"
+    }, dB.length ? dB.map(u => /*#__PURE__*/React.createElement("span", {
+      key: u,
+      className: "pn"
+    }, u, /*#__PURE__*/React.createElement("b", null, placeMap[u] || "—"))) : /*#__PURE__*/React.createElement("span", {
+      className: "pnone"
+    }, "No one yet")), /*#__PURE__*/React.createElement("div", {
+      className: "psrow"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "pshead"
+    }, "Picked ", f.teamB), /*#__PURE__*/React.createElement("span", {
+      className: "pscount"
+    }, bB.length)), /*#__PURE__*/React.createElement("div", {
+      className: "psnames"
+    }, bB.length ? bB.map(u => /*#__PURE__*/React.createElement("span", {
+      key: u,
+      className: "pn"
+    }, u, /*#__PURE__*/React.createElement("b", null, placeMap[u] || "—"))) : /*#__PURE__*/React.createElement("span", {
+      className: "pnone"
+    }, "No one yet")));
+  }
+  function ptsRow(f) {
+    const isKO = f.round && f.round !== "GROUP";
+    const cells = isKO ? [{
+      lab: f.teamA,
+      p: koPotential(f.round, TITLE[f.teamA], TITLE[f.teamB])
+    }, {
+      lab: f.teamB,
+      p: koPotential(f.round, TITLE[f.teamB], TITLE[f.teamA])
+    }] : [{
+      lab: f.teamA,
+      p: potential("A", f.probA, f.probB)
+    }, {
+      lab: "Draw",
+      p: potential("D", f.probA, f.probB)
+    }, {
+      lab: f.teamB,
+      p: potential("B", f.probA, f.probB)
+    }];
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        marginTop: 12
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "eyebrow",
+      style: {
+        fontSize: 10,
+        marginBottom: 6,
+        color: "var(--muted)"
+      }
+    }, "Points for a correct call"), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "flex",
+        gap: 8
+      }
+    }, cells.map((c, i) => /*#__PURE__*/React.createElement("div", {
+      key: i,
+      style: {
+        flex: 1,
+        textAlign: "center",
+        background: "var(--surface-2)",
+        border: "1px solid var(--line)",
+        borderRadius: 8,
+        padding: "7px 4px"
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: {
+        font: '700 11px Inter',
+        color: "var(--muted)",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
+      }
+    }, c.lab), /*#__PURE__*/React.createElement("div", {
+      style: {
+        font: '700 15px "JetBrains Mono"',
+        color: "var(--text)",
+        marginTop: 2
+      }
+    }, "+", c.p, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 10,
+        color: "var(--muted)"
+      }
+    }, " pt", c.p === 1 ? "" : "s"))))));
+  }
+  const koLabel = f => {
+    const d = new Date(f.dateTimeISO),
+      isTmw = d.toDateString() === tmwStr;
+    return (isTmw ? "Tomorrow " : "Today ") + d.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit"
+    });
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "wrap"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "back",
+    onClick: back
+  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow"
+  }, "Now & next"), /*#__PURE__*/React.createElement("h1", {
+    style: {
+      fontSize: 30
+    }
+  }, "Live & Upcoming"), live.length === 0 && upcoming.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      background: "rgba(124,151,168,.1)",
+      borderColor: "var(--line)",
+      color: "var(--muted)"
+    }
+  }, "No live or upcoming games right now. Check back on match days."), live.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow",
+    style: {
+      margin: "20px 0 10px",
+      color: "var(--coral)"
+    }
+  }, "● Live now"), live.map(f => /*#__PURE__*/React.createElement("div", {
+    key: f.id,
+    className: "lg"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lgtop"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lgteam"
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: f.teamA
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "nm"
+  }, f.teamA), /*#__PURE__*/React.createElement("div", {
+    className: "rk"
+  }, "FIFA #", f.seedA || RANK[f.teamA])), /*#__PURE__*/React.createElement("div", {
+    className: "scorebug"
+  }, /*#__PURE__*/React.createElement("span", null, f.scoreA || 0), /*#__PURE__*/React.createElement("span", {
+    style: {
+      color: "var(--muted)"
+    }
+  }, "–"), /*#__PURE__*/React.createElement("span", null, f.scoreB || 0)), /*#__PURE__*/React.createElement("div", {
+    className: "lgteam"
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: f.teamB
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "nm"
+  }, f.teamB), /*#__PURE__*/React.createElement("div", {
+    className: "rk"
+  }, "FIFA #", f.seedB || RANK[f.teamB]))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "scorebug livedot"
+  }, "● LIVE"), " ", /*#__PURE__*/React.createElement("span", {
+    className: "sub"
+  }, f.city, f.country ? ", " + f.country : "")), ptsRow(f), picksBlock(f))), upcoming.length > 0 && /*#__PURE__*/React.createElement("div", {
+    className: "eyebrow",
+    style: {
+      margin: "24px 0 10px"
+    }
+  }, "Upcoming · today & tomorrow"), upcoming.map(f => /*#__PURE__*/React.createElement("div", {
+    key: f.id,
+    className: "lg"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lgtop"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "lgteam"
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: f.teamA
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "nm"
+  }, f.teamA), /*#__PURE__*/React.createElement("div", {
+    className: "rk"
+  }, "FIFA #", f.seedA || RANK[f.teamA])), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: '"JetBrains Mono"',
+      fontSize: 13,
+      fontWeight: 700,
+      color: "var(--muted)",
+      textAlign: "center",
+      whiteSpace: "nowrap"
+    }
+  }, koLabel(f)), /*#__PURE__*/React.createElement("div", {
+    className: "lgteam"
+  }, /*#__PURE__*/React.createElement(Crest, {
+    team: f.teamB
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "nm"
+  }, f.teamB), /*#__PURE__*/React.createElement("div", {
+    className: "rk"
+  }, "FIFA #", f.seedB || RANK[f.teamB]))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "sub"
+  }, f.city, f.country ? ", " + f.country : "")), ptsRow(f), picksBlock(f))), /*#__PURE__*/React.createElement("button", {
+    className: "homebtn",
+    onClick: back
+  }, "← Back to home"));
 }
 
 /* App */
-function App(){
-  const [user,setUser]=useState((typeof localStorage!=="undefined"&&localStorage.getItem("wc_user"))||null);const [view,setView]=useState("home");
-  const [fixtures,setFixtures]=useState(buildFixtures());const [picks,setPicks]=useState({});
-  const [advance,setAdvance]=useState(null);const [bracketPk,setBracketPk]=useState(null);
-  const [leaderboard,setLeaderboard]=useState([]);const [allGroupPicks,setAllGroupPicks]=useState([]);
-  const [bracketLocked,setBL]=useState(false);
-  const [viewUser,setViewUser]=useState(null);const [viewUserPk,setViewUserPk]=useState(null);
-  function load(){
-    fetch(API_URL+"?action=bootstrap").then(r=>r.json()).then(d=>{
-      if(d.teams){d.teams.forEach(t=>{if(t.crestUrl)CREST[t.team]=t.crestUrl;});}
-      if(d.titleOdds){d.titleOdds.forEach(t=>{TITLE[t.team]=Number(t.titleProb);});}
-      if(d.fixtures&&d.fixtures.length){const teams={};(d.teams||[]).forEach(t=>teams[t.team]=t);const odds={};(d.odds||[]).forEach(o=>odds[o.fixtureId]=o);
-        setFixtures(d.fixtures.map(f=>({...f,seedA:Number((teams[f.teamA]||{}).seed)||RANK[f.teamA],seedB:Number((teams[f.teamB]||{}).seed)||RANK[f.teamB],probA:(odds[f.id]||{}).probA,probB:(odds[f.id]||{}).probB})));}
-      setLeaderboard(d.leaderboard||[]);setBL(!!d.bracketLocked);
-    }).catch(()=>{});
-    fetch(API_URL+"?action=mypicks&username="+encodeURIComponent(user)).then(r=>r.json()).then(d=>{
-      if(d.group&&d.group.picksJson)setPicks(JSON.parse(d.group.picksJson));
-      if(d.group&&d.group.advanceJson){try{const a=JSON.parse(d.group.advanceJson);setAdvance(Array.isArray(a)?{advancers:a}:a);}catch(e){}}
-      if(d.bracket&&d.bracket.picksJson){try{setBracketPk(JSON.parse(d.bracket.picksJson));}catch(e){}}
-      setAllGroupPicks(d.allGroupPicks||[]);
-    }).catch(()=>{});
+function App() {
+  const [user, setUser] = useState(typeof localStorage !== "undefined" && localStorage.getItem("wc_user") || null);
+  const [view, setView] = useState("home");
+  const [fixtures, setFixtures] = useState(buildFixtures());
+  const [picks, setPicks] = useState({});
+  const [advance, setAdvance] = useState(null);
+  const [bracketPk, setBracketPk] = useState(null);
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [allGroupPicks, setAllGroupPicks] = useState([]);
+  const [bracketLocked, setBL] = useState(false);
+  const [viewUser, setViewUser] = useState(null);
+  const [viewUserPk, setViewUserPk] = useState(null);
+  function load() {
+    fetch(API_URL + "?action=bootstrap").then(r => r.json()).then(d => {
+      if (d.teams) {
+        d.teams.forEach(t => {
+          if (t.crestUrl) CREST[t.team] = t.crestUrl;
+        });
+      }
+      if (d.titleOdds) {
+        d.titleOdds.forEach(t => {
+          TITLE[t.team] = Number(t.titleProb);
+        });
+      }
+      if (d.fixtures && d.fixtures.length) {
+        const teams = {};
+        (d.teams || []).forEach(t => teams[t.team] = t);
+        const odds = {};
+        (d.odds || []).forEach(o => odds[o.fixtureId] = o);
+        setFixtures(d.fixtures.map(f => ({
+          ...f,
+          seedA: Number((teams[f.teamA] || {}).seed) || RANK[f.teamA],
+          seedB: Number((teams[f.teamB] || {}).seed) || RANK[f.teamB],
+          probA: (odds[f.id] || {}).probA,
+          probB: (odds[f.id] || {}).probB
+        })));
+      }
+      setLeaderboard(d.leaderboard || []);
+      setBL(!!d.bracketLocked);
+    }).catch(() => {});
+    fetch(API_URL + "?action=mypicks&username=" + encodeURIComponent(user)).then(r => r.json()).then(d => {
+      if (d.group && d.group.picksJson) setPicks(JSON.parse(d.group.picksJson));
+      if (d.group && d.group.advanceJson) {
+        try {
+          const a = JSON.parse(d.group.advanceJson);
+          setAdvance(Array.isArray(a) ? {
+            advancers: a
+          } : a);
+        } catch (e) {}
+      }
+      if (d.bracket && d.bracket.picksJson) {
+        try {
+          setBracketPk(JSON.parse(d.bracket.picksJson));
+        } catch (e) {}
+      }
+      setAllGroupPicks(d.allGroupPicks || []);
+    }).catch(() => {});
   }
-  useEffect(()=>{if(user)load();},[user]);
-  if(!user)return <Auth onAuth={setUser} />;
-  const gf=fixtures.filter(f=>(f.round||"GROUP")==="GROUP");
-  const picksCount=Object.keys(picks).length;
-  const hasStandings=!!(advance&&advance.advancers&&advance.advancers.length);
+  useEffect(() => {
+    if (user) load();
+  }, [user]);
+  if (!user) return /*#__PURE__*/React.createElement(Auth, {
+    onAuth: setUser
+  });
+  const gf = fixtures.filter(f => (f.round || "GROUP") === "GROUP");
+  const picksCount = Object.keys(picks).length;
+  const hasStandings = !!(advance && advance.advancers && advance.advancers.length);
   // Stale = standings exist but weren't generated from the current picks.
   // A save with no stored signature (pre-signature save) can't be proven current, so treat it as stale.
-  const standingsStale=hasStandings&&advance.picksSig!==picksSig(picks);
-  const standingsDone=hasStandings&&!standingsStale;
-  const champ=bracketPk&&(bracketPk.FINAL||{})[0];
-  const koStatus=champ?"done":(bracketPk&&Object.keys(bracketPk).length?"resume":"open");
-  const anyLive=fixtures.some(isLive);const koOpen=fixtures.filter(f=>f.round==="R32").length===16;const home=()=>{setView("home");setViewUser(null);};
-  if(view==="scoring")return <HowScoring back={home} />;
-  if(view==="group")return <Picker user={user} fixtures={gf} picks={picks} setPicks={setPicks} back={home} />;
-  if(view==="standings")return <Standings user={user} fixtures={fixtures} picks={picks} saved={advance&&advance.orders?advance:null} onSaved={setAdvance} back={home} />;
-  if(view==="ko"&&(navPhase()>=3||koOpen))return <Knockout user={user} fixtures={fixtures} savedPk={bracketPk} bracketLocked={bracketLocked} readOnly={false} back={home} />;
-  if(view==="leaderboard"){
-    if(viewUser)return <Knockout user={viewUser} fixtures={fixtures} savedPk={viewUserPk||{}} bracketLocked={true} readOnly={true} back={()=>setViewUser(null)} />;
-    return <Leaderboard user={user} back={home} bracketLocked={bracketLocked} fixtures={fixtures} viewBracket={(u)=>{
-      fetch(API_URL+"?action=mypicks&username="+encodeURIComponent(u)).then(r=>r.json()).then(d=>{
-        try{setViewUserPk(d.bracket&&d.bracket.picksJson?JSON.parse(d.bracket.picksJson):{});}catch(e){setViewUserPk({});}setViewUser(u);});}} />;
+  const standingsStale = hasStandings && advance.picksSig !== picksSig(picks);
+  const standingsDone = hasStandings && !standingsStale;
+  const champ = bracketPk && (bracketPk.FINAL || {})[0];
+  const koStatus = champ ? "done" : bracketPk && Object.keys(bracketPk).length ? "resume" : "open";
+  const anyLive = fixtures.some(isLive);
+  const koOpen = fixtures.filter(f => f.round === "R32").length === 16;
+  const home = () => {
+    setView("home");
+    setViewUser(null);
+  };
+  if (view === "scoring") return /*#__PURE__*/React.createElement(HowScoring, {
+    back: home
+  });
+  if (view === "group") return /*#__PURE__*/React.createElement(Picker, {
+    user: user,
+    fixtures: gf,
+    picks: picks,
+    setPicks: setPicks,
+    back: home
+  });
+  if (view === "standings") return /*#__PURE__*/React.createElement(Standings, {
+    user: user,
+    fixtures: fixtures,
+    picks: picks,
+    saved: advance && advance.orders ? advance : null,
+    onSaved: setAdvance,
+    back: home
+  });
+  if (view === "ko" && (navPhase() >= 3 || koOpen)) return /*#__PURE__*/React.createElement(Knockout, {
+    user: user,
+    fixtures: fixtures,
+    savedPk: bracketPk,
+    bracketLocked: bracketLocked,
+    readOnly: false,
+    back: home
+  });
+  if (view === "leaderboard") {
+    if (viewUser) return /*#__PURE__*/React.createElement(Knockout, {
+      user: viewUser,
+      fixtures: fixtures,
+      savedPk: viewUserPk || {},
+      bracketLocked: true,
+      readOnly: true,
+      back: () => setViewUser(null)
+    });
+    return /*#__PURE__*/React.createElement(Leaderboard, {
+      user: user,
+      back: home,
+      bracketLocked: bracketLocked,
+      fixtures: fixtures,
+      viewBracket: u => {
+        fetch(API_URL + "?action=mypicks&username=" + encodeURIComponent(u)).then(r => r.json()).then(d => {
+          try {
+            setViewUserPk(d.bracket && d.bracket.picksJson ? JSON.parse(d.bracket.picksJson) : {});
+          } catch (e) {
+            setViewUserPk({});
+          }
+          setViewUser(u);
+        });
+      }
+    });
   }
-  if(view==="live")return <LiveGames fixtures={fixtures} allGroupPicks={allGroupPicks} leaderboard={leaderboard} back={home} />;
-  return <Home user={user} go={setView} picksCount={picksCount} standingsDone={standingsDone} standingsStale={standingsStale} koStatus={koStatus} koOpen={koOpen} anyLive={anyLive} phase={navPhase()}
-    onSignOut={()=>{if(typeof localStorage!=="undefined")localStorage.removeItem("wc_user");setUser(null);setPicks({});setAdvance(null);setBracketPk(null);}} />;
+  if (view === "live") return /*#__PURE__*/React.createElement(LiveGames, {
+    fixtures: fixtures,
+    allGroupPicks: allGroupPicks,
+    leaderboard: leaderboard,
+    back: home
+  });
+  return /*#__PURE__*/React.createElement(Home, {
+    user: user,
+    go: setView,
+    picksCount: picksCount,
+    standingsDone: standingsDone,
+    standingsStale: standingsStale,
+    koStatus: koStatus,
+    koOpen: koOpen,
+    anyLive: anyLive,
+    phase: navPhase(),
+    onSignOut: () => {
+      if (typeof localStorage !== "undefined") localStorage.removeItem("wc_user");
+      setUser(null);
+      setPicks({});
+      setAdvance(null);
+      setBracketPk(null);
+    }
+  });
 }
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
 </script></body></html>
