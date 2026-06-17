@@ -228,9 +228,15 @@
   .node.bronze{border:1.5px solid #D08A4E;box-shadow:0 6px 16px -12px rgba(208,138,78,.6)}
   .node.bronze .lab{color:#D08A4E}
   @media (prefers-reduced-motion: reduce){*{transition:none!important}.dot,.dot.locked,.tag.red{animation:none!important}}
+  .tabbar{display:flex;gap:8px;margin:16px 0 4px}
+  .tabbtn{flex:1;padding:10px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);font:700 13px Inter;cursor:pointer}
+  .tabbtn.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+  .pshead.wins{color:#15A94E;font-weight:800}
+  .lgteam.win .nm{color:#15A94E;font-weight:800}
+  .scorebug .sw{color:#15A94E}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v31</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v33</div>
 <script>
 const {
   useState,
@@ -1980,6 +1986,9 @@ function LiveGames({
   leaderboard,
   back
 }) {
+  const [tab, setTab] = useState("live");
+  const past = fixtures.filter(f => f.status === "FINISHED" || f.result).slice().sort(byTime);
+  past.reverse();
   const live = fixtures.filter(isLive).sort(byTime);
   const now = new Date(),
     todayStr = now.toDateString(),
@@ -2013,7 +2022,7 @@ function LiveGames({
     }, /*#__PURE__*/React.createElement("div", {
       className: "psrow"
     }, /*#__PURE__*/React.createElement("span", {
-      className: "pshead"
+      className: "pshead" + (f.result === "A" ? " wins" : "")
     }, "Picked ", f.teamA), /*#__PURE__*/React.createElement("span", {
       className: "pscount"
     }, aB.length)), /*#__PURE__*/React.createElement("div", {
@@ -2026,7 +2035,7 @@ function LiveGames({
     }, "No one yet")), /*#__PURE__*/React.createElement("div", {
       className: "psrow"
     }, /*#__PURE__*/React.createElement("span", {
-      className: "pshead"
+      className: "pshead" + (f.result === "D" ? " wins" : "")
     }, "Picked Draw"), /*#__PURE__*/React.createElement("span", {
       className: "pscount"
     }, dB.length)), /*#__PURE__*/React.createElement("div", {
@@ -2039,7 +2048,7 @@ function LiveGames({
     }, "No one yet")), /*#__PURE__*/React.createElement("div", {
       className: "psrow"
     }, /*#__PURE__*/React.createElement("span", {
-      className: "pshead"
+      className: "pshead" + (f.result === "B" ? " wins" : "")
     }, "Picked ", f.teamB), /*#__PURE__*/React.createElement("span", {
       className: "pscount"
     }, bB.length)), /*#__PURE__*/React.createElement("div", {
@@ -2053,21 +2062,27 @@ function LiveGames({
   }
   function ptsRow(f) {
     const isKO = f.round && f.round !== "GROUP";
+    const r = f.result;
     const cells = isKO ? [{
       lab: f.teamA,
-      p: koPotential(f.round, TITLE[f.teamA], TITLE[f.teamB])
+      p: koPotential(f.round, TITLE[f.teamA], TITLE[f.teamB]),
+      k: "A"
     }, {
       lab: f.teamB,
-      p: koPotential(f.round, TITLE[f.teamB], TITLE[f.teamA])
+      p: koPotential(f.round, TITLE[f.teamB], TITLE[f.teamA]),
+      k: "B"
     }] : [{
       lab: f.teamA,
-      p: potential("A", f.probA, f.probB)
+      p: potential("A", f.probA, f.probB),
+      k: "A"
     }, {
       lab: "Draw",
-      p: potential("D", f.probA, f.probB)
+      p: potential("D", f.probA, f.probB),
+      k: "D"
     }, {
       lab: f.teamB,
-      p: potential("B", f.probA, f.probB)
+      p: potential("B", f.probA, f.probB),
+      k: "B"
     }];
     return /*#__PURE__*/React.createElement("div", {
       style: {
@@ -2080,41 +2095,44 @@ function LiveGames({
         marginBottom: 6,
         color: "var(--muted)"
       }
-    }, "Points for a correct call"), /*#__PURE__*/React.createElement("div", {
+    }, r ? "Points awarded" : "Points for a correct call"), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 8
       }
-    }, cells.map((c, i) => /*#__PURE__*/React.createElement("div", {
-      key: i,
-      style: {
-        flex: 1,
-        textAlign: "center",
-        background: "var(--surface-2)",
-        border: "1px solid var(--line)",
-        borderRadius: 8,
-        padding: "7px 4px"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        font: '700 11px Inter',
-        color: "var(--muted)",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis"
-      }
-    }, c.lab), /*#__PURE__*/React.createElement("div", {
-      style: {
-        font: '700 15px "JetBrains Mono"',
-        color: "var(--text)",
-        marginTop: 2
-      }
-    }, "+", c.p, /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 10,
-        color: "var(--muted)"
-      }
-    }, " pt", c.p === 1 ? "" : "s"))))));
+    }, cells.map((c, i) => {
+      const won = !!r && r === c.k;
+      return /*#__PURE__*/React.createElement("div", {
+        key: i,
+        style: {
+          flex: 1,
+          textAlign: "center",
+          background: won ? "rgba(21,169,78,.14)" : "var(--surface-2)",
+          border: "1px solid " + (won ? "#15A94E" : "var(--line)"),
+          borderRadius: 8,
+          padding: "7px 4px"
+        }
+      }, /*#__PURE__*/React.createElement("div", {
+        style: {
+          font: '700 11px Inter',
+          color: won ? "#15A94E" : "var(--muted)",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        }
+      }, c.lab, won ? " ✓" : ""), /*#__PURE__*/React.createElement("div", {
+        style: {
+          font: '700 15px "JetBrains Mono"',
+          color: won ? "#15A94E" : "var(--text)",
+          marginTop: 2
+        }
+      }, "+", c.p, /*#__PURE__*/React.createElement("span", {
+        style: {
+          fontSize: 10,
+          color: won ? "#15A94E" : "var(--muted)"
+        }
+      }, " pt", c.p === 1 ? "" : "s")));
+    })));
   }
   const koLabel = f => {
     const d = new Date(f.dateTimeISO),
@@ -2131,11 +2149,19 @@ function LiveGames({
     onClick: back
   }, "← Home"), /*#__PURE__*/React.createElement("div", {
     className: "eyebrow"
-  }, "Now & next"), /*#__PURE__*/React.createElement("h1", {
+  }, tab === "past" ? "Results" : "Now & next"), /*#__PURE__*/React.createElement("h1", {
     style: {
       fontSize: 30
     }
-  }, "Live & Upcoming"), live.length === 0 && upcoming.length === 0 && /*#__PURE__*/React.createElement("div", {
+  }, tab === "past" ? "Past Games" : "Live & Upcoming"), /*#__PURE__*/React.createElement("div", {
+    className: "tabbar"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "tabbtn" + (tab === "live" ? " on" : ""),
+    onClick: () => setTab("live")
+  }, "Live & Upcoming"), /*#__PURE__*/React.createElement("button", {
+    className: "tabbtn" + (tab === "past" ? " on" : ""),
+    onClick: () => setTab("past")
+  }, "Past Games")), tab === "live" && /*#__PURE__*/React.createElement(React.Fragment, null, live.length === 0 && upcoming.length === 0 && /*#__PURE__*/React.createElement("div", {
     className: "ok",
     style: {
       background: "rgba(124,151,168,.1)",
@@ -2224,7 +2250,63 @@ function LiveGames({
     }
   }, /*#__PURE__*/React.createElement("span", {
     className: "sub"
-  }, f.city, f.country ? ", " + f.country : "")), ptsRow(f), picksBlock(f))), /*#__PURE__*/React.createElement("button", {
+  }, f.city, f.country ? ", " + f.country : "")), ptsRow(f), picksBlock(f)))), tab === "past" && /*#__PURE__*/React.createElement(React.Fragment, null, past.length === 0 && /*#__PURE__*/React.createElement("div", {
+    className: "ok",
+    style: {
+      background: "rgba(124,151,168,.1)",
+      borderColor: "var(--line)",
+      color: "var(--muted)"
+    }
+  }, "No finished games yet. Results show here once games are played."), past.map(f => {
+    const aw = f.result === "A",
+      bw = f.result === "B";
+    const isPK = (f.result === "A" || f.result === "B") && (Number(f.scoreA) || 0) === (Number(f.scoreB) || 0);
+    return /*#__PURE__*/React.createElement("div", {
+      key: f.id,
+      className: "lg"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "lgtop"
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "lgteam" + (aw ? " win" : "")
+    }, /*#__PURE__*/React.createElement(Crest, {
+      team: f.teamA
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "nm"
+    }, f.teamA), /*#__PURE__*/React.createElement("div", {
+      className: "rk"
+    }, "FIFA #", f.seedA || RANK[f.teamA])), /*#__PURE__*/React.createElement("div", {
+      className: "scorebug"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: aw ? "sw" : ""
+    }, f.scoreA || 0), /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: "var(--muted)"
+      }
+    }, "–"), /*#__PURE__*/React.createElement("span", {
+      className: bw ? "sw" : ""
+    }, f.scoreB || 0)), /*#__PURE__*/React.createElement("div", {
+      className: "lgteam" + (bw ? " win" : "")
+    }, /*#__PURE__*/React.createElement(Crest, {
+      team: f.teamB
+    }), /*#__PURE__*/React.createElement("div", {
+      className: "nm"
+    }, f.teamB), /*#__PURE__*/React.createElement("div", {
+      className: "rk"
+    }, "FIFA #", f.seedB || RANK[f.teamB]))), /*#__PURE__*/React.createElement("div", {
+      style: {
+        textAlign: "center"
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "scorebug",
+      style: {
+        background: "var(--surface-2)",
+        color: "var(--muted)",
+        fontSize: 11
+      }
+    }, "FINAL", isPK ? " · PK" : ""), " ", /*#__PURE__*/React.createElement("span", {
+      className: "sub"
+    }, f.round && f.round !== "GROUP" ? f.round + " · " : "", f.city, f.country ? ", " + f.country : "")), ptsRow(f), picksBlock(f));
+  })), /*#__PURE__*/React.createElement("button", {
     className: "homebtn",
     onClick: back
   }, "← Back to home"));
