@@ -130,6 +130,11 @@
   /* standings */
   .strow{display:flex;align-items:center;gap:10px;background:#fff;border:0;border-left:5px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:6px;box-shadow:0 6px 16px -12px rgba(8,18,60,.5);color:var(--ink)}
   .strow.q{border-left-color:var(--green)}.strow.third{border-left-color:#F0A21E}.strow.out{border-left-color:#CBD3E2;opacity:.75}
+  .strow.hit{border-left-color:var(--green);background:#F1FBF5;opacity:1}
+  .strow.miss{border-left-color:var(--red);background:#FDF1F0;opacity:1}
+  .strow.hit .nm{color:#0f7a3d}.strow.miss .nm{color:#b3261e}
+  .rmark{width:46px;text-align:center;font:700 16px Inter}
+  .rmark.hit{color:#15a14e}.rmark.miss{color:var(--red)}.rmark.dash{color:#CBD3E2;font-size:18px}
   .strow .pos{font:400 13px Anton;color:var(--mute);width:18px}
   .strow .nm{flex:1;font:600 14px Inter;display:flex;align-items:center;gap:8px;color:var(--ink)}.strow .nm small{color:var(--mute);font-weight:500;font-family:Inter}
   .strow .pp{font-family:Anton;font-size:17px;color:var(--orange);margin-right:6px}
@@ -141,7 +146,7 @@
   .bkcol{display:flex;flex-direction:column;min-width:152px;flex:0 0 auto}
   .bkcol.center{min-width:166px}
   .bkcol .ch{font:600 10px Oswald;color:#FFB200;text-transform:uppercase;letter-spacing:.08em;text-align:center;height:14px;line-height:14px;margin-bottom:6px;flex:0 0 auto}
-  .bkbody{flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-around;gap:0;min-height:0}
+  .bkbody{flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-around;gap:6px;min-height:0}
   .bkbody.cbody{justify-content:center}
   .cfill{flex:1 1 0;display:flex;min-height:0;width:100%}
   .cfill.top{align-items:flex-end}.cfill.bot{align-items:flex-start}
@@ -174,6 +179,10 @@
   .champcell.out .cn{color:var(--red);text-decoration:line-through}.champcell.out .cs{color:var(--red)}
   .savedok{font:700 13px Oswald;color:#15a14e;background:rgba(21,161,78,.16);border:1px solid #15a14e;border-radius:8px;padding:8px 12px;letter-spacing:.04em;white-space:nowrap}
   .nteam.tbd{opacity:.45;cursor:default}
+  .nteam.tbd.pend{opacity:.7}
+  .nteam.tbd.pend .tnm{font-style:italic;letter-spacing:.01em;white-space:normal;overflow:visible;text-overflow:clip;font-size:11px;line-height:1.15}
+  .nteam.tbd.pend .nm2{overflow:visible}
+  .badge.tb{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);color:var(--muted);font-weight:700}
   .champcell{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;background:linear-gradient(180deg,#FFF6DD,#fff);border:2px solid var(--gold);border-radius:12px;padding:12px 8px;margin-bottom:10px;color:var(--ink);box-shadow:0 8px 22px -10px rgba(244,180,0,.6)}
   .champcell .badge{width:48px;height:48px;font-size:13px;border-color:var(--gold)}
   .champcell .cn{font-family:Anton;font-size:15px;text-transform:uppercase;line-height:1;color:var(--ink)}
@@ -236,7 +245,7 @@
   .scorebug .sw{color:#15A94E}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v33</div>
+<body><div id="root"></div><div class="wm">created by pstastny · v36</div>
 <script>
 const {
   useState,
@@ -425,27 +434,44 @@ function matchProbFromTitle(x, y) {
 }
 // --- KNOCKOUT-ONLY scoring (group scoring above is untouched) ---
 const KO_BASE = {
-  R32: 2,
-  R16: 3,
-  QF: 5,
-  SF: 7,
-  FINAL: 10,
+  R32: 3,
+  R16: 5,
+  QF: 8,
+  SF: 10,
+  FINAL: 15,
   BRONZE: 3
+};
+const KO_MULT = {
+  R32: 1,
+  R16: 1.5,
+  QF: 2,
+  SF: 2.5,
+  FINAL: 3
 };
 const KO_BONUS_CAP = 16,
   KO_BONUS_HI = 0.45,
   KO_BONUS_LO = 0.15;
-function koBonus(yourProb) {
-  yourProb = Number(yourProb);
-  if (!(yourProb >= 0)) return 0;
-  if (yourProb >= KO_BONUS_HI) return 0;
-  if (yourProb <= KO_BONUS_LO) return KO_BONUS_CAP;
-  return Math.round(KO_BONUS_CAP * (KO_BONUS_HI - yourProb) / (KO_BONUS_HI - KO_BONUS_LO));
+function koBonus(y) {
+  y = Number(y);
+  if (!(y >= 0)) return 0;
+  if (y >= 0.50) return 0;
+  if (y >= 0.46) return 1;
+  if (y >= 0.41) return 2;
+  if (y >= 0.36) return 3;
+  if (y >= 0.31) return 4;
+  if (y >= 0.26) return 5;
+  if (y >= 0.21) return 6;
+  if (y >= 0.16) return 7;
+  if (y >= 0.11) return 8;
+  return 10;
 }
+function isReal(t) {
+  return t != null && t !== "" && TITLE[t] != null;
+} // determined team iff it's in the TitleOdds list; placeholders (1I, 2K, 3RD A/B/.., etc.) are not
 function koPotential(round, pickedTitle, oppTitle) {
   if (round === "BRONZE") return KO_BASE.BRONZE;
   const y = matchProbFromTitle(pickedTitle, oppTitle);
-  return KO_BASE[round] + koBonus(y);
+  return KO_BASE[round] + Math.ceil(koBonus(y) * (KO_MULT[round] || 1));
 }
 function initials(n) {
   return n ? n.replace(/&|\.|-/g, " ").split(/\s+/).map(w => w[0]).join("").slice(0, 3).toUpperCase() : "";
@@ -517,8 +543,8 @@ function actualR32(fixtures) {
   const s = new Set();
   fixtures.forEach(f => {
     if (f.round === "R32") {
-      if (f.teamA) s.add(f.teamA);
-      if (f.teamB) s.add(f.teamB);
+      if (f.teamA && isReal(f.teamA)) s.add(f.teamA);
+      if (f.teamB && isReal(f.teamB)) s.add(f.teamB);
     }
   });
   return s;
@@ -677,8 +703,18 @@ function Bracket({
     }, /*#__PURE__*/React.createElement("span", {
       className: "nm2"
     }, "TBD"));
+    if (!isReal(x.team)) return /*#__PURE__*/React.createElement("div", {
+      className: "nteam tbd pend"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "badge tb"
+    }, "?"), /*#__PURE__*/React.createElement("span", {
+      className: "nm2"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "tnm"
+    }, x.team)));
     const sel = (pk[round] || {})[m] === x.team;
-    const pts = opp ? koPotential(round, TITLE[x.team], TITLE[opp.team]) : 0;
+    const oppReal = !!(opp && isReal(opp.team));
+    const pts = oppReal ? koPotential(round, TITLE[x.team], TITLE[opp.team]) : 0;
     const P = PREV[round];
     let cl = "",
       actual = null;
@@ -712,7 +748,7 @@ function Bracket({
     }
     return /*#__PURE__*/React.createElement("div", {
       className: "nteam" + (sel && !cl ? " sel" : "") + (cl ? " " + cl : ""),
-      onClick: () => interactive && opp && onPick(round, m, x.team)
+      onClick: () => interactive && oppReal && onPick(round, m, x.team)
     }, /*#__PURE__*/React.createElement(Crest, {
       team: x.team
     }), /*#__PURE__*/React.createElement("span", {
@@ -723,7 +759,7 @@ function Bracket({
       className: "act"
     }, actual)), myScore != null && /*#__PURE__*/React.createElement("span", {
       className: "s sc"
-    }, myScore, pkMark && /*#__PURE__*/React.createElement("sup", null, "(PK)")), opp && interactive && /*#__PURE__*/React.createElement("span", {
+    }, myScore, pkMark && /*#__PURE__*/React.createElement("sup", null, "(PK)")), oppReal && interactive && /*#__PURE__*/React.createElement("span", {
       className: "pb"
     }, "+", pts));
   }
@@ -1168,13 +1204,13 @@ function HowScoring({
     className: "lab"
   }, "Each team you correctly send through", /*#__PURE__*/React.createElement("small", null, "your 2 per group + 8 best third-place teams")), /*#__PURE__*/React.createElement("div", {
     className: "val"
-  }, "2")), /*#__PURE__*/React.createElement("h2", null, "Knockout — per game"), /*#__PURE__*/React.createElement("p", null, "Different from the group stage: each round pays a fixed ", /*#__PURE__*/React.createElement("b", null, "base"), ", and you add an ", /*#__PURE__*/React.createElement("b", null, "upset bonus (up to +16)"), " when you correctly call an underdog. ", /*#__PURE__*/React.createElement("b", null, "No multiplier"), " — the base already makes later rounds worth more."), /*#__PURE__*/React.createElement("table", {
+  }, "2")), /*#__PURE__*/React.createElement("h2", null, "Knockout — per game"), /*#__PURE__*/React.createElement("p", null, "Different from the group stage: each round pays a fixed ", /*#__PURE__*/React.createElement("b", null, "base"), " for the favorite. Call an ", /*#__PURE__*/React.createElement("b", null, "underdog"), " and you add an ", /*#__PURE__*/React.createElement("b", null, "upset bonus"), " — and that bonus is ", /*#__PURE__*/React.createElement("b", null, "multiplied by the round"), ", so the same upset is worth far more in the final than in the Round of 32. The base itself is never multiplied."), /*#__PURE__*/React.createElement("p", null, /*#__PURE__*/React.createElement("b", null, "Underdog points = base + ⌈bonus × round multiplier⌉."), " Favorite (50%+ to win) = base only."), /*#__PURE__*/React.createElement("table", {
     className: "kt"
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Round"), /*#__PURE__*/React.createElement("th", null, "Base points"))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Round of 32"), /*#__PURE__*/React.createElement("td", null, "2")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Round of 16"), /*#__PURE__*/React.createElement("td", null, "3")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Quarterfinal"), /*#__PURE__*/React.createElement("td", null, "5")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Semifinal"), /*#__PURE__*/React.createElement("td", null, "7")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Final / champion"), /*#__PURE__*/React.createElement("td", null, "10")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "3rd-place game"), /*#__PURE__*/React.createElement("td", null, "3 (no bonus)")))), /*#__PURE__*/React.createElement("p", null, "The upset bonus comes from each team's tournament-winning odds, turned into a match win chance — the longer your team's odds, the bigger the bonus:"), /*#__PURE__*/React.createElement("table", {
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Round"), /*#__PURE__*/React.createElement("th", null, "Base"), /*#__PURE__*/React.createElement("th", null, "Bonus ×"))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Round of 32"), /*#__PURE__*/React.createElement("td", null, "3"), /*#__PURE__*/React.createElement("td", null, "1×")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Round of 16"), /*#__PURE__*/React.createElement("td", null, "5"), /*#__PURE__*/React.createElement("td", null, "1.5×")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Quarterfinal"), /*#__PURE__*/React.createElement("td", null, "8"), /*#__PURE__*/React.createElement("td", null, "2×")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Semifinal"), /*#__PURE__*/React.createElement("td", null, "10"), /*#__PURE__*/React.createElement("td", null, "2.5×")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "Final / champion"), /*#__PURE__*/React.createElement("td", null, "15"), /*#__PURE__*/React.createElement("td", null, "3×")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "3rd-place game"), /*#__PURE__*/React.createElement("td", null, "3"), /*#__PURE__*/React.createElement("td", null, "no bonus")))), /*#__PURE__*/React.createElement("p", null, "The upset bonus comes from each team's match win chance — the longer the odds you back, the bigger the bonus:"), /*#__PURE__*/React.createElement("table", {
     className: "kt"
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Your team's win chance"), /*#__PURE__*/React.createElement("th", null, "Upset bonus"))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "45%+ (favorite / coin-flip)"), /*#__PURE__*/React.createElement("td", null, "+0")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "~35%"), /*#__PURE__*/React.createElement("td", null, "+5")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "~30%"), /*#__PURE__*/React.createElement("td", null, "+8")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "~25%"), /*#__PURE__*/React.createElement("td", null, "+11")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "~20%"), /*#__PURE__*/React.createElement("td", null, "+13")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "15% or lower (longshot)"), /*#__PURE__*/React.createElement("td", null, "+16")))), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "Your team's win chance"), /*#__PURE__*/React.createElement("th", null, "Upset bonus"))), /*#__PURE__*/React.createElement("tbody", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "50%+ (favorite)"), /*#__PURE__*/React.createElement("td", null, "+0")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "46–49%"), /*#__PURE__*/React.createElement("td", null, "1")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "41–45%"), /*#__PURE__*/React.createElement("td", null, "2")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "36–40%"), /*#__PURE__*/React.createElement("td", null, "3")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "31–35%"), /*#__PURE__*/React.createElement("td", null, "4")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "26–30%"), /*#__PURE__*/React.createElement("td", null, "5")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "21–25%"), /*#__PURE__*/React.createElement("td", null, "6")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "16–20%"), /*#__PURE__*/React.createElement("td", null, "7")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "11–15%"), /*#__PURE__*/React.createElement("td", null, "8")), /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, "10% or less"), /*#__PURE__*/React.createElement("td", null, "10")))), /*#__PURE__*/React.createElement("div", {
     className: "ex"
-  }, /*#__PURE__*/React.createElement("b", null, "Example:"), " you back a ~20% underdog to win a ", /*#__PURE__*/React.createElement("b", null, "quarterfinal"), " — base 5 + bonus 13 = ", /*#__PURE__*/React.createElement("b", null, "18 points"), ". Call the favorite in that game and you get the flat ", /*#__PURE__*/React.createElement("b", null, "5"), ". A longshot that wins the ", /*#__PURE__*/React.createElement("b", null, "final"), " is 10 + 16 = ", /*#__PURE__*/React.createElement("b", null, "26"), "."), /*#__PURE__*/React.createElement("p", {
+  }, /*#__PURE__*/React.createElement("b", null, "Example:"), " you back a ~33% underdog to win a ", /*#__PURE__*/React.createElement("b", null, "quarterfinal"), " — base 8 + ⌈4 × 2⌉ = ", /*#__PURE__*/React.createElement("b", null, "16 points"), ". Call the favorite in that game and you get the flat ", /*#__PURE__*/React.createElement("b", null, "8"), ". A longshot (≤10%) that wins the ", /*#__PURE__*/React.createElement("b", null, "final"), " is 15 + ⌈10 × 3⌉ = ", /*#__PURE__*/React.createElement("b", null, "45"), "."), /*#__PURE__*/React.createElement("p", {
     className: "sub",
     style: {
       marginTop: 16
@@ -1417,13 +1453,15 @@ function StRow({
   team,
   pts,
   cls,
+  res,
+  done,
   onUp,
   onDown,
   canUp,
   canDown
 }) {
   return /*#__PURE__*/React.createElement("div", {
-    className: "strow " + cls
+    className: "strow " + cls + (res ? " " + res : "")
   }, /*#__PURE__*/React.createElement("span", {
     className: "pos"
   }, pos), /*#__PURE__*/React.createElement("span", {
@@ -1432,7 +1470,11 @@ function StRow({
     team: team
   }), team, /*#__PURE__*/React.createElement("small", null, "#", RANK[team])), /*#__PURE__*/React.createElement("span", {
     className: "pp"
-  }, pts), /*#__PURE__*/React.createElement("button", {
+  }, pts), done ? res ? /*#__PURE__*/React.createElement("span", {
+    className: "rmark " + res
+  }, res === "hit" ? "\u2713" : "\u2717") : /*#__PURE__*/React.createElement("span", {
+    className: "rmark dash"
+  }, "·") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("button", {
     className: "mv",
     disabled: !canUp,
     onClick: onUp
@@ -1440,7 +1482,7 @@ function StRow({
     className: "mv",
     disabled: !canDown,
     onClick: onDown
-  }, "▼"));
+  }, "▼")));
 }
 function Standings({
   user,
@@ -1474,6 +1516,7 @@ function Standings({
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const realSet = actualR32(fixtures);
+  const elim = eliminatedSet(fixtures);
   const L = locked();
   function move(g, i, dir) {
     if (L) return;
@@ -1610,26 +1653,38 @@ function Standings({
     }
   }, "Who advances to the Round of 32"), /*#__PURE__*/React.createElement("p", {
     className: "sub"
-  }, L ? "Locked — tournament has started. View only." : "32 teams reach the Round of 32: the top 2 from each group (green), plus the 8 best third-place teams (amber). Your group picks set the points — 3 for a win, 1 for a draw. Use ▲▼ to break any ties, then pick your 8 third-place qualifiers below."), Object.keys(GROUPS).sort().map(g => {
+  }, L ? "Locked — tournament has started. View only." + (realSet.size > 0 ? " Green ✓ = you got it right, red ✗ = wrong." : "") : "32 teams reach the Round of 32: the top 2 from each group (green), plus the 8 best third-place teams (amber). Your group picks set the points — 3 for a win, 1 for a draw. Use ▲▼ to break any ties, then pick your 8 third-place qualifiers below."), Object.keys(GROUPS).sort().map(g => {
     const {
       pts
     } = standings(GROUPS[g], groupFx, picks);
     const ord = orders[g];
+    const has = realSet.size > 0;
     return /*#__PURE__*/React.createElement("div", {
       key: g
     }, /*#__PURE__*/React.createElement("div", {
       className: "ghead"
-    }, "GROUP ", g), ord.map((t, i) => /*#__PURE__*/React.createElement(StRow, {
-      key: t,
-      pos: i + 1,
-      team: t,
-      pts: pts[t],
-      cls: i < 2 ? "q" : i === 2 ? "third" : "out",
-      onUp: () => move(g, i, -1),
-      onDown: () => move(g, i, 1),
-      canUp: i > 0 && !L,
-      canDown: i < 3 && !L
-    })));
+    }, "GROUP ", g), ord.map((t, i) => {
+      const predAdv = i < 2 || i === 2 && validThirds.includes(t);
+      const realAdv = realSet.has(t);
+      const out = elim.has(t) || realSet.size >= 32 && !realAdv;
+      let res = "";
+      if (has) {
+        if (realAdv && predAdv) res = "hit";else if (realAdv && !predAdv) res = "miss";else if (predAdv && out) res = "miss";
+      }
+      return /*#__PURE__*/React.createElement(StRow, {
+        key: t,
+        pos: i + 1,
+        team: t,
+        pts: pts[t],
+        cls: i < 2 ? "q" : i === 2 ? "third" : "out",
+        res: res,
+        done: has,
+        onUp: () => move(g, i, -1),
+        onDown: () => move(g, i, 1),
+        canUp: i > 0 && !L,
+        canDown: i < 3 && !L
+      });
+    }));
   }), /*#__PURE__*/React.createElement("div", {
     className: "ghead"
   }, "PICK 8 OF 12 THIRD-PLACE TEAMS"), /*#__PURE__*/React.createElement("p", {
@@ -1717,6 +1772,7 @@ function Knockout({
   const dead = eliminatedSet(fixtures);
   function pick(round, m, team) {
     if (readOnly || bracketLocked) return;
+    if (team != null && !isReal(team)) return;
     setPk(p => {
       const np = JSON.parse(JSON.stringify(p || {}));
       np[round] = np[round] || {};
