@@ -245,7 +245,7 @@
   .scorebug .sw{color:#15A94E}
 </style>
 </head>
-<body><div id="root"></div><div class="wm">created by pstastny · v36</div>
+<body><div id="root"></div><div class="wm">created by pstastny · version 15</div>
 <script>
 const {
   useState,
@@ -1807,6 +1807,7 @@ function Knockout({
     setSaved(false);
   }
   const champ = (pk.FINAL || {})[0];
+  const anyPick = Object.keys(pk || {}).some(r => pk[r] && Object.keys(pk[r]).length > 0);
   async function submit() {
     setBusy(true);
     setMsg("");
@@ -1820,11 +1821,11 @@ function Knockout({
         setMsg(res.error);
         setSaved(false);
       } else {
-        setMsg("");
         setSaved(true);
+        setMsg(champ ? "\u2713 Bracket submitted!" : "\u2713 Progress saved — come back any time to finish.");
       }
     } catch (e) {
-      setMsg("Network error submitting.");
+      setMsg("Network error — not saved.");
       setSaved(false);
     }
     setBusy(false);
@@ -1927,9 +1928,9 @@ function Knockout({
     className: "savedok"
   }, "✓ Saved"), /*#__PURE__*/React.createElement("button", {
     className: "cta",
-    disabled: !champ || busy,
+    disabled: !anyPick || busy,
     onClick: submit
-  }, busy ? "Saving…" : saved ? "Saved ✓ — submit again" : champ ? "Submit bracket" : "Pick to the final"))), (readOnly || bracketLocked) && /*#__PURE__*/React.createElement("button", {
+  }, busy ? "Saving…" : champ ? "Submit bracket" : "Save bracket"))), (readOnly || bracketLocked) && /*#__PURE__*/React.createElement("button", {
     className: "homebtn",
     onClick: back
   }, "← Back to home"));
