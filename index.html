@@ -216,6 +216,10 @@
   .picksec .pn{display:inline-flex;align-items:center;gap:6px;font-size:13px;background:#F6F8FC;border:1px solid var(--line);border-radius:8px;padding:4px 9px;color:var(--ink)}
   .picksec .pn b{font:400 11px Anton;color:var(--orange)}
   .picksec .pnone{font-size:13px;color:var(--mute);font-style:italic}
+  .picksec .kopicks{display:flex;gap:12px;margin-top:4px}
+  .picksec .kocol{flex:1 1 0;min-width:0}
+  .picksec .kocol .pshead{display:flex;align-items:center;gap:8px;justify-content:space-between;padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .picksec .kocol .psnames{flex-direction:column;align-items:flex-start}
   /* legacy backers grid */
   .backers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
   .backers.backers3{grid-template-columns:1fr 1fr 1fr}
@@ -2040,6 +2044,8 @@ function Leaderboard({
 function LiveGames({
   fixtures,
   allGroupPicks,
+  allBracketPicks,
+  bracketLocked,
   leaderboard,
   back
 }) {
@@ -2070,7 +2076,63 @@ function LiveGames({
       }
     }).map(p => p.username);
   }
+  function koMidx(id) {
+    var mm = String(id || "").match(/(\d+)\s*$/);
+    return mm ? parseInt(mm[1], 10) - 1 : -1;
+  }
+  function koBackers(f, side) {
+    const m = koMidx(f.id),
+      team = side === "A" ? f.teamA : f.teamB;
+    return (allBracketPicks || []).filter(p => {
+      try {
+        return (JSON.parse(p.picksJson || "{}")[f.round] || {})[m] === team;
+      } catch (e) {
+        return false;
+      }
+    }).map(p => p.username);
+  }
+  function nameList(arr) {
+    return arr.length ? arr.map(u => /*#__PURE__*/React.createElement("span", {
+      key: u,
+      className: "pn"
+    }, u, /*#__PURE__*/React.createElement("b", null, placeMap[u] || "\u2014"))) : /*#__PURE__*/React.createElement("span", {
+      className: "pnone"
+    }, "No one yet");
+  }
   function picksBlock(f) {
+    const isKO = f.round && f.round !== "GROUP";
+    if (isKO) {
+      if (!bracketLocked) return /*#__PURE__*/React.createElement("div", {
+        className: "picksec"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "psnames"
+      }, /*#__PURE__*/React.createElement("span", {
+        className: "pnone"
+      }, "Everyone's picks show here once the knockouts begin.")));
+      const aB = koBackers(f, "A"),
+        bB = koBackers(f, "B");
+      return /*#__PURE__*/React.createElement("div", {
+        className: "picksec"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "kopicks"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "kocol"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "pshead" + (f.result === "A" ? " wins" : "")
+      }, f.teamA, " ", /*#__PURE__*/React.createElement("span", {
+        className: "pscount"
+      }, aB.length)), /*#__PURE__*/React.createElement("div", {
+        className: "psnames"
+      }, nameList(aB))), /*#__PURE__*/React.createElement("div", {
+        className: "kocol"
+      }, /*#__PURE__*/React.createElement("div", {
+        className: "pshead" + (f.result === "B" ? " wins" : "")
+      }, f.teamB, " ", /*#__PURE__*/React.createElement("span", {
+        className: "pscount"
+      }, bB.length)), /*#__PURE__*/React.createElement("div", {
+        className: "psnames"
+      }, nameList(bB)))));
+    }
     const aB = backers(f.id, "A"),
       bB = backers(f.id, "B"),
       dB = backers(f.id, "D");
@@ -2084,12 +2146,7 @@ function LiveGames({
       className: "pscount"
     }, aB.length)), /*#__PURE__*/React.createElement("div", {
       className: "psnames"
-    }, aB.length ? aB.map(u => /*#__PURE__*/React.createElement("span", {
-      key: u,
-      className: "pn"
-    }, u, /*#__PURE__*/React.createElement("b", null, placeMap[u] || "—"))) : /*#__PURE__*/React.createElement("span", {
-      className: "pnone"
-    }, "No one yet")), /*#__PURE__*/React.createElement("div", {
+    }, nameList(aB)), /*#__PURE__*/React.createElement("div", {
       className: "psrow"
     }, /*#__PURE__*/React.createElement("span", {
       className: "pshead" + (f.result === "D" ? " wins" : "")
@@ -2097,12 +2154,7 @@ function LiveGames({
       className: "pscount"
     }, dB.length)), /*#__PURE__*/React.createElement("div", {
       className: "psnames"
-    }, dB.length ? dB.map(u => /*#__PURE__*/React.createElement("span", {
-      key: u,
-      className: "pn"
-    }, u, /*#__PURE__*/React.createElement("b", null, placeMap[u] || "—"))) : /*#__PURE__*/React.createElement("span", {
-      className: "pnone"
-    }, "No one yet")), /*#__PURE__*/React.createElement("div", {
+    }, nameList(dB)), /*#__PURE__*/React.createElement("div", {
       className: "psrow"
     }, /*#__PURE__*/React.createElement("span", {
       className: "pshead" + (f.result === "B" ? " wins" : "")
@@ -2110,12 +2162,7 @@ function LiveGames({
       className: "pscount"
     }, bB.length)), /*#__PURE__*/React.createElement("div", {
       className: "psnames"
-    }, bB.length ? bB.map(u => /*#__PURE__*/React.createElement("span", {
-      key: u,
-      className: "pn"
-    }, u, /*#__PURE__*/React.createElement("b", null, placeMap[u] || "—"))) : /*#__PURE__*/React.createElement("span", {
-      className: "pnone"
-    }, "No one yet")));
+    }, nameList(bB)));
   }
   function ptsRow(f) {
     const isKO = f.round && f.round !== "GROUP";
@@ -2379,6 +2426,7 @@ function App() {
   const [bracketPk, setBracketPk] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [allGroupPicks, setAllGroupPicks] = useState([]);
+  const [allBracketPicks, setAllBracketPicks] = useState([]);
   const [bracketLocked, setBL] = useState(false);
   const [viewUser, setViewUser] = useState(null);
   const [viewUserPk, setViewUserPk] = useState(null);
@@ -2426,6 +2474,7 @@ function App() {
         } catch (e) {}
       }
       setAllGroupPicks(d.allGroupPicks || []);
+      setAllBracketPicks(d.allBracketPicks || []);
     }).catch(() => {});
   }
   useEffect(() => {
@@ -2504,6 +2553,8 @@ function App() {
   if (view === "live") return /*#__PURE__*/React.createElement(LiveGames, {
     fixtures: fixtures,
     allGroupPicks: allGroupPicks,
+    allBracketPicks: allBracketPicks,
+    bracketLocked: bracketLocked,
     leaderboard: leaderboard,
     back: home
   });
