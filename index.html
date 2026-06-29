@@ -189,7 +189,13 @@
   .champcell .cs{font:600 9px Oswald;color:#B07A00;letter-spacing:.1em;text-transform:uppercase}
   /* leaderboard */
   .lb{display:flex;align-items:center;gap:12px;background:linear-gradient(168deg,#1A1C23,#131419);border:1px solid rgba(255,255,255,.09);border-left:4px solid rgba(255,255,255,.14);border-radius:14px;padding:13px 15px;margin-bottom:8px;color:#E8EBF2}
-  .lb.clickable{cursor:pointer}.lb.me{box-shadow:0 0 0 2px var(--orange)}
+  .lb.clickable{cursor:pointer;transition:transform .08s ease,box-shadow .12s ease,border-color .12s ease}
+  .lb.clickable:hover{border-color:rgba(255,255,255,.24)}
+  .lb.clickable:active{transform:scale(.985)}
+  .lb.loading{border-left-color:var(--orange);box-shadow:0 0 0 2px rgba(232,163,61,.55)}
+  .lb .ldspin{width:20px;height:20px;flex:none;border:2.5px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:ldspin .7s linear infinite}
+  @keyframes ldspin{to{transform:rotate(360deg)}}
+  .lb.me{box-shadow:0 0 0 2px var(--orange)}
   .lb .u small .chx{text-decoration:line-through;color:#ff7a6f}
   .lb .rk{font:400 17px Anton;color:#7B8294;width:34px}
   .lb .u{flex:1;font:600 15px Inter;color:#fff}.lb .u small{display:block;color:#9AA1B2;font-weight:500;font-size:11px;margin-top:2px}
@@ -479,6 +485,9 @@ function koPotential(round, pickedTitle, oppTitle) {
 }
 function initials(n) {
   return n ? n.replace(/&|\.|-/g, " ").split(/\s+/).map(w => w[0]).join("").slice(0, 3).toUpperCase() : "";
+}
+function displayName(n) {
+  return String(n == null ? "" : n).split("@")[0];
 }
 function fmt(iso) {
   if (!iso) return "Time & venue load live";
@@ -1129,7 +1138,7 @@ function Home({
     className: "top"
   }, /*#__PURE__*/React.createElement("span", {
     className: "who"
-  }, "Signed in as ", /*#__PURE__*/React.createElement("b", null, user)), /*#__PURE__*/React.createElement("button", {
+  }, "Signed in as ", /*#__PURE__*/React.createElement("b", null, displayName(user))), /*#__PURE__*/React.createElement("button", {
     className: "linkbtn",
     onClick: onSignOut
   }, "Sign out")), /*#__PURE__*/React.createElement("div", {
@@ -1839,7 +1848,7 @@ function Knockout({
   }, /*#__PURE__*/React.createElement("button", {
     className: "back",
     onClick: back
-  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+  }, "← ", readOnly ? "Leaderboard" : "Home"), /*#__PURE__*/React.createElement("div", {
     className: "eyebrow"
   }, "Knockout"), /*#__PURE__*/React.createElement("h1", {
     style: {
@@ -1861,13 +1870,13 @@ function Knockout({
   }, /*#__PURE__*/React.createElement("button", {
     className: "back",
     onClick: back
-  }, "← Home"), /*#__PURE__*/React.createElement("div", {
+  }, "← ", readOnly ? "Leaderboard" : "Home"), /*#__PURE__*/React.createElement("div", {
     className: "eyebrow"
-  }, "Knockout"), /*#__PURE__*/React.createElement("h1", {
+  }, readOnly ? "Viewing bracket" : "Knockout"), /*#__PURE__*/React.createElement("h1", {
     style: {
       fontSize: 30
     }
-  }, "Knockout bracket"), /*#__PURE__*/React.createElement("p", {
+  }, readOnly ? displayName(user) + "\u2019s bracket" : "Knockout bracket"), /*#__PURE__*/React.createElement("p", {
     className: "sub"
   }, readOnly ? "View only." : bracketLocked ? "Locked — knockout underway. " : "Tap a team to advance it; scroll sideways. ", "Eliminated teams cross out red across your whole bracket."), (bracketLocked || dead.size > 0) && function () {
     var RND = [["R32", 16], ["R16", 8], ["QF", 4], ["SF", 2], ["FINAL", 1]];
@@ -1937,7 +1946,7 @@ function Knockout({
   }, busy ? "Saving…" : champ ? "Submit bracket" : "Save bracket"))), (readOnly || bracketLocked) && /*#__PURE__*/React.createElement("button", {
     className: "homebtn",
     onClick: back
-  }, "← Back to home"));
+  }, "← Back to ", readOnly ? "leaderboard" : "home"));
 }
 
 /* Leaderboard */
@@ -1952,6 +1961,7 @@ function Leaderboard({
   const [rows, setRows] = useState(null);
   const [bp, setBp] = useState({});
   const [err, setErr] = useState("");
+  const [pending, setPending] = useState(null);
   useEffect(() => {
     fetch(API_URL + "?action=bootstrap").then(r => r.json()).then(d => {
       if (d.error) {
@@ -2023,15 +2033,22 @@ function Leaderboard({
     const champ = bracketLocked ? champOf(r.username) : null;
     return /*#__PURE__*/React.createElement("div", {
       key: r.username,
-      className: "lb" + (i < 3 ? " top" : "") + (i === 0 ? " p1" : i === 1 ? " p2" : i === 2 ? " p3" : "") + (r.username === user ? " me" : "") + (bracketLocked ? " clickable" : ""),
-      onClick: () => bracketLocked && viewBracket(r.username)
+      className: "lb" + (i < 3 ? " top" : "") + (i === 0 ? " p1" : i === 1 ? " p2" : i === 2 ? " p3" : "") + (r.username === user ? " me" : "") + (bracketLocked ? " clickable" : "") + (pending === r.username ? " loading" : ""),
+      onClick: () => {
+        if (bracketLocked && !pending) {
+          setPending(r.username);
+          viewBracket(r.username);
+        }
+      }
     }, /*#__PURE__*/React.createElement("span", {
       className: "rk"
     }, r.place), /*#__PURE__*/React.createElement("span", {
       className: "u"
-    }, r.username, r.username === user ? " (you)" : "", /*#__PURE__*/React.createElement("small", null, "group ", r.groupPts || 0, " · advance ", r.advancePts || 0, " · bracket ", r.bracketPts || 0, champ ? /*#__PURE__*/React.createElement("span", null, " · champ: ", /*#__PURE__*/React.createElement("span", {
+    }, displayName(r.username), r.username === user ? " (you)" : "", /*#__PURE__*/React.createElement("small", null, "group ", r.groupPts || 0, " · advance ", r.advancePts || 0, " · bracket ", r.bracketPts || 0, champ ? /*#__PURE__*/React.createElement("span", null, " · champ: ", /*#__PURE__*/React.createElement("span", {
       className: dead.has(champ) ? "chx" : ""
-    }, champ)) : "")), /*#__PURE__*/React.createElement("span", {
+    }, champ)) : "")), pending === r.username ? /*#__PURE__*/React.createElement("span", {
+      className: "ldspin"
+    }) : /*#__PURE__*/React.createElement("span", {
       className: "tot"
     }, r.total || 0));
   }), /*#__PURE__*/React.createElement("button", {
@@ -2095,7 +2112,7 @@ function LiveGames({
     return arr.length ? arr.map(u => /*#__PURE__*/React.createElement("span", {
       key: u,
       className: "pn"
-    }, u, /*#__PURE__*/React.createElement("b", null, placeMap[u] || "\u2014"))) : /*#__PURE__*/React.createElement("span", {
+    }, displayName(u), /*#__PURE__*/React.createElement("b", null, placeMap[u] || "\u2014"))) : /*#__PURE__*/React.createElement("span", {
       className: "pnone"
     }, "No one yet");
   }
