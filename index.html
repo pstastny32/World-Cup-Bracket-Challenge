@@ -200,6 +200,7 @@
   .lb .rk{font:400 17px Anton;color:#7B8294;width:34px}
   .lb .u{flex:1;font:600 15px Inter;color:#fff}.lb .u small{display:block;color:#9AA1B2;font-weight:500;font-size:11px;margin-top:2px}
   .lb .tot{font-family:Anton;font-size:24px;color:#fff}
+  .lb .tot .mx{font:600 14px Inter;color:#8A93A6;letter-spacing:0}
   .lb.p1{border-left-color:#F4B400;background:linear-gradient(168deg,rgba(244,180,0,.16),#15161C 62%)}
   .lb.p1 .rk,.lb.p1 .tot{color:#FFD64D;text-shadow:0 0 14px rgba(244,180,0,.45)}
   .lb.p2{border-left-color:#C9D2E3}.lb.p2 .rk,.lb.p2 .tot{color:#DDE4F0}
@@ -551,6 +552,88 @@ function eliminatedSet(fixtures) {
     }
   });
   return s;
+}
+/* Knockout points still earnable for a saved bracket, given current results.
+   - counts only games NOT yet played (played games are already in the person's total)
+   - a pick only counts while its team is still alive (not eliminated)
+   - the upset bonus is computed vs the ACTUAL opponent once that opponent's feeder game has resolved,
+     otherwise vs the person's own predicted opponent. So this ceiling can rise or fall as the bracket fills in. */
+function koRemaining(picksJson, fixtures, locked) {
+  if (!locked) return 0;
+  var pk;
+  try {
+    pk = JSON.parse(picksJson || "{}");
+  } catch (e) {
+    return 0;
+  }
+  if (!pk || typeof pk !== "object") return 0;
+  var order = ["R32", "R16", "QF", "SF", "FINAL"],
+    tot = {
+      R32: 16,
+      R16: 8,
+      QF: 4,
+      SF: 2,
+      FINAL: 1
+    };
+  function midx(id) {
+    var mm = String(id || "").match(/(\d+)\s*$/);
+    return mm ? parseInt(mm[1], 10) - 1 : -1;
+  }
+  var realW = {},
+    played = {},
+    r32 = {},
+    bronzePlayed = false;
+  (fixtures || []).forEach(function (f) {
+    if (f.round === "BRONZE") {
+      if (f.result) bronzePlayed = true;
+      return;
+    }
+    if (order.indexOf(f.round) < 0) return;
+    var i = midx(f.id);
+    if (f.round === "R32" && i >= 0) r32[i] = {
+      a: f.teamA,
+      b: f.teamB
+    };
+    if (f.result) {
+      played[f.round] = played[f.round] || {};
+      played[f.round][i] = true;
+      if (f.result !== "D") {
+        realW[f.round] = realW[f.round] || {};
+        realW[f.round][i] = f.result === "A" ? f.teamA : f.teamB;
+      }
+    }
+  });
+  var dead = eliminatedSet(fixtures || []),
+    sum = 0;
+  for (var ri = 0; ri < order.length; ri++) {
+    var R = order[ri],
+      n = tot[R],
+      picks = pk[R] || {};
+    for (var m = 0; m < n; m++) {
+      var pick = picks[m];
+      if (!isReal(pick)) continue;
+      if (played[R] && played[R][m]) continue;
+      if (dead.has(pick)) continue;
+      var opp = null;
+      if (R === "R32") {
+        var g = r32[m];
+        if (g) opp = g.a === pick ? g.b : g.a;
+      } else {
+        var pr = order[ri - 1],
+          fa = 2 * m,
+          fb = 2 * m + 1,
+          pA = (pk[pr] || {})[fa],
+          pB = (pk[pr] || {})[fb];
+        var oppFeeder = pick === pA ? fb : pick === pB ? fa : fb;
+        opp = played[pr] && played[pr][oppFeeder] ? realW[pr] && realW[pr][oppFeeder] : oppFeeder === fa ? pA : pB;
+      }
+      if (!isReal(opp)) continue;
+      sum += koPotential(R, TITLE[pick], TITLE[opp]);
+    }
+  }
+  var bz = (pk.BRONZE || {})[0];
+  if (isReal(bz) && !dead.has(bz) && !bronzePlayed) sum += KO_BASE.BRONZE;
+  return sum;
 }
 function actualR32(fixtures) {
   const s = new Set();
@@ -2012,7 +2095,7 @@ function Leaderboard({
     style: {
       marginTop: 6
     }
-  }, "Tap anyone to see their bracket."), err && /*#__PURE__*/React.createElement("div", {
+  }, "Tap anyone to see their bracket. Score reads ", /*#__PURE__*/React.createElement("b", null, "now / max still possible"), "."), err && /*#__PURE__*/React.createElement("div", {
     className: "err",
     style: {
       marginTop: 12
@@ -2031,6 +2114,7 @@ function Leaderboard({
     }
   }, "No scores yet — the board fills in once games are played."), rows && rows.map((r, i) => {
     const champ = bracketLocked ? champOf(r.username) : null;
+    const maxTot = (r.total || 0) + (bracketLocked ? koRemaining(bp[r.username], fixtures || [], true) : 0);
     return /*#__PURE__*/React.createElement("div", {
       key: r.username,
       className: "lb" + (i < 3 ? " top" : "") + (i === 0 ? " p1" : i === 1 ? " p2" : i === 2 ? " p3" : "") + (r.username === user ? " me" : "") + (bracketLocked ? " clickable" : "") + (pending === r.username ? " loading" : ""),
@@ -2050,7 +2134,9 @@ function Leaderboard({
       className: "ldspin"
     }) : /*#__PURE__*/React.createElement("span", {
       className: "tot"
-    }, r.total || 0));
+    }, r.total || 0, bracketLocked && /*#__PURE__*/React.createElement("span", {
+      className: "mx"
+    }, " / ", maxTot)));
   }), /*#__PURE__*/React.createElement("button", {
     className: "homebtn",
     onClick: back
